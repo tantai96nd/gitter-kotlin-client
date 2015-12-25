@@ -1,27 +1,37 @@
 package com.github.shchurov.gitterclient.network
 
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.logging.HttpLoggingInterceptor
 import retrofit.GsonConverterFactory
 import retrofit.Retrofit
 import retrofit.RxJavaCallAdapterFactory
+import java.lang.reflect.Type
 
-class GitterApi {
+object GitterApi {
 
-    companion object {
-        val BASE_URL = "https://gitter.im/"
-        val instance: GitterApi by lazy {
-            GitterApi()
-        }
-    }
+    private val BASE_URL = "https://gitter.im/"
 
-    lateinit var gitterService: GitterService
+    val retrofit: Retrofit
+    val gitterService: GitterService
 
     init {
-        val retrofit: Retrofit = Retrofit.Builder()
+        val okHttpClient = OkHttpClient()
+        setupLogging(okHttpClient)
+        retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
                 .build()
         gitterService = retrofit.create(GitterService::class.java)
+    }
+
+    fun <T> getConverter(clazz: Class<T>) = retrofit.responseConverter<T>(clazz, arrayOfNulls(1))
+
+    private fun setupLogging(client: OkHttpClient) {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        client.interceptors().add(interceptor)
     }
 
 }

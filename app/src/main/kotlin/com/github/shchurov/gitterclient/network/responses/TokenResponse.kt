@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.network
+package com.github.shchurov.gitterclient.network.responses
 
 import com.google.gson.annotations.SerializedName
 

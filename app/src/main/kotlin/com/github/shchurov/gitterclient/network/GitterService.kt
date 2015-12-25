@@ -1,5 +1,6 @@
 package com.github.shchurov.gitterclient.network
 
+import com.github.shchurov.gitterclient.network.responses.TokenResponse
 import retrofit.http.Field
 import retrofit.http.FormUrlEncoded
 import retrofit.http.POST

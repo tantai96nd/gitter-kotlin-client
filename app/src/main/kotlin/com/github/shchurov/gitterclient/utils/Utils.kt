@@ -1,19 +1,24 @@
 package com.github.shchurov.gitterclient.utils
 
-import android.content.Context
-import android.content.res.Resources
-import android.support.annotation.ColorRes
-import android.util.TypedValue
 import android.widget.Toast
 import com.github.shchurov.gitterclient.App
-import com.github.shchurov.gitterclient.R
+import com.github.shchurov.gitterclient.network.RequestSubscriber
+import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 
-fun Context.showToast(textId: Int, duration: Int = Toast.LENGTH_SHORT) {
+fun showToast(textId: Int, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(App.context, textId, duration).show()
 }
 
-fun getPrimaryColor(theme: Resources.Theme) : Int {
-    val typedValue = TypedValue()
-    theme.resolveAttribute(R.attr.colorPrimary, typedValue, true)
-    return typedValue.data
+fun showToast(text: String, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(App.context, text, duration).show()
+}
+
+fun getString(textId: Int) = App.context.getString(textId)
+
+fun <T> Observable<T>.subscribeWithSchedulers(subscriber: RequestSubscriber<T>) {
+    observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(subscriber)
 }

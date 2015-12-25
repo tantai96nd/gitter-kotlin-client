@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">GitterClient</string>
+    <string name="unexpected_error_from_web">Unexpected error occurred while
+        loading data from web</string>
+    <string name="check_your_internet_connection">Check your internet connection</string>
 </resources>
