@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.network
 
-import com.github.shchurov.gitterclient.network.responses.DefaultErrorHandler
+import com.github.shchurov.gitterclient.network.DefaultErrorHandler
 import rx.Subscriber
 
 open class RequestSubscriber<T> : Subscriber<T>() {

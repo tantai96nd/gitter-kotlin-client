@@ -1,5 +1,6 @@
 package com.github.shchurov.gitterclient.views.activities
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
@@ -41,6 +42,8 @@ class LogInActivity : AppCompatActivity(), LogInView {
                 .setStartDelay(PAGE_RENDER_TIME)
                 .setDuration(300)
     }
+
+    override fun getActivity() = this
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (event!!.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK

@@ -21,6 +21,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".views.activities.RoomsActivity"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

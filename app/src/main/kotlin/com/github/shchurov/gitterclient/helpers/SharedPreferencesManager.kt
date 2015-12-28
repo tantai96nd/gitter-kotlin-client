@@ -5,15 +5,16 @@ import kotlin.reflect.KProperty
 
 object SharedPreferencesManager {
 
-    private val PREFS_NAME = "gitter_kotlin_client"
+    private const val PREFS_NAME = "gitter_kotlin_client"
 
-    private val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
+    private const val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
     private val prefs = App.context.getSharedPreferences(PREFS_NAME, 0)
 
-    var gitterAccessToken: String? by PreferenceField(GITTER_ACCESS_TOKEN_KEY, null as String?)
+    var gitterAccessToken: String? by CachedPreferenceField(GITTER_ACCESS_TOKEN_KEY,
+            null as String?)
 
-    private class PreferenceField<T>(val key: String, val defaultValue: T?) {
-        operator fun getValue(thisRef: Any?, property: KProperty<*>): T? {
+    private open class PreferenceField<T>(val key: String, val defaultValue: T?) {
+        operator open fun getValue(thisRef: Any?, property: KProperty<*>): T? {
             with(prefs) {
                 val result: Any? = when (defaultValue) {
                     is String? -> getString(key, defaultValue)
@@ -25,7 +26,7 @@ object SharedPreferencesManager {
             }
         }
 
-        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        operator open fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
             val editor = prefs.edit()
             with (editor) {
                 when (value) {
@@ -36,6 +37,24 @@ object SharedPreferencesManager {
                 }
                 commit()
             }
+        }
+    }
+
+    private class CachedPreferenceField<T>(key: String, defaultValue: T)
+            : PreferenceField<T>(key, defaultValue) {
+
+        var cache: T? = null
+
+        override fun getValue(thisRef: Any?, property: KProperty<*>): T? {
+            if (cache == null) {
+                cache = super.getValue(thisRef, property)
+            }
+            return cache
+        }
+
+        override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+            super.setValue(thisRef, property, value)
+            cache = value
         }
     }
 
