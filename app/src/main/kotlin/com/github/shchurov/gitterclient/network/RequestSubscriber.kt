@@ -1,13 +1,11 @@
 package com.github.shchurov.gitterclient.network
 
-import com.github.shchurov.gitterclient.network.DefaultErrorHandler
 import rx.Subscriber
 
 open class RequestSubscriber<T> : Subscriber<T>() {
 
     final override fun onNext(t: T) {
         onSuccess(t)
-        onFinish()
     }
 
     final override fun onError(e: Throwable) {
@@ -17,6 +15,7 @@ open class RequestSubscriber<T> : Subscriber<T>() {
     }
 
     final override fun onCompleted() {
+        onFinish()
     }
 
     protected open fun onSuccess(response: T) {

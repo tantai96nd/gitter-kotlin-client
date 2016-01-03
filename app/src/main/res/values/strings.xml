@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">GitterClient</string>
-    <string name="unexpected_error_from_web">Unexpected error occurred while
-        loading data from web</string>
+    <string name="unexpected_error_from_internet">Unexpected error occurred while
+        loading data from the internet</string>
     <string name="check_your_internet_connection">Check your internet connection</string>
     <string name="unexpected_error">Unexpected error</string>
     <string name="error_access_denied">Error: access denied</string>

@@ -13,7 +13,7 @@ object GitterApi {
     private const val BASE_URL = "https://api.gitter.im/"
     private const val KEY_AUTH_HEADER = "Authorization"
 
-    val retrofit: Retrofit
+    private val retrofit: Retrofit
     val gitterService: GitterService
 
     init {

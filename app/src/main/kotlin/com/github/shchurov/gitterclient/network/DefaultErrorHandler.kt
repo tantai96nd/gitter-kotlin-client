@@ -21,7 +21,7 @@ object DefaultErrorHandler {
         } catch (e: Exception) {
             ApiError()
         }
-        showToast(apiError.description ?: getString(R.string.unexpected_error_from_web))
+        showToast(apiError.description ?: getString(R.string.unexpected_error_from_internet))
     }
 
 }

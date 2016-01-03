@@ -11,7 +11,7 @@ import com.github.shchurov.gitterclient.network.RequestSubscriber
 import com.github.shchurov.gitterclient.network.responses.TokenResponse
 import com.github.shchurov.gitterclient.presenters.interfaces.LogInPresenter
 import com.github.shchurov.gitterclient.utils.showToast
-import com.github.shchurov.gitterclient.utils.subscribeWithSchedulers
+import com.github.shchurov.gitterclient.utils.customSubscribe
 import com.github.shchurov.gitterclient.views.activities.RoomsActivity
 import com.github.shchurov.gitterclient.views.interfaces.LogInView
 import rx.subscriptions.CompositeSubscription
@@ -89,7 +89,7 @@ class LogInPresenterImpl(val view: LogInView) : LogInPresenter {
         val code = uri.getQueryParameter(KEY_CODE)
         GitterApi.gitterService.getAccessToken(AUTHENTICATION_ENDPOINT, CLIENT_ID,
                 Secrets.gitterOauthSecret, code, REDIRECT_URI, GRANT_TYPE)
-                .subscribeWithSchedulers(object : RequestSubscriber<TokenResponse>() {
+                .customSubscribe(subscriptions, object : RequestSubscriber<TokenResponse>() {
                     override fun onSuccess(response: TokenResponse) {
                         SharedPreferencesManager.gitterAccessToken = response.accessToken
                         startRoomsActivity()
