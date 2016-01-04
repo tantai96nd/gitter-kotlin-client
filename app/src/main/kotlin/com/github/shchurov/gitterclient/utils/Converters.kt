@@ -6,10 +6,13 @@ import com.github.shchurov.gitterclient.network.responses.RoomResponse
 
 object Converters {
 
-    fun roomRealmToUi(room: RoomRealm): Room = Room(room.id, room.name, room.unreadItems,
-            room.mentions)
+    fun roomRealmToUi(room: RoomRealm): Room = Room(room.id, room.name, room.avatar,
+            room.unreadItems, room.mentions, room.lastAccessTime)
 
-    fun roomNetworkToUi(room: RoomResponse): Room = Room(room.id!!, room.name!!, room.unreadItems,
-            room.mentions)
+    fun roomNetworkToUi(room: RoomResponse): Room = Room(room.id!!, room.name!!, room.avatar,
+            room.unreadItems, room.mentions, room.lastAccessTime)
+
+    fun roomNetworkToRealm(room: RoomResponse): RoomRealm = RoomRealm(room.id, room.name,
+            room.avatar, room.unreadItems, room.mentions, room.lastAccessTime)
 
 }

@@ -1,16 +1,32 @@
 package com.github.shchurov.gitterclient.helpers.realm.models;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class RoomRealm extends RealmObject {
 
-    public static final String FIELD_ORDER = "order";
+    public static final String FIELD_LAST_ACCESS_TIME = "lastAccessTime";
 
+    @PrimaryKey
     private String id;
     private String name;
+    private String avatar;
     private int unreadItems;
     private int mentions;
-    private int order;
+    private long lastAccessTime;
+
+    public RoomRealm() {
+    }
+
+    public RoomRealm(String id, String name, String avatar, int unreadItems, int mentions,
+            long lastAccessTime) {
+        this.id = id;
+        this.name = name;
+        this.avatar = avatar;
+        this.unreadItems = unreadItems;
+        this.mentions = mentions;
+        this.lastAccessTime = lastAccessTime;
+    }
 
     public String getId() {
         return id;
@@ -26,6 +42,14 @@ public class RoomRealm extends RealmObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public int getUnreadItems() {
@@ -44,12 +68,12 @@ public class RoomRealm extends RealmObject {
         this.mentions = mentions;
     }
 
-    public int getOrder() {
-        return order;
+    public long getLastAccessTime() {
+        return lastAccessTime;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    public void setLastAccessTime(long lastAccessTime) {
+        this.lastAccessTime = lastAccessTime;
     }
 
 }

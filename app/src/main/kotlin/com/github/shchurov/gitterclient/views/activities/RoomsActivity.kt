@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.presenters.implementations.RoomsPresenterImpl
 import com.github.shchurov.gitterclient.presenters.interfaces.RoomsPresenter
@@ -15,6 +16,7 @@ class RoomsActivity : AppCompatActivity(), RoomsView {
 
     private lateinit var presenter: RoomsPresenter
     private lateinit var rvRooms: RecyclerView
+    private lateinit var toolbar: Toolbar
 
     companion object {
         fun start(context: Context) {
@@ -28,17 +30,23 @@ class RoomsActivity : AppCompatActivity(), RoomsView {
         setContentView(R.layout.rooms_activity)
         initViews()
         setupRecyclerView()
+        setupToolbar()
         presenter = RoomsPresenterImpl(this)
         presenter.onCreate()
     }
 
     private fun initViews() {
         rvRooms = findViewById(R.id.rvRooms) as RecyclerView
+        toolbar = findViewById(R.id.toolbar) as Toolbar
     }
 
     private fun setupRecyclerView() {
         rvRooms.layoutManager = LinearLayoutManager(this)
         rvRooms.setHasFixedSize(false)
+    }
+
+    private fun setupToolbar() {
+        toolbar.setTitle(R.string.rooms)
     }
 
     override fun onDestroy() {

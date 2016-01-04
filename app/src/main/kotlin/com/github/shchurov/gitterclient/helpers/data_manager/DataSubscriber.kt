@@ -3,7 +3,7 @@ package com.github.shchurov.gitterclient.helpers.data_manager
 import com.github.shchurov.gitterclient.network.DefaultErrorHandler
 import rx.Subscriber
 
-open class DataSubsriber<T> : Subscriber<T>() {
+open class DataSubscriber<T> : Subscriber<T>() {
 
     private var localEmitted: Boolean = false;
 
