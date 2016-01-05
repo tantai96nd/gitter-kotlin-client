@@ -8,9 +8,9 @@ import com.bumptech.glide.Glide
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.models.Room
 import com.github.shchurov.gitterclient.utils.GlideCircleTransformation
-import com.github.shchurov.gitterclient.views.adapters.RoomsAdapter
+import com.github.shchurov.gitterclient.views.adapters.RoomsListAdapter
 
-class RoomViewHolder(itemView: View, val actionListener: RoomsAdapter.ActionListener) :
+class RoomViewHolder(itemView: View, private val actionListener: RoomsListAdapter.ActionListener) :
         RecyclerView.ViewHolder(itemView) {
 
     companion object {
@@ -19,14 +19,16 @@ class RoomViewHolder(itemView: View, val actionListener: RoomsAdapter.ActionList
 
     private val tvName: TextView
     private val ivAvatar: ImageView
+    private lateinit var room: Room
 
     init {
         tvName = itemView.findViewById(R.id.tvName) as TextView
         ivAvatar = itemView.findViewById(R.id.ivAvatar) as ImageView
-        itemView.setOnClickListener { actionListener.onRoomClick() }
+        itemView.setOnClickListener { actionListener.onRoomClick(room) }
     }
 
     fun bindData(room: Room) {
+        this.room = room
         tvName.text = room.name
         Glide.with(itemView.context)
                 .load(room.avatar)

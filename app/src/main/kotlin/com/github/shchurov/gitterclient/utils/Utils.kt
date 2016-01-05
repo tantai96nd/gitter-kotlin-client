@@ -1,5 +1,6 @@
 package com.github.shchurov.gitterclient.utils
 
+import android.util.TypedValue
 import android.widget.Toast
 import com.github.shchurov.gitterclient.App
 import rx.Observable
@@ -41,5 +42,8 @@ object Utils {
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
         return df.parse(time).time
     }
+
+    fun dpToPx(dp: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(),
+            App.context.resources.displayMetrics).toInt()
 
 }

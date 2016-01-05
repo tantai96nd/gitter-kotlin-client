@@ -12,7 +12,7 @@ import com.github.shchurov.gitterclient.network.responses.TokenResponse
 import com.github.shchurov.gitterclient.presenters.interfaces.LogInPresenter
 import com.github.shchurov.gitterclient.utils.compositeSubscribeWithSchedulers
 import com.github.shchurov.gitterclient.utils.showToast
-import com.github.shchurov.gitterclient.views.activities.RoomsActivity
+import com.github.shchurov.gitterclient.views.activities.RoomsListActivity
 import com.github.shchurov.gitterclient.views.interfaces.LogInView
 import rx.subscriptions.CompositeSubscription
 
@@ -49,7 +49,7 @@ class LogInPresenterImpl(val view: LogInView) : LogInPresenter {
     }
 
     private fun startRoomsActivity() {
-        RoomsActivity.start(view.getActivity())
+        RoomsListActivity.start(view.getActivity())
         view.getActivity().finish()
     }
 

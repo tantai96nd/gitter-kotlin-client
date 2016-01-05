@@ -8,30 +8,30 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.presenters.implementations.RoomsPresenterImpl
-import com.github.shchurov.gitterclient.presenters.interfaces.RoomsPresenter
-import com.github.shchurov.gitterclient.views.interfaces.RoomsView
+import com.github.shchurov.gitterclient.presenters.implementations.RoomsListPresenterImpl
+import com.github.shchurov.gitterclient.presenters.interfaces.RoomsListPresenter
+import com.github.shchurov.gitterclient.views.interfaces.RoomsListView
 
-class RoomsActivity : AppCompatActivity(), RoomsView {
+class RoomsListActivity : AppCompatActivity(), RoomsListView {
 
-    private lateinit var presenter: RoomsPresenter
+    private lateinit var presenter: RoomsListPresenter
     private lateinit var rvRooms: RecyclerView
     private lateinit var toolbar: Toolbar
 
     companion object {
         fun start(context: Context) {
-            val intent = Intent(context, RoomsActivity::class.java)
+            val intent = Intent(context, RoomsListActivity::class.java)
             context.startActivity(intent)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.rooms_activity)
+        setContentView(R.layout.rooms_list_activity)
         initViews()
         setupRecyclerView()
         setupToolbar()
-        presenter = RoomsPresenterImpl(this)
+        presenter = RoomsListPresenterImpl(this)
         presenter.onCreate()
     }
 
@@ -59,4 +59,5 @@ class RoomsActivity : AppCompatActivity(), RoomsView {
         rvRooms.adapter = adapter
     }
 
+    override fun getContext() = this
 }

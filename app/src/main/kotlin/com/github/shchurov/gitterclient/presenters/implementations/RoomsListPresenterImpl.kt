@@ -4,17 +4,19 @@ import com.github.shchurov.gitterclient.helpers.data_manager.DataManager
 import com.github.shchurov.gitterclient.helpers.data_manager.DataSource
 import com.github.shchurov.gitterclient.helpers.data_manager.DataSubscriber
 import com.github.shchurov.gitterclient.models.Room
-import com.github.shchurov.gitterclient.presenters.interfaces.RoomsPresenter
+import com.github.shchurov.gitterclient.presenters.interfaces.RoomsListPresenter
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
-import com.github.shchurov.gitterclient.views.adapters.RoomsAdapter
-import com.github.shchurov.gitterclient.views.interfaces.RoomsView
+import com.github.shchurov.gitterclient.views.activities.RoomActivity
+import com.github.shchurov.gitterclient.views.adapters.RoomsListAdapter
+import com.github.shchurov.gitterclient.views.interfaces.RoomsListView
 import rx.subscriptions.CompositeSubscription
 
-class RoomsPresenterImpl(val view: RoomsView) : RoomsPresenter, RoomsAdapter.ActionListener {
+class RoomsListPresenterImpl(val view: RoomsListView) : RoomsListPresenter,
+        RoomsListAdapter.ActionListener {
 
     private val subscriptions = CompositeSubscription()
     private val rooms: MutableList<Room> = arrayListOf()
-    private val adapter = RoomsAdapter(rooms, this)
+    private val adapter = RoomsListAdapter(rooms, this)
 
     override fun onCreate() {
         view.setRecyclerViewAdapter(adapter)
@@ -29,10 +31,6 @@ class RoomsPresenterImpl(val view: RoomsView) : RoomsPresenter, RoomsAdapter.Act
                         rooms.addAll(data)
                         adapter.notifyDataSetChanged()
                     }
-
-                    override fun onFinish() {
-                        super.onFinish()
-                    }
                 })
     }
 
@@ -40,8 +38,8 @@ class RoomsPresenterImpl(val view: RoomsView) : RoomsPresenter, RoomsAdapter.Act
         subscriptions.clear()
     }
 
-    override fun onRoomClick() {
-
+    override fun onRoomClick(room: Room) {
+        RoomActivity.start(view.getContext(), room.id, room.name)
     }
 
 }

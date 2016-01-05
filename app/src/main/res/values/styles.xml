@@ -4,7 +4,7 @@
         <item name="colorPrimary">@color/blue1</item>
         <item name="colorPrimaryDark">@color/blue2</item>
         <item name="colorAccent">@color/purple</item>
-        <item name="android:windowBackground">@color/grey3</item>
+        <item name="android:windowBackground">@color/grey4</item>
         <item name="toolbarStyle">@style/ToolbarStyle</item>
     </style>
 

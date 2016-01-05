@@ -1,5 +1,6 @@
 package com.github.shchurov.gitterclient.network
 
+import com.github.shchurov.gitterclient.network.responses.MessageResponse
 import com.github.shchurov.gitterclient.network.responses.RoomResponse
 import com.github.shchurov.gitterclient.network.responses.TokenResponse
 import retrofit.http.*
@@ -20,5 +21,11 @@ interface GitterService {
 
     @GET("v1/rooms")
     fun getMyRooms(): Observable<MutableList<RoomResponse>>
+
+    @GET("v1/rooms/{roomId}/chatMessages")
+    fun getRoomMessages(
+            @Path("roomId") roomId: String,
+            @Query("limit") limit: Int
+    ): Observable<MutableList<MessageResponse>>
 
 }

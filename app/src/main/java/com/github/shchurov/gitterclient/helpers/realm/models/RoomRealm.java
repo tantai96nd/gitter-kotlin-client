@@ -3,6 +3,7 @@ package com.github.shchurov.gitterclient.helpers.realm.models;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+@SuppressWarnings("unused")
 public class RoomRealm extends RealmObject {
 
     public static final String FIELD_LAST_ACCESS_TIME = "lastAccessTime";

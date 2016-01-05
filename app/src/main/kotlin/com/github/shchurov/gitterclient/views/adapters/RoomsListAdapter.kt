@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import com.github.shchurov.gitterclient.models.Room
 import com.github.shchurov.gitterclient.views.view_holders.RoomViewHolder
 
-class RoomsAdapter(private val rooms: List<Room>,
-        private val actionListener: RoomsAdapter.ActionListener) :
+class RoomsListAdapter(private val rooms: List<Room>,
+        private val actionListener: RoomsListAdapter.ActionListener) :
         RecyclerView.Adapter<RoomViewHolder>() {
 
     override fun getItemCount() = rooms.size
@@ -24,7 +24,7 @@ class RoomsAdapter(private val rooms: List<Room>,
 
     interface ActionListener {
 
-        fun onRoomClick()
+        fun onRoomClick(room: Room)
 
     }
 

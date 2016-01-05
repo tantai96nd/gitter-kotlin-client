@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.presenters.interfaces
 
-interface RoomsPresenter {
+interface RoomPresenter {
 
     fun onCreate()
 
