@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.network.responses
 
-import com.github.shchurov.gitterclient.utils.Utils
+import com.github.shchurov.gitterclient.utils.TimeUtils
 import com.google.gson.annotations.SerializedName
 
 class RoomResponse {
@@ -13,7 +13,7 @@ class RoomResponse {
     @SerializedName("lastAccessTime")
     var lastAccessTimeString: String? = null
     val lastAccessTime by lazy {
-        Utils.convertTimeStringToLong(lastAccessTimeString)
+        TimeUtils.convertIsoToLong(lastAccessTimeString)
     }
     val avatar by lazy {
         // taken from the official gitter app, is reliable?

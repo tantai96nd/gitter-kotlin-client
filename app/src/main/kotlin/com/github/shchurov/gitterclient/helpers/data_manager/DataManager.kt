@@ -20,6 +20,7 @@ object DataManager {
         }.applySchedulers()
         val networkObservable = GitterApi.gitterService.getMyRooms()
                 .flatMap { roomsResponse ->
+                    roomsResponse.sortByDescending { it.lastAccessTime }
                     val realm = RealmManager.createWrapperInstance()
                     val roomsRealm = roomsResponse.map { Converters.roomNetworkToRealm(it) }
                     realm.putMyRooms(roomsRealm)

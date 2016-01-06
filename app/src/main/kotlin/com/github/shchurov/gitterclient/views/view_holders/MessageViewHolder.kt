@@ -7,6 +7,8 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.models.Message
+import com.github.shchurov.gitterclient.utils.GlideCircleTransformation
+import com.github.shchurov.gitterclient.utils.TimeUtils
 import com.github.shchurov.gitterclient.views.adapters.RoomAdapter
 
 class MessageViewHolder(itemView: View, private val actionListener: RoomAdapter.ActionListener) :
@@ -33,9 +35,10 @@ class MessageViewHolder(itemView: View, private val actionListener: RoomAdapter.
         this.message = message
         Glide.with(itemView.context)
                 .load(message.user.avatar)
+                .transform(GlideCircleTransformation)
                 .into(ivAvatar)
         tvUsername.text = message.user.username
-        tvTime.text = message.time.toString()
+        tvTime.text = TimeUtils.convertLongToString(message.time)
         tvMessage.text = message.text
     }
 

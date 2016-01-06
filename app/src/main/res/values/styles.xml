@@ -4,14 +4,14 @@
         <item name="colorPrimary">@color/blue1</item>
         <item name="colorPrimaryDark">@color/blue2</item>
         <item name="colorAccent">@color/purple</item>
-        <item name="android:windowBackground">@color/grey4</item>
+        <item name="android:windowBackground">@color/grey3</item>
         <item name="toolbarStyle">@style/ToolbarStyle</item>
     </style>
 
     <style name="ToolbarStyle" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">@color/blue1</item>
-        <item name="titleTextColor">@color/grey2</item>
         <item name="android:elevation" tools:ignore="NewApi">4dp</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
 </resources>

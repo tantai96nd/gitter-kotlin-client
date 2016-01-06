@@ -1,5 +1,6 @@
 package com.github.shchurov.gitterclient.network.responses
 
+import com.github.shchurov.gitterclient.utils.TimeUtils
 import com.github.shchurov.gitterclient.utils.Utils
 import com.google.gson.annotations.SerializedName
 
@@ -10,7 +11,7 @@ class MessageResponse {
     @SerializedName("sent")
     var timeString: String? = null
     val time by lazy {
-        Utils.convertTimeStringToLong(timeString)
+        TimeUtils.convertIsoToLong(timeString)
     }
     @SerializedName("fromUser")
     var user: UserResponse? = null

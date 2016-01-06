@@ -4,9 +4,8 @@
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
     <color name="grey1">#b3d3e9</color>
-    <color name="grey2">#34434d</color>
-    <color name="grey3">#394b54</color>
-    <color name="grey4">#263238</color>
+    <color name="grey2">#394b54</color>
+    <color name="grey3">#263238</color>
     <color name="blue1">#00e5ff</color>
     <color name="blue2">#009ab1</color>
     <color name="purple">#aa00ff</color>
