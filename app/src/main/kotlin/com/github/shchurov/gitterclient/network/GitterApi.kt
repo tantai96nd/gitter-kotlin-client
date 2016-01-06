@@ -10,8 +10,8 @@ import retrofit.RxJavaCallAdapterFactory
 
 object GitterApi {
 
-    private const val BASE_URL = "https://api.gitter.im/"
-    private const val KEY_AUTH_HEADER = "Authorization"
+    private val BASE_URL = "https://api.gitter.im/"
+    private val KEY_AUTH_HEADER = "Authorization"
 
     private val retrofit: Retrofit
     val gitterService: GitterService

@@ -5,9 +5,9 @@ import kotlin.reflect.KProperty
 
 object SharedPreferencesManager {
 
-    private const val PREFS_NAME = "gitter_kotlin_client"
+    private val PREFS_NAME = "gitter_kotlin_client"
 
-    private const val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
+    private val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
     private val prefs = App.context.getSharedPreferences(PREFS_NAME, 0)
 
     var gitterAccessToken: String? by CachedPreferenceField(GITTER_ACCESS_TOKEN_KEY,

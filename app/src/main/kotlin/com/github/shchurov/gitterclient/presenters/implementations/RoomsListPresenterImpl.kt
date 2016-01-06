@@ -24,12 +24,17 @@ class RoomsListPresenterImpl(val view: RoomsListView) : RoomsListPresenter,
     }
 
     private fun loadRooms() {
+        adapter.loading = true
         DataManager.getMyRooms()
                 .compositeSubscribe(subscriptions, object : DataSubscriber<List<Room>>() {
                     override fun onData(data: List<Room>, source: DataSource) {
                         rooms.clear()
                         rooms.addAll(data)
                         adapter.notifyDataSetChanged()
+                    }
+
+                    override fun onFinish() {
+                        adapter.loading = false
                     }
                 })
     }

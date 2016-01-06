@@ -6,7 +6,7 @@ import io.realm.RealmConfiguration
 
 object RealmManager {
 
-    private const val REALM_SCHEMA_VERSION = 1L
+    private val REALM_SCHEMA_VERSION = 1L
 
     fun initRealm(context: Context) {
         val config = RealmConfiguration.Builder(context)

@@ -15,7 +15,7 @@ class MessageViewHolder(itemView: View, private val actionListener: RoomAdapter.
         RecyclerView.ViewHolder(itemView) {
 
     companion object {
-        val LAYOUT_ID = R.layout.message_item
+        const val LAYOUT_ID = R.layout.message_item
     }
 
     private lateinit var ivAvatar: ImageView
