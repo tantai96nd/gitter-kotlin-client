@@ -28,7 +28,7 @@ class MessagesItemDecoration() : RecyclerView.ItemDecoration() {
             state: RecyclerView.State?) {
         if (isFirstItem(parent, view))
             return
-        outRect.top = width
+        outRect.bottom = width
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
@@ -38,8 +38,9 @@ class MessagesItemDecoration() : RecyclerView.ItemDecoration() {
             val child = parent.getChildAt(i)
             if (isFirstItem(parent, child))
                 continue
-            val top = child.top.toFloat()
+            val top = child.translationY + child.bottom.toFloat()
             val bottom = top + WIDTH_DP
+            paint.alpha = (255 * child.alpha).toInt()
             c.drawRect(left, top, right, bottom, paint)
         }
     }

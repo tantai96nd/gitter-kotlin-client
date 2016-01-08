@@ -9,9 +9,9 @@ import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.models.Message
 import com.github.shchurov.gitterclient.utils.GlideCircleTransformation
 import com.github.shchurov.gitterclient.utils.TimeUtils
-import com.github.shchurov.gitterclient.views.adapters.RoomAdapter
+import com.github.shchurov.gitterclient.views.adapters.MessagesAdapter
 
-class MessageViewHolder(itemView: View, private val actionListener: RoomAdapter.ActionListener) :
+class MessageViewHolder(itemView: View, private val actionListener: MessagesAdapter.ActionListener) :
         RecyclerView.ViewHolder(itemView) {
 
     companion object {

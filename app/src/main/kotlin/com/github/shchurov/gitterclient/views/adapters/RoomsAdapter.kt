@@ -7,8 +7,8 @@ import com.github.shchurov.gitterclient.models.Room
 import com.github.shchurov.gitterclient.views.view_holders.LoadingViewHolder
 import com.github.shchurov.gitterclient.views.view_holders.RoomViewHolder
 
-class RoomsListAdapter(private val rooms: List<Room>,
-        private val actionListener: RoomsListAdapter.ActionListener) :
+class RoomsAdapter(private val rooms: List<Room>,
+        private val actionListener: RoomsAdapter.ActionListener) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -30,6 +30,8 @@ class RoomsListAdapter(private val rooms: List<Room>,
         setHasStableIds(true)
     }
 
+    private fun offset() = if (loading) 1 else 0
+
     override fun getItemCount() = offset() + rooms.size
 
     override fun getItemViewType(position: Int) = when {
@@ -37,8 +39,8 @@ class RoomsListAdapter(private val rooms: List<Room>,
         else -> TYPE_ROOM
     }
 
-    // not 100% reliable but totally safe. Allows to have cool animations when items'
-    // positions have been changed since last update
+    // not 100% reliable (shrinking 24-chars String to Long) but totally safe.
+    // Allows to have cool animations when items' positions have been changed
     override fun getItemId(position: Int) = when (getItemViewType(position)) {
         TYPE_ROOM -> Math.abs(rooms[position - offset()].idHashCode)
         else -> RecyclerView.NO_ID
@@ -65,8 +67,6 @@ class RoomsListAdapter(private val rooms: List<Room>,
             (holder as RoomViewHolder).bindData(rooms[position - offset()])
         }
     }
-
-    private fun offset() = if (loading) 1 else 0
 
     interface ActionListener {
 

@@ -7,16 +7,16 @@ import com.github.shchurov.gitterclient.models.Room
 import com.github.shchurov.gitterclient.presenters.interfaces.RoomsListPresenter
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import com.github.shchurov.gitterclient.views.activities.RoomActivity
-import com.github.shchurov.gitterclient.views.adapters.RoomsListAdapter
+import com.github.shchurov.gitterclient.views.adapters.RoomsAdapter
 import com.github.shchurov.gitterclient.views.interfaces.RoomsListView
 import rx.subscriptions.CompositeSubscription
 
 class RoomsListPresenterImpl(val view: RoomsListView) : RoomsListPresenter,
-        RoomsListAdapter.ActionListener {
+        RoomsAdapter.ActionListener {
 
     private val subscriptions = CompositeSubscription()
     private val rooms: MutableList<Room> = arrayListOf()
-    private val adapter = RoomsListAdapter(rooms, this)
+    private val adapter = RoomsAdapter(rooms, this)
 
     override fun onCreate() {
         view.setRecyclerViewAdapter(adapter)
@@ -28,7 +28,9 @@ class RoomsListPresenterImpl(val view: RoomsListView) : RoomsListPresenter,
         DataManager.getMyRooms()
                 .compositeSubscribe(subscriptions, object : DataSubscriber<List<Room>>() {
                     override fun onData(data: List<Room>, source: DataSource) {
-                        rooms.clear()
+                        if (source == DataSource.NETWORK) {
+                            rooms.clear()
+                        }
                         rooms.addAll(data)
                         adapter.notifyDataSetChanged()
                     }

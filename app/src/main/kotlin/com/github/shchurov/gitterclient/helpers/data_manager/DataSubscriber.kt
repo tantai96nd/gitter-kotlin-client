@@ -3,17 +3,10 @@ package com.github.shchurov.gitterclient.helpers.data_manager
 import com.github.shchurov.gitterclient.network.DefaultErrorHandler
 import rx.Subscriber
 
-open class DataSubscriber<T> : Subscriber<T>() {
+open class DataSubscriber<T> : Subscriber<DataWrapper<T>>() {
 
-    private var localEmitted: Boolean = false;
-
-    final override fun onNext(t: T) {
-        if (localEmitted) {
-            onData(t, DataSource.NETWORK)
-        } else {
-            onData(t, DataSource.LOCAL)
-            localEmitted = true
-        }
+    final override fun onNext(wrapper: DataWrapper<T>) {
+        onData(wrapper.data, wrapper.source)
     }
 
     final override fun onError(e: Throwable) {

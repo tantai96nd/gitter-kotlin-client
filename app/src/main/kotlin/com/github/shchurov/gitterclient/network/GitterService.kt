@@ -25,7 +25,8 @@ interface GitterService {
     @GET("v1/rooms/{roomId}/chatMessages")
     fun getRoomMessages(
             @Path("roomId") roomId: String,
-            @Query("limit") limit: Int
+            @Query("limit") limit: Int,
+            @Query("beforeId") beforeId: String? = null
     ): Observable<MutableList<MessageResponse>>
 
 }

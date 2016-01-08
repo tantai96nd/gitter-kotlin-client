@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.view.View
+import android.widget.ProgressBar
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.presenters.implementations.RoomPresenterImpl
 import com.github.shchurov.gitterclient.presenters.interfaces.RoomPresenter
@@ -31,6 +33,7 @@ class RoomActivity : AppCompatActivity(), RoomView {
     private lateinit var presenter: RoomPresenter
     private lateinit var toolbar: Toolbar
     private lateinit var rvMessages: RecyclerView
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,7 @@ class RoomActivity : AppCompatActivity(), RoomView {
     private fun initViews() {
         toolbar = findViewById(R.id.toolbar) as Toolbar
         rvMessages = findViewById(R.id.rvMessages) as RecyclerView
+        progressBar = findViewById(R.id.progressBar) as ProgressBar
     }
 
     private fun setupToolbar() {
@@ -55,7 +59,7 @@ class RoomActivity : AppCompatActivity(), RoomView {
     }
 
     private fun setupRecyclerView() {
-        rvMessages.layoutManager = LinearLayoutManager(this)
+        rvMessages.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
         rvMessages.setHasFixedSize(true)
         rvMessages.addItemDecoration(MessagesItemDecoration())
     }
@@ -78,5 +82,17 @@ class RoomActivity : AppCompatActivity(), RoomView {
     }
 
     override fun getRoomId() = intent.getStringExtra(EXTRA_ROOM_ID)
+
+    override fun addOnScrollListener(listener: RecyclerView.OnScrollListener) {
+        rvMessages.addOnScrollListener(listener)
+    }
+
+    override fun showInitLoading() {
+        progressBar.visibility = View.VISIBLE
+    }
+
+    override fun hideInitLoading() {
+        progressBar.visibility = View.GONE
+    }
 
 }

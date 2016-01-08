@@ -8,9 +8,9 @@ import com.bumptech.glide.Glide
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.models.Room
 import com.github.shchurov.gitterclient.utils.GlideCircleTransformation
-import com.github.shchurov.gitterclient.views.adapters.RoomsListAdapter
+import com.github.shchurov.gitterclient.views.adapters.RoomsAdapter
 
-class RoomViewHolder(itemView: View, private val actionListener: RoomsListAdapter.ActionListener) :
+class RoomViewHolder(itemView: View, private val actionListener: RoomsAdapter.ActionListener) :
         RecyclerView.ViewHolder(itemView) {
 
     companion object {
