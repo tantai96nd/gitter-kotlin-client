@@ -45,10 +45,6 @@ object DataManager {
 
     fun getRoomMessagesNextPage(roomId: String, limit: Int, beforeId: String) =
             GitterApi.gitterService.getRoomMessages(roomId, limit, beforeId)
-                    .flatMap { messagesResponse ->
-                        Thread.sleep(3000)
-                        Observable.just(messagesResponse)
-                    }
                     .map { messagesResponse ->
                         messagesResponse.reverse()
                         val messages = messagesResponse.map { Converters.messageNetworkToUi(it) }
