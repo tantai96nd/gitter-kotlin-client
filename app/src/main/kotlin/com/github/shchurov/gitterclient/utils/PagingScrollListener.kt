@@ -2,7 +2,6 @@ package com.github.shchurov.gitterclient.utils
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 
 abstract class PagingScrollListener(private val offscreenItemsThreshold: Int) :
         RecyclerView.OnScrollListener() {
@@ -14,17 +13,25 @@ abstract class PagingScrollListener(private val offscreenItemsThreshold: Int) :
     protected abstract fun onLoadMoreItems()
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        if (layoutManager == null) {
-            layoutManager = recyclerView.layoutManager as LinearLayoutManager
-        }
         if (!enabled)
             return
-        val lastVisible = layoutManager!!.findLastVisibleItemPosition()
-        val totalCount = layoutManager!!.itemCount
-        if (!loading && totalCount <= lastVisible + offscreenItemsThreshold) {
+        initLayoutManagerIfRequired(recyclerView)
+        if (!loading && isThresholdPassed()) {
             loading = true
             onLoadMoreItems()
         }
+    }
+
+    private fun initLayoutManagerIfRequired(recyclerView: RecyclerView) {
+        if (layoutManager == null) {
+            layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        }
+    }
+
+    private fun isThresholdPassed(): Boolean {
+        val lastVisible = layoutManager!!.findLastVisibleItemPosition()
+        val totalCount = layoutManager!!.itemCount
+        return totalCount <= lastVisible + offscreenItemsThreshold
     }
 
     fun notifyLoadingFinished() {

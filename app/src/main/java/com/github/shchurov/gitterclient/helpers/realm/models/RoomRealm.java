@@ -6,6 +6,7 @@ import io.realm.annotations.PrimaryKey;
 @SuppressWarnings("unused")
 public class RoomRealm extends RealmObject {
 
+    public static final String FIELD_ID = "id";
     public static final String FIELD_LAST_ACCESS_TIME = "lastAccessTime";
 
     @PrimaryKey

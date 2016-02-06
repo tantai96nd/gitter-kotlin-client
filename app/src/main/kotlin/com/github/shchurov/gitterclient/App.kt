@@ -2,7 +2,7 @@ package com.github.shchurov.gitterclient
 
 import android.app.Application
 import android.content.Context
-import com.github.shchurov.gitterclient.helpers.realm.RealmManager
+import com.github.shchurov.gitterclient.data.database.realm.RealmManager
 
 class App : Application() {
 
