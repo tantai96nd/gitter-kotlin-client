@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.data.network
+package com.github.shchurov.gitterclient.data.network.implementation.helpers
 
 import rx.Subscriber
 
@@ -22,7 +22,7 @@ open class RequestSubscriber<T> : Subscriber<T>() {
     }
 
     protected open fun onFailure(e: Throwable) {
-        DefaultErrorHandler.handleError(e)
+        NetworkErrorHandler.handleError(e)
     }
 
     protected open fun onFinish() {

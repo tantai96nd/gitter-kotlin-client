@@ -7,7 +7,6 @@ abstract class PagingScrollListener(private val offscreenItemsThreshold: Int) :
         RecyclerView.OnScrollListener() {
 
     private var layoutManager: LinearLayoutManager? = null
-    private var loading: Boolean = false
     var enabled: Boolean = true
 
     protected abstract fun onLoadMoreItems()
@@ -16,8 +15,8 @@ abstract class PagingScrollListener(private val offscreenItemsThreshold: Int) :
         if (!enabled)
             return
         initLayoutManagerIfRequired(recyclerView)
-        if (!loading && isThresholdPassed()) {
-            loading = true
+        if (isThresholdPassed()) {
+            enabled = false
             onLoadMoreItems()
         }
     }
@@ -32,10 +31,6 @@ abstract class PagingScrollListener(private val offscreenItemsThreshold: Int) :
         val lastVisible = layoutManager!!.findLastVisibleItemPosition()
         val totalCount = layoutManager!!.itemCount
         return totalCount <= lastVisible + offscreenItemsThreshold
-    }
-
-    fun notifyLoadingFinished() {
-        loading = false
     }
 
 }

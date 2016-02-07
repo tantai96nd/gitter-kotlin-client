@@ -8,10 +8,12 @@ interface RoomView {
 
     fun getRoomId(): String
 
-    fun addOnScrollListener(listener: RecyclerView.OnScrollListener)
-
     fun showInitLoading()
 
     fun hideInitLoading()
+
+    fun enablePagingListener()
+
+    fun disablePagingListener()
 
 }

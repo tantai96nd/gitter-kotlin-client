@@ -4,7 +4,7 @@ import com.github.shchurov.gitterclient.domain.models.Room
 
 interface Database {
 
-    fun getMyRooms(): List<Room>
+    fun getMyRooms(): MutableList<Room>
 
     fun clearMyRooms()
 

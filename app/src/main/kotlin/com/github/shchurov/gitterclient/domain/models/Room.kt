@@ -1,7 +1,7 @@
 package com.github.shchurov.gitterclient.domain.models
 
 class Room(val id: String, val name: String, val avatar: String, var unreadItems: Int,
-        var mentions: Int, var lastTimeAccess: Long) {
+        var mentions: Int, var lastAccessTimestamp: Long) {
 
     /**
      * used in RoomsAdapter for animations

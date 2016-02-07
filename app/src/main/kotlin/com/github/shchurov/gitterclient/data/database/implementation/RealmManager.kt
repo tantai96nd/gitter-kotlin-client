@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.data.database.realm
+package com.github.shchurov.gitterclient.data.database.implementation
 
 import android.content.Context
 import io.realm.Realm

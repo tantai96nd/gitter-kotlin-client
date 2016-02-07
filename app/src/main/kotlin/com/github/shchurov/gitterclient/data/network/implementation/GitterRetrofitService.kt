@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.data.network.retrofit
+package com.github.shchurov.gitterclient.data.network.implementation
 
 import com.github.shchurov.gitterclient.data.network.responses.MessageResponse
 import com.github.shchurov.gitterclient.data.network.responses.RoomResponse

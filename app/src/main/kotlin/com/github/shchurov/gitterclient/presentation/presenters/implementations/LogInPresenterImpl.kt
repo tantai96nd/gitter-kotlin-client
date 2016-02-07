@@ -6,43 +6,42 @@ import android.webkit.WebViewClient
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.data.Secrets
 import com.github.shchurov.gitterclient.data.SharedPreferencesManager
-import com.github.shchurov.gitterclient.data.network.retrofit.RetrofitManager
-import com.github.shchurov.gitterclient.data.network.RequestSubscriber
-import com.github.shchurov.gitterclient.data.network.responses.TokenResponse
+import com.github.shchurov.gitterclient.data.network.implementation.helpers.RequestSubscriber
+import com.github.shchurov.gitterclient.domain.interactors.implementation.TokenInteractorImpl
+import com.github.shchurov.gitterclient.domain.models.Token
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
+import com.github.shchurov.gitterclient.presentation.ui.LogInView
+import com.github.shchurov.gitterclient.presentation.ui.activities.RoomsListActivity
 import com.github.shchurov.gitterclient.utils.compositeSubscribeWithSchedulers
 import com.github.shchurov.gitterclient.utils.showToast
-import com.github.shchurov.gitterclient.presentation.ui.activities.RoomsListActivity
-import com.github.shchurov.gitterclient.presentation.ui.LogInView
 import rx.subscriptions.CompositeSubscription
 
-class LogInPresenterImpl(val view: LogInView) : LogInPresenter {
+class LogInPresenterImpl(private val view: LogInView) : LogInPresenter {
 
     companion object {
         const val AUTHORIZATION_ENDPOINT = "https://gitter.im/login/oauth/authorize"
-        const val AUTHENTICATION_ENDPOINT = "https://gitter.im/login/oauth/token"
         const val KEY_CLIENT_ID = "client_id"
-        val CLIENT_ID = Secrets.gitterOauthKey
         const val KEY_RESPONSE_TYPE = "response_type"
         const val RESPONSE_TYPE = "code"
         const val KEY_REDIRECT_URI = "redirect_uri"
-        val REDIRECT_URI = Secrets.gitterRedirectUri
-        const val GRANT_TYPE = "authorization_code"
         const val KEY_CODE = "code"
         const val KEY_ERROR = "error"
         const val ERROR_ACCESS_DENIED = "access_denied"
-        val AUTH_REQUEST = "${com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.AUTHORIZATION_ENDPOINT}" +
-                "?${com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.KEY_CLIENT_ID}=${com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.CLIENT_ID}" +
-                "&${com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.KEY_RESPONSE_TYPE}=${com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.RESPONSE_TYPE}" +
-                "&${com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.KEY_REDIRECT_URI}=${com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.REDIRECT_URI}"
+        @Suppress("ConvertToStringTemplate")
+        val AUTH_REQUEST = "$AUTHORIZATION_ENDPOINT" +
+                "?$KEY_CLIENT_ID=${Secrets.gitterOauthKey}" +
+                "&$KEY_RESPONSE_TYPE=$RESPONSE_TYPE" +
+                "&$KEY_REDIRECT_URI=${Secrets.gitterRedirectUri}"
     }
 
+    val prefsManager: SharedPreferencesManager
     val subscriptions: CompositeSubscription = CompositeSubscription()
+    val tokenInteractor = TokenInteractorImpl()
 
     override fun onCreate() {
-        if (SharedPreferencesManager.gitterAccessToken == null) {
+        if (prefsManager.gitterAccessToken == null) {
             view.setWebViewClient(webViewClient)
-            view.loadUrl(com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.AUTH_REQUEST)
+            view.loadUrl(AUTH_REQUEST)
         } else {
             startRoomsActivity()
         }
@@ -59,16 +58,24 @@ class LogInPresenterImpl(val view: LogInView) : LogInPresenter {
         }
 
         override fun shouldOverrideUrlLoading(webView: WebView?, url: String?): Boolean {
-            if (url == null || !url.startsWith(Secrets.gitterRedirectUri))
-                return false;
-            webView?.clearHistory()
+            if (isUrlShouldBeHandled(url)) {
+                webView?.clearHistory()
+                handleUrl(url!!)
+                return true
+            } else {
+                return false
+            }
+        }
+
+        private fun isUrlShouldBeHandled(url: String?) = url != null && url.startsWith(Secrets.gitterRedirectUri)
+
+        private fun handleUrl(url: String) {
             val uri = Uri.parse(url);
             val queryKeys = uri.queryParameterNames
             when {
-                com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.KEY_ERROR in queryKeys -> handleAuthError(uri)
-                com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.KEY_CODE in queryKeys -> getAccessToken(uri)
+                KEY_ERROR in queryKeys -> handleAuthError(uri)
+                KEY_CODE in queryKeys -> getAccessToken(uri)
             }
-            return true
         }
 
         override fun onReceivedError(view: WebView?, errorCode: Int, description: String?,
@@ -78,21 +85,19 @@ class LogInPresenterImpl(val view: LogInView) : LogInPresenter {
     }
 
     private fun handleAuthError(uri: Uri) {
-        val error = uri.getQueryParameter(com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.KEY_ERROR)
+        val error = uri.getQueryParameter(KEY_ERROR)
         when (error) {
-            com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.ERROR_ACCESS_DENIED -> showToast(R.string.error_access_denied)
+            ERROR_ACCESS_DENIED -> showToast(R.string.error_access_denied)
             else -> showToast(R.string.unexpected_error)
         }
     }
 
     private fun getAccessToken(uri: Uri) {
-        val code = uri.getQueryParameter(com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.KEY_CODE)
-        RetrofitManager.gitterService.getAccessToken(com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.AUTHENTICATION_ENDPOINT, com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.CLIENT_ID,
-                Secrets.gitterOauthSecret, code, com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.REDIRECT_URI, com.github.shchurov.gitterclient.presentation.LogInPresenterImpl.Companion.GRANT_TYPE)
-                .compositeSubscribeWithSchedulers(subscriptions, object :
-                        RequestSubscriber<TokenResponse>() {
-                    override fun onSuccess(response: TokenResponse) {
-                        SharedPreferencesManager.gitterAccessToken = response.accessToken
+        val code = uri.getQueryParameter(KEY_CODE)
+        tokenInteractor.getAccessToken(code)
+                .compositeSubscribeWithSchedulers(subscriptions, object : RequestSubscriber<Token>() {
+                    override fun onSuccess(response: Token) {
+                        prefsManager.gitterAccessToken = response.accessToken
                         startRoomsActivity()
                     }
 

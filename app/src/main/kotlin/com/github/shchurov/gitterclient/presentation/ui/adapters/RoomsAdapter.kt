@@ -7,8 +7,7 @@ import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.ui.view_holders.LoadingViewHolder
 import com.github.shchurov.gitterclient.presentation.ui.view_holders.RoomViewHolder
 
-class RoomsAdapter(private val rooms: List<Room>,
-        private val actionListener: com.github.shchurov.gitterclient.presentation.RoomsAdapter.ActionListener) :
+class RoomsAdapter(private val rooms: List<Room>, private val actionListener: ActionListener) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -35,25 +34,25 @@ class RoomsAdapter(private val rooms: List<Room>,
     override fun getItemCount() = offset() + rooms.size
 
     override fun getItemViewType(position: Int) = when {
-        loading && position == 0 -> com.github.shchurov.gitterclient.presentation.RoomsAdapter.Companion.TYPE_LOADING
-        else -> com.github.shchurov.gitterclient.presentation.RoomsAdapter.Companion.TYPE_ROOM
+        loading && position == 0 -> Companion.TYPE_LOADING
+        else -> Companion.TYPE_ROOM
     }
 
     // not 100% reliable (shrinking 24-chars String to Long) but totally safe.
     // Allows to have cool animations when items' positions have been changed
     override fun getItemId(position: Int) = when (getItemViewType(position)) {
-        com.github.shchurov.gitterclient.presentation.RoomsAdapter.Companion.TYPE_ROOM -> Math.abs(rooms[position - offset()].idHashCode)
+        Companion.TYPE_ROOM -> Math.abs(rooms[position - offset()].idHashCode)
         else -> RecyclerView.NO_ID
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            com.github.shchurov.gitterclient.presentation.RoomsAdapter.Companion.TYPE_ROOM -> {
+            Companion.TYPE_ROOM -> {
                 val itemView = inflater.inflate(RoomViewHolder.LAYOUT_ID, parent, false)
                 RoomViewHolder(itemView, actionListener)
             }
-            com.github.shchurov.gitterclient.presentation.RoomsAdapter.Companion.TYPE_LOADING -> {
+            Companion.TYPE_LOADING -> {
                 val itemView = inflater.inflate(LoadingViewHolder.LAYOUT_ID, parent, false)
                 LoadingViewHolder(itemView)
             }
@@ -63,7 +62,7 @@ class RoomsAdapter(private val rooms: List<Room>,
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder.itemViewType == com.github.shchurov.gitterclient.presentation.RoomsAdapter.Companion.TYPE_ROOM) {
+        if (holder.itemViewType == Companion.TYPE_ROOM) {
             (holder as RoomViewHolder).bindData(rooms[position - offset()])
         }
     }

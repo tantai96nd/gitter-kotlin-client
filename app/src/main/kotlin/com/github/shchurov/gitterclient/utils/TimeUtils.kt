@@ -8,8 +8,8 @@ import java.util.*
 object TimeUtils {
 
     private val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US)
-    private val calendarThen = Calendar.getInstance()
-    private val calendarNow = Calendar.getInstance()
+    private val calendar1 = Calendar.getInstance()
+    private val calendar2 = Calendar.getInstance()
     private val months = App.context.resources.getStringArray(R.array.months)
 
     init {
@@ -23,9 +23,11 @@ object TimeUtils {
     }
 
     fun convertTimestampToString(time: Long): String {
+        val calendarNow = calendar1
+        val calendarThen = calendar2
         setCalendarTime(calendarThen, time)
         val hourMinute = getHourMinuteString(calendarThen)
-        if (isNotToday(calendarThen)) {
+        if (isNotToday(calendarThen, calendarNow)) {
             val dayMonth = getDayMonthString(calendarThen)
             return "$dayMonth $hourMinute"
         } else {
@@ -37,10 +39,10 @@ object TimeUtils {
         calendar.timeInMillis = time
     }
 
-    private fun isNotToday(calendar: Calendar): Boolean {
+    private fun isNotToday(calendarThen: Calendar, calendarNow: Calendar): Boolean {
         setCalendarTime(calendarNow, System.currentTimeMillis())
-        return calendar.get(Calendar.DAY_OF_YEAR) != calendarNow.get(Calendar.DAY_OF_YEAR)
-                || calendar.get(Calendar.YEAR) != calendarNow.get(Calendar.YEAR)
+        return calendarThen.get(Calendar.DAY_OF_YEAR) != calendarNow.get(Calendar.DAY_OF_YEAR)
+                || calendarThen.get(Calendar.YEAR) != calendarNow.get(Calendar.YEAR)
     }
 
     private fun getHourMinuteString(calendar: Calendar): String {

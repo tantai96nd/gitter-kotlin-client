@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.github.shchurov.gitterclient.presentation.presenters.implementations.LogInPresenterImpl
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
+import com.github.shchurov.gitterclient.presentation.presenters.implementations.LogInPresenterImpl
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
 
 class LogInActivity : AppCompatActivity(), LogInView {
@@ -20,9 +20,17 @@ class LogInActivity : AppCompatActivity(), LogInView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupWebView()
+        setupPresenter()
+    }
+
+    private fun setupWebView() {
         webView = WebView(this)
         webView.alpha = 0f;
         setContentView(webView)
+    }
+
+    private fun setupPresenter() {
         presenter = LogInPresenterImpl(this)
         presenter.onCreate()
     }
@@ -38,15 +46,14 @@ class LogInActivity : AppCompatActivity(), LogInView {
     override fun showWebView() {
         webView.animate()
                 .alpha(1f)
-                .setStartDelay(com.github.shchurov.gitterclient.presentation.LogInActivity.Companion.PAGE_RENDER_TIME)
-                .setDuration(300)
+                .setStartDelay(PAGE_RENDER_TIME)
+                .duration = 300
     }
 
     override fun getActivity() = this
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (event!!.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK
-                && webView.canGoBack()) {
+        if (event!!.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
             webView.goBack()
             return true
         }

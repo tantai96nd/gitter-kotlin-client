@@ -11,21 +11,23 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.presentation.presenters.implementations.RoomPresenterImpl
 import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
-import com.github.shchurov.gitterclient.utils.MessagesItemDecoration
+import com.github.shchurov.gitterclient.presentation.presenters.implementations.RoomPresenterImpl
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
+import com.github.shchurov.gitterclient.utils.MessagesItemDecoration
+import com.github.shchurov.gitterclient.utils.PagingScrollListener
 
 class RoomActivity : AppCompatActivity(), RoomView {
 
     companion object {
         private const val EXTRA_ROOM_ID = "room_id"
         private const val EXTRA_ROOM_NAME = "room_name"
+        private const val PAGING_THRESHOLD = 10
 
         fun start(context: Context, roomId: String, roomName: String) {
             val intent = Intent(context, RoomActivity::class.java)
-            intent.putExtra(com.github.shchurov.gitterclient.presentation.RoomActivity.Companion.EXTRA_ROOM_ID, roomId)
-            intent.putExtra(com.github.shchurov.gitterclient.presentation.RoomActivity.Companion.EXTRA_ROOM_NAME, roomName)
+            intent.putExtra(EXTRA_ROOM_ID, roomId)
+            intent.putExtra(EXTRA_ROOM_NAME, roomName)
             context.startActivity(intent)
         }
     }
@@ -41,8 +43,7 @@ class RoomActivity : AppCompatActivity(), RoomView {
         initViews()
         setupToolbar()
         setupRecyclerView()
-        presenter = RoomPresenterImpl(this)
-        presenter.onCreate()
+        setupPresenter()
     }
 
     private fun initViews() {
@@ -52,16 +53,30 @@ class RoomActivity : AppCompatActivity(), RoomView {
     }
 
     private fun setupToolbar() {
-        val title = intent.getStringExtra(com.github.shchurov.gitterclient.presentation.RoomActivity.Companion.EXTRA_ROOM_NAME)
+        val title = intent.getStringExtra(EXTRA_ROOM_NAME)
         toolbar.title = title
         setSupportActionBar(toolbar)
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setupRecyclerView() {
-        rvMessages.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
-        rvMessages.setHasFixedSize(true)
-        rvMessages.addItemDecoration(MessagesItemDecoration())
+        with (rvMessages) {
+            layoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true)
+            setHasFixedSize(true)
+            addItemDecoration(MessagesItemDecoration())
+            addOnScrollListener(pagingListener)
+        }
+    }
+
+    private val pagingListener = object : PagingScrollListener(PAGING_THRESHOLD) {
+        override fun onLoadMoreItems() {
+            presenter.onLoadMoreItems()
+        }
+    }
+
+    private fun setupPresenter() {
+        presenter = RoomPresenterImpl(this)
+        presenter.onCreate()
     }
 
     override fun onDestroy() {
@@ -81,11 +96,7 @@ class RoomActivity : AppCompatActivity(), RoomView {
         rvMessages.adapter = adapter
     }
 
-    override fun getRoomId() = intent.getStringExtra(com.github.shchurov.gitterclient.presentation.RoomActivity.Companion.EXTRA_ROOM_ID)
-
-    override fun addOnScrollListener(listener: RecyclerView.OnScrollListener) {
-        rvMessages.addOnScrollListener(listener)
-    }
+    override fun getRoomId() = intent.getStringExtra(EXTRA_ROOM_ID)
 
     override fun showInitLoading() {
         progressBar.visibility = View.VISIBLE
@@ -95,4 +106,11 @@ class RoomActivity : AppCompatActivity(), RoomView {
         progressBar.visibility = View.GONE
     }
 
+    override fun enablePagingListener() {
+        pagingListener.enabled = true
+    }
+
+    override fun disablePagingListener() {
+        pagingListener.enabled = false
+    }
 }

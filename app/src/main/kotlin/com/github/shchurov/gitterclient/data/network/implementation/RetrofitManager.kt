@@ -1,15 +1,15 @@
-package com.github.shchurov.gitterclient.data.network.retrofit
+package com.github.shchurov.gitterclient.data.network.implementation
 
 import com.github.shchurov.gitterclient.data.SharedPreferencesManager
-import com.github.shchurov.gitterclient.data.network.retrofit.GitterRetrofitService
 import com.squareup.okhttp.Interceptor
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.logging.HttpLoggingInterceptor
-import retrofit.GsonConverterFactory
+import retrofit.Converter
 import retrofit.Retrofit
 import retrofit.RxJavaCallAdapterFactory
 
-object RetrofitManager {
+class RetrofitManager(private val converterFactory: Converter.Factory,
+        private val prefsManager: SharedPreferencesManager) {
 
     private val BASE_URL = "https://api.gitter.im/"
     private val KEY_AUTH_HEADER = "Authorization"
@@ -18,10 +18,10 @@ object RetrofitManager {
     val gitterService: GitterRetrofitService
 
     init {
-        retrofit = retrofit.Retrofit.Builder()
+        retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addCallAdapterFactory(retrofit.RxJavaCallAdapterFactory.create())
-                .addConverterFactory(retrofit.GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(converterFactory)
                 .client(createClient())
                 .build()
         gitterService = retrofit.create(GitterRetrofitService::class.java)
@@ -43,7 +43,7 @@ object RetrofitManager {
     private fun setupAuth(client: OkHttpClient) {
         val interceptor = Interceptor { chain ->
             val original = chain.request();
-            val token = SharedPreferencesManager.gitterAccessToken
+            val token = prefsManager.gitterAccessToken
             if (token != null) {
                 val modified = original.newBuilder()
                         .header(KEY_AUTH_HEADER, "Bearer $token")
@@ -56,7 +56,5 @@ object RetrofitManager {
         }
         client.interceptors().add(interceptor)
     }
-
-    fun <T> getConverter(clazz: Class<T>) = retrofit.responseConverter<T>(clazz, arrayOfNulls(1))
 
 }

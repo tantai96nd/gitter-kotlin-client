@@ -1,7 +1,5 @@
 package com.github.shchurov.gitterclient.presentation
 
-import com.github.shchurov.gitterclient.data.network.responses.MessageResponse
-import com.github.shchurov.gitterclient.data.network.responses.RoomResponse
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.domain.models.User

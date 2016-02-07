@@ -3,16 +3,18 @@ package com.github.shchurov.gitterclient.data
 import com.github.shchurov.gitterclient.App
 import kotlin.reflect.KProperty
 
-object SharedPreferencesManager {
+class SharedPreferencesManager {
 
-    private val PREFS_NAME = "gitter_kotlin_client"
+    companion object {
+        private const val PREFS_NAME = "gitter_kotlin_client"
+        private const val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
+    }
 
-    private val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
     private val prefs = App.context.getSharedPreferences(PREFS_NAME, 0)
 
     var gitterAccessToken by CachedPreferenceField<String?>(GITTER_ACCESS_TOKEN_KEY, null)
 
-    private open class PreferenceField<T>(val key: String, val defaultValue: T?) {
+    private inner open class PreferenceField<T>(val key: String, val defaultValue: T?) {
 
         @Suppress("UNCHECKED_CAST")
         operator open fun getValue(thisRef: Any?, property: KProperty<*>): T? {
@@ -42,8 +44,7 @@ object SharedPreferencesManager {
 
     }
 
-    private class CachedPreferenceField<T>(key: String, defaultValue: T)
-    : PreferenceField<T>(key, defaultValue) {
+    private inner class CachedPreferenceField<T>(key: String, defaultValue: T) : PreferenceField<T>(key, defaultValue) {
 
         var cache: T? = null
 

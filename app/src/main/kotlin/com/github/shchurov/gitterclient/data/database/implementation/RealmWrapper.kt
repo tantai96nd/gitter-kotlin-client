@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.data.database.realm
+package com.github.shchurov.gitterclient.data.database.implementation
 
 import com.github.shchurov.gitterclient.helpers.realm.models.RoomRealm
 import io.realm.Realm

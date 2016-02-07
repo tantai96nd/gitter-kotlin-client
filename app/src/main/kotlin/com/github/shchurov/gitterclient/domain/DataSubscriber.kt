@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.domain
 
-import com.github.shchurov.gitterclient.data.network.DefaultErrorHandler
+import com.github.shchurov.gitterclient.data.network.implementation.helpers.NetworkErrorHandler
 import rx.Subscriber
 
 open class DataSubscriber<T> : Subscriber<DataWrapper<T>>() {
@@ -23,7 +23,7 @@ open class DataSubscriber<T> : Subscriber<DataWrapper<T>>() {
     }
 
     protected open fun onFailure(e: Throwable) {
-        DefaultErrorHandler.handleError(e)
+        NetworkErrorHandler.handleError(e)
     }
 
     protected open fun onFinish() {

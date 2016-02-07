@@ -32,7 +32,7 @@ class MessageViewHolder(itemView: View, private val actionListener: MessagesAdap
                 .transform(GlideCircleTransformation)
                 .into(ivAvatar)
         tvUsername.text = message.user.username
-        tvTime.text = TimeUtils.convertTimestampToString(message.time)
+        tvTime.text = TimeUtils.convertTimestampToString(message.timestamp)
         tvMessage.text = message.text
     }
 

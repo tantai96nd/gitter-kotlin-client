@@ -2,17 +2,19 @@ package com.github.shchurov.gitterclient.presentation.presenters.implementations
 
 import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataSubscriber
+import com.github.shchurov.gitterclient.domain.interactors.implementation.MyRoomsInteractorImpl
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
-import com.github.shchurov.gitterclient.utils.compositeSubscribe
+import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
 import com.github.shchurov.gitterclient.presentation.ui.activities.RoomActivity
 import com.github.shchurov.gitterclient.presentation.ui.adapters.RoomsAdapter
-import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
+import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import rx.subscriptions.CompositeSubscription
 
-class RoomsListPresenterImpl(val view: RoomsListView) : RoomsListPresenter,
+class RoomsListPresenterImpl(private val view: RoomsListView) : RoomsListPresenter,
         RoomsAdapter.ActionListener {
 
+    private val roomsInteractor = MyRoomsInteractorImpl()
     private val subscriptions = CompositeSubscription()
     private val rooms: MutableList<Room> = arrayListOf()
     private val adapter = RoomsAdapter(rooms, this)
@@ -30,9 +32,9 @@ class RoomsListPresenterImpl(val view: RoomsListView) : RoomsListPresenter,
         if (!localOnly) {
             adapter.loading = true
         }
-        DataManager.getMyRooms(localOnly)
-                .compositeSubscribe(subscriptions, object : DataSubscriber<List<Room>>() {
-                    override fun onData(data: List<Room>, source: DataSource) {
+        roomsInteractor.getMyRooms(localOnly)
+                .compositeSubscribe(subscriptions, object : DataSubscriber<MutableList<Room>>() {
+                    override fun onData(data: MutableList<Room>, source: DataSource) {
                         rooms.clear()
                         rooms.addAll(data)
                         adapter.notifyDataSetChanged()

@@ -7,8 +7,7 @@ import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.presentation.ui.view_holders.LoadingViewHolder
 import com.github.shchurov.gitterclient.presentation.ui.view_holders.MessageViewHolder
 
-class MessagesAdapter(private val messages: List<Message>,
-        private val actionListener: com.github.shchurov.gitterclient.presentation.MessagesAdapter.ActionListener) :
+class MessagesAdapter(private val messages: List<Message>, private val actionListener: ActionListener) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -31,18 +30,18 @@ class MessagesAdapter(private val messages: List<Message>,
     override fun getItemCount() = messages.size + offsetEnd()
 
     override fun getItemViewType(position: Int) = when {
-        loading && position == itemCount - 1 -> com.github.shchurov.gitterclient.presentation.MessagesAdapter.Companion.TYPE_LOADING
-        else -> com.github.shchurov.gitterclient.presentation.MessagesAdapter.Companion.TYPE_MESSAGE
+        loading && position == itemCount - 1 -> Companion.TYPE_LOADING
+        else -> Companion.TYPE_MESSAGE
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            com.github.shchurov.gitterclient.presentation.MessagesAdapter.Companion.TYPE_MESSAGE -> {
+            Companion.TYPE_MESSAGE -> {
                 val itemView = inflater.inflate(MessageViewHolder.LAYOUT_ID, parent, false)
                 MessageViewHolder(itemView, actionListener)
             }
-            com.github.shchurov.gitterclient.presentation.MessagesAdapter.Companion.TYPE_LOADING -> {
+            Companion.TYPE_LOADING -> {
                 val itemView = inflater.inflate(LoadingViewHolder.LAYOUT_ID, parent, false)
                 LoadingViewHolder(itemView)
             }
@@ -52,7 +51,7 @@ class MessagesAdapter(private val messages: List<Message>,
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder.itemViewType == com.github.shchurov.gitterclient.presentation.MessagesAdapter.Companion.TYPE_MESSAGE) {
+        if (holder.itemViewType == Companion.TYPE_MESSAGE) {
             (holder as MessageViewHolder).bindData(messages[position])
         }
     }

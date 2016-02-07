@@ -8,8 +8,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.presentation.presenters.implementations.RoomsListPresenterImpl
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
+import com.github.shchurov.gitterclient.presentation.presenters.implementations.RoomsListPresenterImpl
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
 
 class RoomsListActivity : AppCompatActivity(), RoomsListView {
@@ -31,8 +31,7 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
         initViews()
         setupRecyclerView()
         setupToolbar()
-        presenter = RoomsListPresenterImpl(this)
-        presenter.onCreate()
+        setupPresenter()
     }
 
     private fun initViews() {
@@ -47,6 +46,11 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
 
     private fun setupToolbar() {
         toolbar.setTitle(R.string.rooms)
+    }
+
+    private fun setupPresenter() {
+        presenter = RoomsListPresenterImpl(this)
+        presenter.onCreate()
     }
 
     override fun onRestart() {
