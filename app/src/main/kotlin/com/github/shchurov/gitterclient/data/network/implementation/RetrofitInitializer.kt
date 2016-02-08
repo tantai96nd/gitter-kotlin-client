@@ -8,28 +8,25 @@ import retrofit.Converter
 import retrofit.Retrofit
 import retrofit.RxJavaCallAdapterFactory
 
-class RetrofitManager(private val converterFactory: Converter.Factory,
-        private val prefsManager: SharedPreferencesManager) {
+object RetrofitInitializer {
 
-    private val BASE_URL = "https://api.gitter.im/"
-    private val KEY_AUTH_HEADER = "Authorization"
+    private const val BASE_URL = "https://api.gitter.im/"
+    private const val KEY_AUTH_HEADER = "Authorization"
 
-    private val retrofit: Retrofit
-    val gitterService: GitterRetrofitService
-
-    init {
-        retrofit = Retrofit.Builder()
+    fun initGitterService(converterFactory: Converter.Factory, prefsManager: SharedPreferencesManager)
+            : GitterRetrofitService {
+        val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(converterFactory)
-                .client(createClient())
+                .client(createClient(prefsManager))
                 .build()
-        gitterService = retrofit.create(GitterRetrofitService::class.java)
+        return retrofit.create(GitterRetrofitService::class.java)
     }
 
-    private fun createClient(): OkHttpClient {
+    private fun createClient(prefsManager: SharedPreferencesManager): OkHttpClient {
         val okHttpClient = OkHttpClient()
-        setupAuth(okHttpClient)
+        setupAuth(okHttpClient, prefsManager)
         setupLogging(okHttpClient)
         return okHttpClient
     }
@@ -40,7 +37,7 @@ class RetrofitManager(private val converterFactory: Converter.Factory,
         client.interceptors().add(interceptor)
     }
 
-    private fun setupAuth(client: OkHttpClient) {
+    private fun setupAuth(client: OkHttpClient, prefsManager: SharedPreferencesManager) {
         val interceptor = Interceptor { chain ->
             val original = chain.request();
             val token = prefsManager.gitterAccessToken

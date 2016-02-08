@@ -8,6 +8,6 @@ interface Database {
 
     fun clearMyRooms()
 
-    fun writeMyRooms(rooms: List<Room>)
+    fun saveMyRooms(rooms: List<Room>)
 
 }

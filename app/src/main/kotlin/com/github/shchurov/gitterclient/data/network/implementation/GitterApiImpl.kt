@@ -13,20 +13,20 @@ class GitterApiImpl(private val retrofitService: GitterRetrofitService,
     override fun getAccessToken(url: String, clientId: String, clientSecret: String, code: String, redirectUri: String,
             grantType: String) =
             retrofitService.getAccessToken(url, clientId, clientSecret, code, redirectUri, grantType)
-                    .map { response -> converter.convertToken(response) };
+                    .map { response -> converter.convertToToken(response) };
 
     override fun getMyRooms(): Observable<MutableList<Room>> =
             retrofitService.getMyRooms()
                     .map { response ->
                         val rooms = ArrayList<Room>()
-                        response.mapTo(rooms) { converter.convertRoom(it) }
+                        response.mapTo(rooms) { converter.convertToRoom(it) }
                     }
 
     override fun getRoomMessages(roomId: String, limit: Int, beforeId: String?): Observable<MutableList<Message>> =
             retrofitService.getRoomMessages(roomId, limit, beforeId)
                     .map { response ->
                         val messages = ArrayList<Message>()
-                        response.mapTo(messages) { converter.convertMessage(it) }
+                        response.mapTo(messages) { converter.convertToMessage(it) }
                     }
 
 }

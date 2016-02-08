@@ -3,6 +3,7 @@ package com.github.shchurov.gitterclient.presentation.presenters.implementations
 import android.net.Uri
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.data.Secrets
 import com.github.shchurov.gitterclient.data.SharedPreferencesManager
@@ -15,6 +16,7 @@ import com.github.shchurov.gitterclient.presentation.ui.activities.RoomsListActi
 import com.github.shchurov.gitterclient.utils.compositeSubscribeWithSchedulers
 import com.github.shchurov.gitterclient.utils.showToast
 import rx.subscriptions.CompositeSubscription
+import javax.inject.Inject
 
 class LogInPresenterImpl(private val view: LogInView) : LogInPresenter {
 
@@ -34,9 +36,14 @@ class LogInPresenterImpl(private val view: LogInView) : LogInPresenter {
                 "&$KEY_REDIRECT_URI=${Secrets.gitterRedirectUri}"
     }
 
-    val prefsManager: SharedPreferencesManager
+    @Inject
+    lateinit var prefsManager: SharedPreferencesManager
     val subscriptions: CompositeSubscription = CompositeSubscription()
     val tokenInteractor = TokenInteractorImpl()
+
+    init {
+        App.appComponent.inject(this)
+    }
 
     override fun onCreate() {
         if (prefsManager.gitterAccessToken == null) {

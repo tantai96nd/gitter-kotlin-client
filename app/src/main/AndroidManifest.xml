@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".views.activities.LogInActivity"
+            android:name=".presentation.ui.activities.LogInActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -22,11 +22,11 @@
         </activity>
 
         <activity
-            android:name=".views.activities.RoomsListActivity"
+            android:name=".presentation.ui.activities.RoomsListActivity"
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".views.activities.RoomActivity"
+            android:name=".presentation.ui.activities.RoomActivity"
             android:screenOrientation="portrait"/>
 
     </application>

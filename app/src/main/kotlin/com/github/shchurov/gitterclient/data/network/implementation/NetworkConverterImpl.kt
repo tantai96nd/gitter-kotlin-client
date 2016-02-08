@@ -1,5 +1,6 @@
 package com.github.shchurov.gitterclient.data.network.implementation
 
+import android.util.Log
 import com.github.shchurov.gitterclient.data.network.NetworkConverter
 import com.github.shchurov.gitterclient.data.network.responses.MessageResponse
 import com.github.shchurov.gitterclient.data.network.responses.RoomResponse
@@ -13,9 +14,9 @@ import com.github.shchurov.gitterclient.utils.TimeUtils
 
 class NetworkConverterImpl : NetworkConverter {
 
-    override fun convertToken(tokenResponse: TokenResponse) = Token(tokenResponse.accessToken)
+    override fun convertToToken(tokenResponse: TokenResponse) = Token(tokenResponse.accessToken)
 
-    override fun convertRoom(roomResponse: RoomResponse): Room {
+    override fun convertToRoom(roomResponse: RoomResponse): Room {
         with(roomResponse) {
             val avatar = generateRoomAvatarUrl(url)
             val lastAccessTimestamp = TimeUtils.convertIsoToTimestamp(lastAccessTimeIso)
@@ -23,15 +24,15 @@ class NetworkConverterImpl : NetworkConverter {
         }
     }
 
-    override fun convertMessage(messageResponse: MessageResponse): Message {
+    override fun convertToMessage(messageResponse: MessageResponse): Message {
         with(messageResponse) {
             val timestamp = TimeUtils.convertIsoToTimestamp(messageResponse.timeIso)
-            val user = convertUser(user)
+            val user = convertToUser(user)
             return Message(id, text, timestamp, user, unread)
         }
     }
 
-    override fun convertUser(userResponse: UserResponse) = with(userResponse) {
+    override fun convertToUser(userResponse: UserResponse) = with(userResponse) {
         User(id, username, avatar)
     }
 

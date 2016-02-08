@@ -1,5 +1,6 @@
 package com.github.shchurov.gitterclient.domain.interactors.implementation
 
+import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataWrapper
@@ -7,6 +8,7 @@ import com.github.shchurov.gitterclient.domain.interactors.RoomMessagesInteracto
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.utils.applySchedulers
 import rx.Observable
+import javax.inject.Inject
 
 class RoomMessagesInteractorImpl(private val roomId: String) : RoomMessagesInteractor {
 
@@ -14,9 +16,14 @@ class RoomMessagesInteractorImpl(private val roomId: String) : RoomMessagesInter
         private const val MESSAGES_LIMIT = 30;
     }
 
-    val gitterApi: GitterApi
+    @Inject
+    lateinit var gitterApi: GitterApi
     private var hasMorePages = false
     private lateinit var lastMessageId: String
+
+    init {
+        App.appComponent.inject(this)
+    }
 
     override fun getRoomMessagesFirstPage(): Observable<DataWrapper<MutableList<Message>>> {
         return gitterApi.getRoomMessages(roomId, MESSAGES_LIMIT)

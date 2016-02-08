@@ -13,7 +13,7 @@ object GlideCircleTransformation : BitmapTransformation(App.context) {
             Bitmap {
         val size = calcSize(toTransform)
         val bitmap = reuseOrCreateBitmap(size, pool)
-        val shader = createShader(bitmap, size)
+        val shader = createShader(toTransform, size)
         paint.shader = shader
         draw(bitmap)
         return bitmap

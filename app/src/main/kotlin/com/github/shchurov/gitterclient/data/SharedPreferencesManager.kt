@@ -1,16 +1,16 @@
 package com.github.shchurov.gitterclient.data
 
-import com.github.shchurov.gitterclient.App
+import android.content.Context
 import kotlin.reflect.KProperty
 
-class SharedPreferencesManager {
+class SharedPreferencesManager(appContext: Context) {
 
     companion object {
         private const val PREFS_NAME = "gitter_kotlin_client"
         private const val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
     }
 
-    private val prefs = App.context.getSharedPreferences(PREFS_NAME, 0)
+    private val prefs = appContext.getSharedPreferences(PREFS_NAME, 0)
 
     var gitterAccessToken by CachedPreferenceField<String?>(GITTER_ACCESS_TOKEN_KEY, null)
 

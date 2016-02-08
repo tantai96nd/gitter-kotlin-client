@@ -11,12 +11,12 @@ import com.github.shchurov.gitterclient.domain.models.User
 
 interface NetworkConverter {
 
-    fun convertToken(tokenResponse: TokenResponse): Token
+    fun convertToToken(tokenResponse: TokenResponse): Token
 
-    fun convertRoom(roomResponse: RoomResponse): Room
+    fun convertToRoom(roomResponse: RoomResponse): Room
 
-    fun convertMessage(messageResponse: MessageResponse): Message
+    fun convertToMessage(messageResponse: MessageResponse): Message
 
-    fun convertUser(userResponse: UserResponse): User
+    fun convertToUser(userResponse: UserResponse): User
 
 }

@@ -4,7 +4,7 @@ import android.content.Context
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
-object RealmManager {
+object RealmInitializer {
 
     private val REALM_SCHEMA_VERSION = 1L
 
@@ -14,7 +14,5 @@ object RealmManager {
                 .build()
         Realm.setDefaultConfiguration(config)
     }
-
-    fun createWrapperInstance() = RealmWrapper(Realm.getDefaultInstance())
 
 }

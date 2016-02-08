@@ -10,9 +10,10 @@ object TimeUtils {
     private val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US)
     private val calendar1 = Calendar.getInstance()
     private val calendar2 = Calendar.getInstance()
-    private val months = App.context.resources.getStringArray(R.array.months)
+    private lateinit var months: Array<String>
 
     init {
+        months = App.context.resources.getStringArray(R.array.months)
         isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
     }
 
