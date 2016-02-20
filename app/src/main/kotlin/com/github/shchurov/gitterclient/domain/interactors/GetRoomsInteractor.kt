@@ -4,8 +4,8 @@ import com.github.shchurov.gitterclient.domain.DataWrapper
 import com.github.shchurov.gitterclient.domain.models.Room
 import rx.Observable
 
-interface MyRoomsInteractor {
+interface GetRoomsInteractor {
 
-    fun getMyRooms(localOnly: Boolean): Observable<DataWrapper<MutableList<Room>>>
+    fun getRooms(localOnly: Boolean): Observable<DataWrapper<MutableList<Room>>>
 
 }

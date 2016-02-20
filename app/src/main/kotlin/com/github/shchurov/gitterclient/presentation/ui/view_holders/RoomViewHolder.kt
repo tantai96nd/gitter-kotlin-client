@@ -30,18 +30,34 @@ class RoomViewHolder(itemView: View, private val actionListener: RoomsAdapter.Ac
 
     fun bindData(room: Room) {
         this.room = room
+        loadAvatar()
+        setupName()
+        setupUnreadItems()
+        setupMentions()
+    }
+
+    private fun loadAvatar() {
         Glide.with(itemView.context)
                 .load(room.avatar)
                 .placeholder(R.drawable.avatar_loading)
                 .transform(GlideCircleTransformation)
                 .into(ivAvatar)
+    }
+
+    private fun setupName() {
         tvName.text = room.name
+    }
+
+    private fun setupUnreadItems() {
         if (room.unreadItems > 0) {
             tvUnread.visibility = View.VISIBLE
             tvUnread.text = room.unreadItems.toString()
         } else {
             tvUnread.visibility = View.GONE
         }
+    }
+
+    private fun setupMentions() {
         if (room.mentions > 0) {
             tvMentions.visibility = View.VISIBLE
             tvMentions.text = room.mentions.toString()

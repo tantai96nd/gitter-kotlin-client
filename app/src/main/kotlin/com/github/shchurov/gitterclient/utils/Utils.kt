@@ -7,8 +7,6 @@ import com.github.shchurov.gitterclient.App
 import rx.Observable
 import rx.Subscriber
 import rx.Subscription
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 
 fun showToast(textId: Int, duration: Int = Toast.LENGTH_SHORT) {
@@ -22,12 +20,6 @@ fun showToast(text: String, duration: Int = Toast.LENGTH_SHORT) {
 fun getString(textId: Int) = App.context.getString(textId)
 
 fun RecyclerView.ViewHolder.findViewById(id: Int) = itemView.findViewById(id)
-
-fun <T> Observable<T>.compositeSubscribeWithSchedulers(subscriptions: CompositeSubscription,
-        subscriber: Subscriber<T>) = applySchedulers().compositeSubscribe(subscriptions, subscriber)
-
-fun <T> Observable<T>.applySchedulers() = observeOn(AndroidSchedulers.mainThread())
-        .subscribeOn(Schedulers.io())
 
 fun <T> Observable<T>.compositeSubscribe(subscriptions: CompositeSubscription,
         subscriber: Subscriber<T>): Subscription {

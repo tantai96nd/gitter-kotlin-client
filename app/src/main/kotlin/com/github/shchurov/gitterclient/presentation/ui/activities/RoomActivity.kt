@@ -10,12 +10,15 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
+import com.github.shchurov.gitterclient.dagger.components.DaggerActivityComponent
+import com.github.shchurov.gitterclient.dagger.modules.ActivityModule
 import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
-import com.github.shchurov.gitterclient.presentation.presenters.implementations.RoomPresenterImpl
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
 import com.github.shchurov.gitterclient.utils.MessagesItemDecoration
 import com.github.shchurov.gitterclient.utils.PagingScrollListener
+import javax.inject.Inject
 
 class RoomActivity : AppCompatActivity(), RoomView {
 
@@ -32,18 +35,27 @@ class RoomActivity : AppCompatActivity(), RoomView {
         }
     }
 
-    private lateinit var presenter: RoomPresenter
+    @Inject lateinit var presenter: RoomPresenter
     private lateinit var toolbar: Toolbar
     private lateinit var rvMessages: RecyclerView
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initDependencies()
         setContentView(R.layout.room_activity)
         initViews()
         setupToolbar()
         setupRecyclerView()
-        setupPresenter()
+        presenter.onCreate()
+    }
+
+    private fun initDependencies() {
+        val component = DaggerActivityComponent.builder()
+                .appComponent(App.appComponent)
+                .activityModule(ActivityModule(this))
+                .build()
+        component.inject(this)
     }
 
     private fun initViews() {
@@ -72,11 +84,6 @@ class RoomActivity : AppCompatActivity(), RoomView {
         override fun onLoadMoreItems() {
             presenter.onLoadMoreItems()
         }
-    }
-
-    private fun setupPresenter() {
-        presenter = RoomPresenterImpl(this)
-        presenter.onCreate()
     }
 
     override fun onDestroy() {

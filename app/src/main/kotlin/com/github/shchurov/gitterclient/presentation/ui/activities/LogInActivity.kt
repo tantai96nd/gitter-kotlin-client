@@ -5,9 +5,12 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.github.shchurov.gitterclient.App
+import com.github.shchurov.gitterclient.dagger.components.DaggerActivityComponent
+import com.github.shchurov.gitterclient.dagger.modules.ActivityModule
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
-import com.github.shchurov.gitterclient.presentation.presenters.implementations.LogInPresenterImpl
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
+import javax.inject.Inject
 
 class LogInActivity : AppCompatActivity(), LogInView {
 
@@ -15,24 +18,28 @@ class LogInActivity : AppCompatActivity(), LogInView {
         val PAGE_RENDER_TIME = 300L
     }
 
-    private lateinit var presenter: LogInPresenter
+    @Inject lateinit var presenter: LogInPresenter
     private lateinit var webView: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initDependencies()
         setupWebView()
-        setupPresenter()
+        presenter.onCreate()
+    }
+
+    private fun initDependencies() {
+        val component = DaggerActivityComponent.builder()
+                .appComponent(App.appComponent)
+                .activityModule(ActivityModule(this))
+                .build()
+        component.inject(this)
     }
 
     private fun setupWebView() {
         webView = WebView(this)
         webView.alpha = 0f;
         setContentView(webView)
-    }
-
-    private fun setupPresenter() {
-        presenter = LogInPresenterImpl(this)
-        presenter.onCreate()
     }
 
     override fun setWebViewClient(webViewClient: WebViewClient) {

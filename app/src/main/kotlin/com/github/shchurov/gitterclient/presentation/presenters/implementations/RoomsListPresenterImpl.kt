@@ -2,7 +2,7 @@ package com.github.shchurov.gitterclient.presentation.presenters.implementations
 
 import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataSubscriber
-import com.github.shchurov.gitterclient.domain.interactors.implementation.MyRoomsInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
@@ -11,10 +11,11 @@ import com.github.shchurov.gitterclient.presentation.ui.adapters.RoomsAdapter
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import rx.subscriptions.CompositeSubscription
 
-class RoomsListPresenterImpl(private val view: RoomsListView) : RoomsListPresenter,
-        RoomsAdapter.ActionListener {
+class RoomsListPresenterImpl(
+        private val view: RoomsListView,
+        private val getRoomsInteractor: GetRoomsInteractor
+) : RoomsListPresenter, RoomsAdapter.ActionListener {
 
-    private val roomsInteractor = MyRoomsInteractorImpl()
     private val subscriptions = CompositeSubscription()
     private val rooms: MutableList<Room> = arrayListOf()
     private val adapter = RoomsAdapter(rooms, this)
@@ -32,7 +33,7 @@ class RoomsListPresenterImpl(private val view: RoomsListView) : RoomsListPresent
         if (!localOnly) {
             adapter.loading = true
         }
-        roomsInteractor.getMyRooms(localOnly)
+        getRoomsInteractor.getRooms(localOnly)
                 .compositeSubscribe(subscriptions, object : DataSubscriber<MutableList<Room>>() {
                     override fun onData(data: MutableList<Room>, source: DataSource) {
                         rooms.clear()

@@ -7,14 +7,17 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
+import com.github.shchurov.gitterclient.dagger.components.DaggerActivityComponent
+import com.github.shchurov.gitterclient.dagger.modules.ActivityModule
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
-import com.github.shchurov.gitterclient.presentation.presenters.implementations.RoomsListPresenterImpl
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
+import javax.inject.Inject
 
 class RoomsListActivity : AppCompatActivity(), RoomsListView {
 
-    private lateinit var presenter: RoomsListPresenter
+    @Inject lateinit var presenter: RoomsListPresenter
     private lateinit var rvRooms: RecyclerView
     private lateinit var toolbar: Toolbar
 
@@ -27,11 +30,20 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initDependencies()
         setContentView(R.layout.rooms_list_activity)
         initViews()
         setupRecyclerView()
         setupToolbar()
-        setupPresenter()
+        presenter.onCreate()
+    }
+
+    private fun initDependencies() {
+        val component = DaggerActivityComponent.builder()
+                .appComponent(App.appComponent)
+                .activityModule(ActivityModule(this))
+                .build()
+        component.inject(this)
     }
 
     private fun initViews() {
@@ -46,11 +58,6 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
 
     private fun setupToolbar() {
         toolbar.setTitle(R.string.rooms)
-    }
-
-    private fun setupPresenter() {
-        presenter = RoomsListPresenterImpl(this)
-        presenter.onCreate()
     }
 
     override fun onRestart() {

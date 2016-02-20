@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.data.network.implementation
 
-import com.github.shchurov.gitterclient.data.SharedPreferencesManager
+import com.github.shchurov.gitterclient.data.Preferences
 import com.squareup.okhttp.Interceptor
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.logging.HttpLoggingInterceptor
@@ -13,20 +13,20 @@ object RetrofitInitializer {
     private const val BASE_URL = "https://api.gitter.im/"
     private const val KEY_AUTH_HEADER = "Authorization"
 
-    fun initGitterService(converterFactory: Converter.Factory, prefsManager: SharedPreferencesManager)
+    fun initGitterService(converterFactory: Converter.Factory, preferences: Preferences)
             : GitterRetrofitService {
         val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(converterFactory)
-                .client(createClient(prefsManager))
+                .client(createClient(preferences))
                 .build()
         return retrofit.create(GitterRetrofitService::class.java)
     }
 
-    private fun createClient(prefsManager: SharedPreferencesManager): OkHttpClient {
+    private fun createClient(preferences: Preferences): OkHttpClient {
         val okHttpClient = OkHttpClient()
-        setupAuth(okHttpClient, prefsManager)
+        setupAuth(okHttpClient, preferences)
         setupLogging(okHttpClient)
         return okHttpClient
     }
@@ -37,10 +37,10 @@ object RetrofitInitializer {
         client.interceptors().add(interceptor)
     }
 
-    private fun setupAuth(client: OkHttpClient, prefsManager: SharedPreferencesManager) {
+    private fun setupAuth(client: OkHttpClient, preferences: Preferences) {
         val interceptor = Interceptor { chain ->
             val original = chain.request();
-            val token = prefsManager.gitterAccessToken
+            val token = preferences.gitterAccessToken
             if (token != null) {
                 val modified = original.newBuilder()
                         .header(KEY_AUTH_HEADER, "Bearer $token")

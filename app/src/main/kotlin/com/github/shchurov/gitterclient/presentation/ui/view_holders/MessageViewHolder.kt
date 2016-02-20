@@ -27,12 +27,28 @@ class MessageViewHolder(itemView: View, private val actionListener: MessagesAdap
 
     fun bindData(message: Message) {
         this.message = message
+        loadAvatar()
+        setupUsername()
+        setupTime()
+        setupMessage()
+    }
+
+    private fun loadAvatar() {
         Glide.with(itemView.context)
                 .load(message.user.avatar)
                 .transform(GlideCircleTransformation)
                 .into(ivAvatar)
+    }
+
+    private fun setupUsername() {
         tvUsername.text = message.user.username
+    }
+
+    private fun setupTime() {
         tvTime.text = TimeUtils.convertTimestampToString(message.timestamp)
+    }
+
+    private fun setupMessage() {
         tvMessage.text = message.text
     }
 

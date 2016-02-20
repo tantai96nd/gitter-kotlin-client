@@ -1,7 +1,5 @@
 package com.github.shchurov.gitterclient.data.network.implementation
 
-import android.util.Log
-import com.github.shchurov.gitterclient.data.network.NetworkConverter
 import com.github.shchurov.gitterclient.data.network.responses.MessageResponse
 import com.github.shchurov.gitterclient.data.network.responses.RoomResponse
 import com.github.shchurov.gitterclient.data.network.responses.TokenResponse
@@ -12,11 +10,11 @@ import com.github.shchurov.gitterclient.domain.models.Token
 import com.github.shchurov.gitterclient.domain.models.User
 import com.github.shchurov.gitterclient.utils.TimeUtils
 
-class NetworkConverterImpl : NetworkConverter {
+class NetworkConverter {
 
-    override fun convertToToken(tokenResponse: TokenResponse) = Token(tokenResponse.accessToken)
+    fun convertResponseToToken(tokenResponse: TokenResponse) = Token(tokenResponse.accessToken)
 
-    override fun convertToRoom(roomResponse: RoomResponse): Room {
+    fun convertToRoom(roomResponse: RoomResponse): Room {
         with(roomResponse) {
             val avatar = generateRoomAvatarUrl(url)
             val lastAccessTimestamp = TimeUtils.convertIsoToTimestamp(lastAccessTimeIso)
@@ -24,15 +22,15 @@ class NetworkConverterImpl : NetworkConverter {
         }
     }
 
-    override fun convertToMessage(messageResponse: MessageResponse): Message {
+    fun convertResponseToMessage(messageResponse: MessageResponse): Message {
         with(messageResponse) {
             val timestamp = TimeUtils.convertIsoToTimestamp(messageResponse.timeIso)
-            val user = convertToUser(user)
+            val user = convertResponseToUser(user)
             return Message(id, text, timestamp, user, unread)
         }
     }
 
-    override fun convertToUser(userResponse: UserResponse) = with(userResponse) {
+    fun convertResponseToUser(userResponse: UserResponse) = with(userResponse) {
         User(id, username, avatar)
     }
 

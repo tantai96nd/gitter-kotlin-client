@@ -1,34 +1,30 @@
 package com.github.shchurov.gitterclient.domain.interactors.implementation
 
-import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataWrapper
-import com.github.shchurov.gitterclient.domain.interactors.RoomMessagesInteractor
+import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.models.Message
-import com.github.shchurov.gitterclient.utils.applySchedulers
 import rx.Observable
-import javax.inject.Inject
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 
-class RoomMessagesInteractorImpl(private val roomId: String) : RoomMessagesInteractor {
+class GetRoomMessagesInteractorImpl(private val gitterApi: GitterApi) : GetRoomMessagesInteractor {
 
     companion object {
         private const val MESSAGES_LIMIT = 30;
     }
 
-    @Inject
-    lateinit var gitterApi: GitterApi
     private var hasMorePages = false
+    private lateinit var roomId: String
     private lateinit var lastMessageId: String
 
-    init {
-        App.appComponent.inject(this)
-    }
-
-    override fun getRoomMessagesFirstPage(): Observable<DataWrapper<MutableList<Message>>> {
+    override fun getFirstPage(roomId: String): Observable<DataWrapper<MutableList<Message>>> {
+        this.roomId = roomId
         return gitterApi.getRoomMessages(roomId, MESSAGES_LIMIT)
+                .subscribeOn(Schedulers.io())
                 .map { handleMessages(it) }
-                .applySchedulers()
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     private fun handleMessages(messages: MutableList<Message>): DataWrapper<MutableList<Message>> {
@@ -46,11 +42,12 @@ class RoomMessagesInteractorImpl(private val roomId: String) : RoomMessagesInter
         lastMessageId = messages.last().id
     }
 
-    override fun getRoomMessagesNextPage() =
+    override fun getNextPage() =
             gitterApi.getRoomMessages(roomId, MESSAGES_LIMIT, lastMessageId)
+                    .subscribeOn(Schedulers.io())
                     .map { handleMessages(it) }
-                    .applySchedulers()
+                    .observeOn(AndroidSchedulers.mainThread())
 
-    override fun isHasMorePages() = hasMorePages
+    override fun hasMorePages() = hasMorePages
 
 }

@@ -2,8 +2,8 @@ package com.github.shchurov.gitterclient
 
 import android.app.Application
 import android.content.Context
-import com.github.shchurov.gitterclient.dagger.AppComponent
-import com.github.shchurov.gitterclient.dagger.DaggerAppComponent
+import com.github.shchurov.gitterclient.dagger.components.AppComponent
+import com.github.shchurov.gitterclient.dagger.components.DaggerAppComponent
 import com.github.shchurov.gitterclient.data.database.implementation.RealmInitializer
 
 class App : Application() {

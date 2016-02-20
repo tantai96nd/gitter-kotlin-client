@@ -3,22 +3,24 @@ package com.github.shchurov.gitterclient.presentation.presenters.implementations
 import android.net.Uri
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
+import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.Secrets
-import com.github.shchurov.gitterclient.data.SharedPreferencesManager
 import com.github.shchurov.gitterclient.data.network.implementation.helpers.RequestSubscriber
-import com.github.shchurov.gitterclient.domain.interactors.implementation.TokenInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.GetTokenInteractor
 import com.github.shchurov.gitterclient.domain.models.Token
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
 import com.github.shchurov.gitterclient.presentation.ui.activities.RoomsListActivity
-import com.github.shchurov.gitterclient.utils.compositeSubscribeWithSchedulers
+import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import com.github.shchurov.gitterclient.utils.showToast
 import rx.subscriptions.CompositeSubscription
-import javax.inject.Inject
 
-class LogInPresenterImpl(private val view: LogInView) : LogInPresenter {
+class LogInPresenterImpl(
+        private val view: LogInView,
+        private val preferences: Preferences,
+        private val getTokenInteractor: GetTokenInteractor
+) : LogInPresenter {
 
     companion object {
         const val AUTHORIZATION_ENDPOINT = "https://gitter.im/login/oauth/authorize"
@@ -36,17 +38,10 @@ class LogInPresenterImpl(private val view: LogInView) : LogInPresenter {
                 "&$KEY_REDIRECT_URI=${Secrets.gitterRedirectUri}"
     }
 
-    @Inject
-    lateinit var prefsManager: SharedPreferencesManager
     val subscriptions: CompositeSubscription = CompositeSubscription()
-    val tokenInteractor = TokenInteractorImpl()
-
-    init {
-        App.appComponent.inject(this)
-    }
 
     override fun onCreate() {
-        if (prefsManager.gitterAccessToken == null) {
+        if (preferences.gitterAccessToken == null) {
             view.setWebViewClient(webViewClient)
             view.loadUrl(AUTH_REQUEST)
         } else {
@@ -101,10 +96,10 @@ class LogInPresenterImpl(private val view: LogInView) : LogInPresenter {
 
     private fun getAccessToken(uri: Uri) {
         val code = uri.getQueryParameter(KEY_CODE)
-        tokenInteractor.getAccessToken(code)
-                .compositeSubscribeWithSchedulers(subscriptions, object : RequestSubscriber<Token>() {
+        getTokenInteractor.getAccessToken(code)
+                .compositeSubscribe(subscriptions, object : RequestSubscriber<Token>() {
                     override fun onSuccess(response: Token) {
-                        prefsManager.gitterAccessToken = response.accessToken
+                        preferences.gitterAccessToken = response.accessToken
                         startRoomsActivity()
                     }
 

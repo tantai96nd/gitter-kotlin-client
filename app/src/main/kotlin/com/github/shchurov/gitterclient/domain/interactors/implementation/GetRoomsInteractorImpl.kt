@@ -1,28 +1,21 @@
 package com.github.shchurov.gitterclient.domain.interactors.implementation
 
-import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataWrapper
-import com.github.shchurov.gitterclient.domain.interactors.MyRoomsInteractor
+import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
-import com.github.shchurov.gitterclient.utils.applySchedulers
 import rx.Observable
-import javax.inject.Inject
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 
-class MyRoomsInteractorImpl() : MyRoomsInteractor {
+class GetRoomsInteractorImpl(
+        private val gitterApi: GitterApi,
+        private val database: Database
+) : GetRoomsInteractor {
 
-    @Inject
-    lateinit var gitterApi: GitterApi
-    @Inject
-    lateinit var database: Database
-
-    init {
-        App.appComponent.inject(this)
-    }
-
-    override fun getMyRooms(localOnly: Boolean): Observable<DataWrapper<MutableList<Room>>> {
+    override fun getRooms(localOnly: Boolean): Observable<DataWrapper<MutableList<Room>>> {
         val localObservable = getMyRoomsLocal()
         if (localOnly)
             return localObservable
@@ -35,16 +28,22 @@ class MyRoomsInteractorImpl() : MyRoomsInteractor {
         subscriber.onNext(DataWrapper(rooms, DataSource.LOCAL))
         subscriber.onCompleted()
     }
-            .applySchedulers()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
 
     private fun getMyRoomsNetwork() = gitterApi.getMyRooms()
             .flatMap { rooms ->
                 rooms.sortByDescending { it.lastAccessTimestamp }
-                database.clearMyRooms()
-                database.saveMyRooms(rooms)
+                saveRoomsToDatabase(rooms)
                 val wrapper = DataWrapper(rooms, DataSource.NETWORK)
                 Observable.just(wrapper)
-            }
-            .applySchedulers()
+            }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+    private fun saveRoomsToDatabase(rooms: List<Room>) {
+        database.clearMyRooms()
+        database.saveMyRooms(rooms)
+    }
 
 }

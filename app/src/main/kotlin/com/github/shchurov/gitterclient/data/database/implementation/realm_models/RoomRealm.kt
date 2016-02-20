@@ -15,7 +15,6 @@ open class RoomRealm(
 ) : RealmObject() {
 
     companion object {
-        const val FIELD_ID = "id"
         const val FIELD_LAST_ACCESS_TIMESTAMP = "lastAccessTimestamp"
     }
 

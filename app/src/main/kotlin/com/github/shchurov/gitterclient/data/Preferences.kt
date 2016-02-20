@@ -3,7 +3,7 @@ package com.github.shchurov.gitterclient.data
 import android.content.Context
 import kotlin.reflect.KProperty
 
-class SharedPreferencesManager(appContext: Context) {
+class Preferences(appContext: Context) {
 
     companion object {
         private const val PREFS_NAME = "gitter_kotlin_client"
