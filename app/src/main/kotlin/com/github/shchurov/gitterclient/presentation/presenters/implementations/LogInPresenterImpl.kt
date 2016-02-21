@@ -7,8 +7,8 @@ import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.Secrets
 import com.github.shchurov.gitterclient.data.network.implementation.helpers.RequestSubscriber
-import com.github.shchurov.gitterclient.domain.interactors.GetTokenInteractor
-import com.github.shchurov.gitterclient.domain.models.Token
+import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
+import com.github.shchurov.gitterclient.domain.models.User
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
 import com.github.shchurov.gitterclient.presentation.ui.activities.RoomsListActivity
@@ -19,7 +19,7 @@ import rx.subscriptions.CompositeSubscription
 class LogInPresenterImpl(
         private val view: LogInView,
         private val preferences: Preferences,
-        private val getTokenInteractor: GetTokenInteractor
+        private val gitterLogInInteractor: GitterLogInInteractor
 ) : LogInPresenter {
 
     companion object {
@@ -75,8 +75,8 @@ class LogInPresenterImpl(
             val uri = Uri.parse(url);
             val queryKeys = uri.queryParameterNames
             when {
-                KEY_ERROR in queryKeys -> handleAuthError(uri)
-                KEY_CODE in queryKeys -> getAccessToken(uri)
+                KEY_ERROR in queryKeys -> handleAuthError(uri.getQueryParameter(KEY_ERROR))
+                KEY_CODE in queryKeys -> logIn(uri.getQueryParameter(KEY_CODE))
             }
         }
 
@@ -86,20 +86,17 @@ class LogInPresenterImpl(
         }
     }
 
-    private fun handleAuthError(uri: Uri) {
-        val error = uri.getQueryParameter(KEY_ERROR)
+    private fun handleAuthError(error: String) {
         when (error) {
             ERROR_ACCESS_DENIED -> showToast(R.string.error_access_denied)
             else -> showToast(R.string.unexpected_error)
         }
     }
 
-    private fun getAccessToken(uri: Uri) {
-        val code = uri.getQueryParameter(KEY_CODE)
-        getTokenInteractor.getAccessToken(code)
-                .compositeSubscribe(subscriptions, object : RequestSubscriber<Token>() {
-                    override fun onSuccess(response: Token) {
-                        preferences.gitterAccessToken = response.accessToken
+    private fun logIn(code: String) {
+        gitterLogInInteractor.logIn(code)
+                .compositeSubscribe(subscriptions, object : RequestSubscriber<User>() {
+                    override fun onSuccess(data: User) {
                         startRoomsActivity()
                     }
 

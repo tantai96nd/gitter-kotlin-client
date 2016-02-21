@@ -18,6 +18,7 @@ import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
 import com.github.shchurov.gitterclient.utils.MessagesItemDecoration
 import com.github.shchurov.gitterclient.utils.PagingScrollListener
+import com.github.shchurov.gitterclient.utils.ReadPositionsScrollListener
 import javax.inject.Inject
 
 class RoomActivity : AppCompatActivity(), RoomView {
@@ -73,16 +74,23 @@ class RoomActivity : AppCompatActivity(), RoomView {
 
     private fun setupRecyclerView() {
         with (rvMessages) {
-            layoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true)
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
             setHasFixedSize(true)
             addItemDecoration(MessagesItemDecoration())
-            addOnScrollListener(pagingListener)
+            addOnScrollListener(pagingScrollListener)
+            addOnScrollListener(readScrollListener)
         }
     }
 
-    private val pagingListener = object : PagingScrollListener(PAGING_THRESHOLD) {
+    private val pagingScrollListener = object : PagingScrollListener(PAGING_THRESHOLD) {
         override fun onLoadMoreItems() {
             presenter.onLoadMoreItems()
+        }
+    }
+
+    private val readScrollListener = object : ReadPositionsScrollListener() {
+        override fun onReadPositionsChanged(firstPosition: Int, lastPosition: Int) {
+            presenter.onReadPositionsChanged(firstPosition, lastPosition)
         }
     }
 
@@ -114,10 +122,15 @@ class RoomActivity : AppCompatActivity(), RoomView {
     }
 
     override fun enablePagingListener() {
-        pagingListener.enabled = true
+        pagingScrollListener.enabled = true
     }
 
     override fun disablePagingListener() {
-        pagingListener.enabled = false
+        pagingScrollListener.enabled = false
+    }
+
+    override fun forceOnReadPositionsChangedCallback() {
+        // simple post(...) returns "-1" positions
+        rvMessages.postDelayed({ readScrollListener.forceCallback(rvMessages) }, 100)
     }
 }

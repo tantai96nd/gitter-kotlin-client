@@ -8,11 +8,13 @@ class Preferences(appContext: Context) {
     companion object {
         private const val PREFS_NAME = "gitter_kotlin_client"
         private const val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
+        private const val USER_ID_KEY = "user_id"
     }
 
     private val prefs = appContext.getSharedPreferences(PREFS_NAME, 0)
 
     var gitterAccessToken by CachedPreferenceField<String?>(GITTER_ACCESS_TOKEN_KEY, null)
+    var userId by PreferenceField<String?>(USER_ID_KEY, null)
 
     private inner open class PreferenceField<T>(val key: String, val defaultValue: T?) {
 

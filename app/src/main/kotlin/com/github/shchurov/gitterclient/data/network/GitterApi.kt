@@ -3,6 +3,7 @@ package com.github.shchurov.gitterclient.data.network
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.domain.models.Token
+import com.github.shchurov.gitterclient.domain.models.User
 import rx.Observable
 
 interface GitterApi {
@@ -14,5 +15,9 @@ interface GitterApi {
 
     fun getRoomMessages(roomId: String, limit: Int, beforeId: String? = null)
             : Observable<MutableList<Message>>
+
+    fun markMessagesAsRead(messageIds: List<String>, roomId: String): Observable<Any>
+
+    fun getUser(): Observable<User>
 
 }

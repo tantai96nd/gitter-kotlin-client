@@ -24,6 +24,7 @@ class MessagesAdapter(private val messages: List<Message>, private val actionLis
             }
             field = value
         }
+    val messagesOffset = 0
 
     private fun offsetEnd() = (if (loading) 1 else 0)
 
@@ -58,6 +59,10 @@ class MessagesAdapter(private val messages: List<Message>, private val actionLis
 
     fun notifyMessagesAdded(oldCount: Int, count: Int) {
         notifyItemRangeInserted(oldCount, count)
+    }
+
+    fun notifyMessageChanged(messagePosition: Int) {
+        notifyItemChanged(messagePosition + messagesOffset)
     }
 
     interface ActionListener {

@@ -16,4 +16,6 @@ interface RoomView {
 
     fun disablePagingListener()
 
+    fun forceOnReadPositionsChangedCallback()
+
 }

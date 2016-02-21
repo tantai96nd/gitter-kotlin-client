@@ -18,7 +18,7 @@ open class RequestSubscriber<T> : Subscriber<T>() {
         onFinish()
     }
 
-    protected open fun onSuccess(response: T) {
+    protected open fun onSuccess(data: T) {
     }
 
     protected open fun onFailure(e: Throwable) {

@@ -3,6 +3,7 @@ package com.github.shchurov.gitterclient.data.network.implementation
 import com.github.shchurov.gitterclient.data.network.responses.MessageResponse
 import com.github.shchurov.gitterclient.data.network.responses.RoomResponse
 import com.github.shchurov.gitterclient.data.network.responses.TokenResponse
+import com.github.shchurov.gitterclient.data.network.responses.UserResponse
 import retrofit.http.*
 import rx.Observable
 
@@ -28,5 +29,16 @@ interface GitterRetrofitService {
             @Query("limit") limit: Int,
             @Query("beforeId") beforeId: String? = null
     ): Observable<MutableList<MessageResponse>>
+
+    @POST("/v1/user/{userId}/rooms/{roomId}/unreadItems")
+    @FormUrlEncoded
+    fun markMessagesAsRead(
+            @Path("roomId") roomId: String,
+            @Path("userId") userId: String,
+            @Field("chat") messageIds: List<String>
+    ): Observable<Any>
+
+    @GET("/v1/user")
+    fun getUser(): Observable<List<UserResponse>>
 
 }

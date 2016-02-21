@@ -7,10 +7,12 @@ import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
-import com.github.shchurov.gitterclient.domain.interactors.GetTokenInteractor
+import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
+import com.github.shchurov.gitterclient.domain.interactors.MarkMessageAsReadInteractor
 import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomMessagesInteractorImpl
 import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomsInteractorImpl
-import com.github.shchurov.gitterclient.domain.interactors.implementation.GetTokenInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.implementation.GitterLogInInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.implementation.MarkMessageAsReadInteractorImpl
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
@@ -34,15 +36,15 @@ class ActivityModule(private val activity: Activity) {
 
     @Provides
     @PerActivity
-    fun provideGetTokenInteractor(gitterApi: GitterApi): GetTokenInteractor {
-        return GetTokenInteractorImpl(gitterApi)
+    fun provideGetTokenInteractor(gitterApi: GitterApi, preferences: Preferences): GitterLogInInteractor {
+        return GitterLogInInteractorImpl(gitterApi, preferences)
     }
 
     @Provides
     @PerActivity
-    fun provideLogInPresenter(view: LogInView, preferences: Preferences, getTokenInteractor: GetTokenInteractor)
+    fun provideLogInPresenter(view: LogInView, preferences: Preferences, gitterLogInInteractor: GitterLogInInteractor)
             : LogInPresenter {
-        return LogInPresenterImpl(view, preferences, getTokenInteractor)
+        return LogInPresenterImpl(view, preferences, gitterLogInInteractor)
     }
 
     //endregion
@@ -81,9 +83,15 @@ class ActivityModule(private val activity: Activity) {
 
     @Provides
     @PerActivity
-    fun provideRoomPresenter(view: RoomView, getRoomsMessagesInteractor: GetRoomMessagesInteractor)
-            : RoomPresenter {
-        return RoomPresenterImpl(view, getRoomsMessagesInteractor)
+    fun provideMarkMessagesAsReadInteractor(gitterApi: GitterApi): MarkMessageAsReadInteractor {
+        return MarkMessageAsReadInteractorImpl(gitterApi)
+    }
+
+    @Provides
+    @PerActivity
+    fun provideRoomPresenter(view: RoomView, getRoomsMessagesInteractor: GetRoomMessagesInteractor,
+            markMessageAsReadInteractor: MarkMessageAsReadInteractor): RoomPresenter {
+        return RoomPresenterImpl(view, getRoomsMessagesInteractor, markMessageAsReadInteractor)
     }
 
     //endregion

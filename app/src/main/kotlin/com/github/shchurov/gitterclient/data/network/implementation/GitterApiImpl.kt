@@ -1,12 +1,16 @@
 package com.github.shchurov.gitterclient.data.network.implementation
 
+import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.Room
 import rx.Observable
 import java.util.*
 
-class GitterApiImpl(private val retrofitService: GitterRetrofitService) : GitterApi {
+class GitterApiImpl(
+        private val retrofitService: GitterRetrofitService,
+        private val preferences: Preferences
+) : GitterApi {
 
     private val converter = NetworkConverter()
 
@@ -28,5 +32,11 @@ class GitterApiImpl(private val retrofitService: GitterRetrofitService) : Gitter
                         val messages = ArrayList<Message>()
                         response.mapTo(messages) { converter.convertResponseToMessage(it) }
                     }
+
+    override fun markMessagesAsRead(messageIds: List<String>, roomId: String) =
+            retrofitService.markMessagesAsRead(roomId, preferences.userId!!, messageIds)
+
+    override fun getUser() = retrofitService.getUser()
+            .map { response -> converter.convertResponseToUser(response[0]) }
 
 }

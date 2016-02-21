@@ -12,7 +12,7 @@ class DatabaseImpl() : Database {
     private val converter = DatabaseConverter()
 
     override fun getMyRooms(): MutableList<Room> {
-        val realm = Realm.getDefaultInstance()
+        val realm = getRealmInstance()
         val realmRooms = realm.allObjectsSorted(RoomRealm::class.java, RoomRealm.FIELD_LAST_ACCESS_TIMESTAMP,
                 Sort.DESCENDING)
         val rooms = ArrayList<Room>()
@@ -29,7 +29,7 @@ class DatabaseImpl() : Database {
     }
 
     private fun executeTransaction(transaction: (Realm) -> Unit) {
-        val realm = Realm.getDefaultInstance()
+        val realm = getRealmInstance()
         realm.beginTransaction()
         try {
             transaction(realm)
@@ -40,5 +40,7 @@ class DatabaseImpl() : Database {
         }
         realm.close()
     }
+
+    private fun getRealmInstance() = Realm.getDefaultInstance()
 
 }
