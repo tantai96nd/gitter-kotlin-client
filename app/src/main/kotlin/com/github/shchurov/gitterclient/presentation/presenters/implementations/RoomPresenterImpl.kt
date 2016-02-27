@@ -56,14 +56,17 @@ class RoomPresenterImpl(
         subscriptions.clear()
     }
 
-    override fun onReadPositionsChanged(firstPosition: Int, lastPosition: Int) {
+    override fun onVisiblePositionsChanged(firstPosition: Int, lastPosition: Int) {
         markMessagesAsRead(firstPosition, lastPosition)
     }
 
     private fun markMessagesAsRead(firstAdapterPosition: Int, lastAdapterPosition: Int) {
         val offset = adapter.messagesOffset
         for (i in (firstAdapterPosition - offset)..(lastAdapterPosition - offset)) {
-            markMessageAsReadInteractor.markAsReadLazy(messages[i], roomId)
+            if (adapter.isMessageOnPosition(i) && messages[i].unread) {
+                markMessageAsReadInteractor.markAsReadLazy(messages[i], roomId)
+                adapter.notifyMessageMarkedAsRead(i);
+            }
         }
     }
 

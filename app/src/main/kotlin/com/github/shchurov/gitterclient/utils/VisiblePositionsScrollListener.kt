@@ -2,9 +2,8 @@ package com.github.shchurov.gitterclient.utils
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 
-abstract class ReadPositionsScrollListener : RecyclerView.OnScrollListener() {
+abstract class VisiblePositionsScrollListener : RecyclerView.OnScrollListener() {
 
     private var layoutManager: LinearLayoutManager? = null
 
@@ -18,9 +17,8 @@ abstract class ReadPositionsScrollListener : RecyclerView.OnScrollListener() {
         }
         val first = layoutManager!!.findFirstVisibleItemPosition()
         val last = layoutManager!!.findLastVisibleItemPosition()
-        Log.d("OLOLO", "1: " + first + " - " + last)
         if (first != RecyclerView.NO_POSITION && last != RecyclerView.NO_POSITION) {
-            onReadPositionsChanged(first, last)
+            onVisiblePositionsChanged(first, last)
         }
     }
 
@@ -30,6 +28,6 @@ abstract class ReadPositionsScrollListener : RecyclerView.OnScrollListener() {
         handleNewPosition(recyclerView)
     }
 
-    abstract fun onReadPositionsChanged(firstPosition: Int, lastPosition: Int)
+    abstract fun onVisiblePositionsChanged(firstPosition: Int, lastPosition: Int)
 
 }

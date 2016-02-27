@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:paddingBottom="16dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:paddingTop="16dp">
 
     <LinearLayout
+        android:id="@+id/llHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingRight="10dp">
 
         <ImageView
             android:id="@+id/ivAvatar"
@@ -45,8 +46,19 @@
         android:id="@+id/tvMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/llHeader"
         android:layout_marginTop="8dp"
+        android:paddingRight="10dp"
         android:textColor="@color/grey1"
         android:textSize="13sp"/>
 
-</LinearLayout>
+    <View
+        android:id="@+id/vUnread"
+        android:layout_width="2dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tvMessage"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/llHeader"
+        android:background="@color/teal"/>
+
+</RelativeLayout>

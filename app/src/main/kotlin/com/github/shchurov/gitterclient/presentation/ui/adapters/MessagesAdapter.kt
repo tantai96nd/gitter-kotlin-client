@@ -13,6 +13,7 @@ class MessagesAdapter(private val messages: List<Message>, private val actionLis
     companion object {
         private const val TYPE_MESSAGE = 0
         private const val TYPE_LOADING = 1
+        private const val PAYLOAD_HIDE_UNREAD = 3123
     }
 
     var loading: Boolean = false
@@ -31,38 +32,51 @@ class MessagesAdapter(private val messages: List<Message>, private val actionLis
     override fun getItemCount() = messages.size + offsetEnd()
 
     override fun getItemViewType(position: Int) = when {
-        loading && position == itemCount - 1 -> Companion.TYPE_LOADING
-        else -> Companion.TYPE_MESSAGE
+        loading && position == itemCount - 1 -> TYPE_LOADING
+        else -> TYPE_MESSAGE
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            Companion.TYPE_MESSAGE -> {
+            TYPE_MESSAGE -> {
                 val itemView = inflater.inflate(MessageViewHolder.LAYOUT_ID, parent, false)
                 MessageViewHolder(itemView, actionListener)
             }
-            Companion.TYPE_LOADING -> {
+            TYPE_LOADING -> {
                 val itemView = inflater.inflate(LoadingViewHolder.LAYOUT_ID, parent, false)
                 LoadingViewHolder(itemView)
             }
             else -> throw IllegalArgumentException()
         }
+    }
 
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (holder.itemViewType == TYPE_MESSAGE) {
+            if (PAYLOAD_HIDE_UNREAD in payloads) {
+                (holder as MessageViewHolder).hideUnreadIndicator()
+            } else {
+                onBindViewHolder(holder, position)
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder.itemViewType == Companion.TYPE_MESSAGE) {
+        if (holder.itemViewType == TYPE_MESSAGE) {
             (holder as MessageViewHolder).bindData(messages[position])
         }
     }
 
     fun notifyMessagesAdded(oldCount: Int, count: Int) {
-        notifyItemRangeInserted(oldCount, count)
+        notifyItemRangeInserted(oldCount + messagesOffset, count)
     }
 
-    fun notifyMessageChanged(messagePosition: Int) {
-        notifyItemChanged(messagePosition + messagesOffset)
+    fun notifyMessageMarkedAsRead(position: Int) {
+        notifyItemChanged(position + messagesOffset, PAYLOAD_HIDE_UNREAD)
+    }
+
+    fun isMessageOnPosition(i: Int): Boolean {
+        return getItemViewType(i) == TYPE_MESSAGE
     }
 
     interface ActionListener {

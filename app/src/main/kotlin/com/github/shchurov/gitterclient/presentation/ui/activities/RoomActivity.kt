@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SimpleItemAnimator
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.view.View
@@ -18,7 +19,7 @@ import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
 import com.github.shchurov.gitterclient.utils.MessagesItemDecoration
 import com.github.shchurov.gitterclient.utils.PagingScrollListener
-import com.github.shchurov.gitterclient.utils.ReadPositionsScrollListener
+import com.github.shchurov.gitterclient.utils.VisiblePositionsScrollListener
 import javax.inject.Inject
 
 class RoomActivity : AppCompatActivity(), RoomView {
@@ -79,6 +80,7 @@ class RoomActivity : AppCompatActivity(), RoomView {
             addItemDecoration(MessagesItemDecoration())
             addOnScrollListener(pagingScrollListener)
             addOnScrollListener(readScrollListener)
+            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         }
     }
 
@@ -88,9 +90,9 @@ class RoomActivity : AppCompatActivity(), RoomView {
         }
     }
 
-    private val readScrollListener = object : ReadPositionsScrollListener() {
-        override fun onReadPositionsChanged(firstPosition: Int, lastPosition: Int) {
-            presenter.onReadPositionsChanged(firstPosition, lastPosition)
+    private val readScrollListener = object : VisiblePositionsScrollListener() {
+        override fun onVisiblePositionsChanged(firstPosition: Int, lastPosition: Int) {
+            presenter.onVisiblePositionsChanged(firstPosition, lastPosition)
         }
     }
 

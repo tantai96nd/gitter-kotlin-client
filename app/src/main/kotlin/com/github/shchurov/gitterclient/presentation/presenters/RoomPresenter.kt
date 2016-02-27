@@ -4,6 +4,6 @@ interface RoomPresenter : BasePresenter {
 
     fun onLoadMoreItems()
 
-    fun onReadPositionsChanged(firstPosition: Int, lastPosition: Int)
+    fun onVisiblePositionsChanged(firstPosition: Int, lastPosition: Int)
 
 }

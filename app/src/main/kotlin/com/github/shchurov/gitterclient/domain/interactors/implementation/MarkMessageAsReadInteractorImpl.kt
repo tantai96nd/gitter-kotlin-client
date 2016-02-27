@@ -21,13 +21,13 @@ class MarkMessageAsReadInteractorImpl(private val gitterApi: GitterApi) : MarkMe
         message.unread = false
         ids.add(message.id)
         if (ids.size == MAX_MESSAGES_BEFORE_REQUEST) {
-            sendRequest(roomId)
+//            sendRequest(roomId)
         }
     }
 
     override fun flush(roomId: String) {
         if (ids.size > 0) {
-            sendRequest(roomId)
+//            sendRequest(roomId)
         }
     }
 
