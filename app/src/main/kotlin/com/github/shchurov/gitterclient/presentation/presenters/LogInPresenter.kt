@@ -1,3 +1,9 @@
 package com.github.shchurov.gitterclient.presentation.presenters
 
-interface LogInPresenter : BasePresenter
+interface LogInPresenter {
+
+    fun onCreate()
+
+    fun onDestroy()
+
+}

@@ -76,4 +76,9 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
     }
 
     override fun getContext() = this
+
+    override fun postDelayed(runnable: () -> Unit, delay: Long) {
+        rvRooms.postDelayed(runnable, delay)
+    }
+
 }

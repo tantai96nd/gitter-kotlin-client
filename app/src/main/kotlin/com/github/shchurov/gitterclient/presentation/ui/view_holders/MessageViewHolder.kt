@@ -75,12 +75,12 @@ class MessageViewHolder(
                 .setDuration(600)
                 .setListener(object : SimpleAnimatorListener() {
                     override fun onAnimationEnd(p0: Animator?) {
-                        resetAfterAnimation()
+                        resetAfterHideUnreadAnimation()
                     }
                 })
     }
 
-    private fun resetAfterAnimation() {
+    private fun resetAfterHideUnreadAnimation() {
         setIsRecyclable(true)
         vUnread.visibility = View.GONE
         vUnread.alpha = 1f

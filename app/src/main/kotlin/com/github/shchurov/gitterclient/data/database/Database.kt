@@ -4,10 +4,14 @@ import com.github.shchurov.gitterclient.domain.models.Room
 
 interface Database {
 
-    fun getMyRooms(): MutableList<Room>
+    fun getRooms(): MutableList<Room>
 
-    fun clearMyRooms()
+    fun clearRooms()
 
-    fun saveMyRooms(rooms: List<Room>)
+    fun saveRooms(rooms: List<Room>)
+
+    fun updateRoomLastAccessTime(roomId: String, timestamp: Long)
+
+    fun decrementRoomUnreadItems(roomId: String)
 
 }

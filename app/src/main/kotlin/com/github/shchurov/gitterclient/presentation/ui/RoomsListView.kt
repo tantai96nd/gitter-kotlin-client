@@ -9,4 +9,6 @@ interface RoomsListView {
 
     fun getContext(): Context
 
+    fun postDelayed(runnable: () -> Unit, delay: Long)
+
 }

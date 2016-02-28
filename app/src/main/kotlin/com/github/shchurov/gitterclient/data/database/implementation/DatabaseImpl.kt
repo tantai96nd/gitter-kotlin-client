@@ -5,26 +5,45 @@ import com.github.shchurov.gitterclient.data.database.implementation.realm_model
 import com.github.shchurov.gitterclient.domain.models.Room
 import io.realm.Realm
 import io.realm.Sort
-import java.util.*
 
 class DatabaseImpl() : Database {
 
     private val converter = DatabaseConverter()
 
-    override fun getMyRooms(): MutableList<Room> {
+    override fun getRooms(): MutableList<Room> {
         val realm = getRealmInstance()
         val realmRooms = realm.allObjectsSorted(RoomRealm::class.java, RoomRealm.FIELD_LAST_ACCESS_TIMESTAMP,
                 Sort.DESCENDING)
-        val rooms = ArrayList<Room>()
-        return realmRooms.mapTo(rooms) { converter.convertRealmToRoom(it) }
+        val rooms: MutableList<Room> = mutableListOf()
+        realmRooms.mapTo(rooms) { converter.convertRealmToRoom(it) }
+        realm.close()
+        return rooms
     }
 
-    override fun saveMyRooms(rooms: List<Room>) {
+    override fun saveRooms(rooms: List<Room>) {
         val realmRooms = rooms.map { converter.convertRoomToRealm(it) }
         executeTransaction { realm -> realm.copyToRealm(realmRooms) }
     }
 
-    override fun clearMyRooms() {
+    override fun updateRoomLastAccessTime(roomId: String, timestamp: Long) {
+        executeTransaction { realm ->
+            getRoom(roomId, realm).lastAccessTimestamp = timestamp
+        }
+    }
+
+    private fun getRoom(roomId: String, realm: Realm) =
+            realm.where(RoomRealm::class.java)
+                    .equalTo(RoomRealm.FIELD_ID, roomId)
+                    .findFirst()
+
+    override fun decrementRoomUnreadItems(roomId: String) {
+        executeTransaction { realm ->
+            val realmRoom = getRoom(roomId, realm)
+            realmRoom.unreadItems--
+        }
+    }
+
+    override fun clearRooms() {
         executeTransaction { realm -> realm.clear(RoomRealm::class.java) }
     }
 

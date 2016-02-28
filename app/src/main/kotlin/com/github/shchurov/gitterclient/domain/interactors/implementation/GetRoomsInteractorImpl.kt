@@ -17,14 +17,16 @@ class GetRoomsInteractorImpl(
 
     override fun getRooms(localOnly: Boolean): Observable<DataWrapper<MutableList<Room>>> {
         val localObservable = getMyRoomsLocal()
-        if (localOnly)
+        if (localOnly) {
             return localObservable
-        val networkObservable = getMyRoomsNetwork()
-        return Observable.mergeDelayError(localObservable, networkObservable)
+        } else {
+            val networkObservable = getMyRoomsNetwork()
+            return Observable.mergeDelayError(localObservable, networkObservable)
+        }
     }
 
     private fun getMyRoomsLocal() = Observable.create<DataWrapper<MutableList<Room>>> { subscriber ->
-        val rooms = database.getMyRooms()
+        val rooms = database.getRooms()
         subscriber.onNext(DataWrapper(rooms, DataSource.LOCAL))
         subscriber.onCompleted()
     }
@@ -33,17 +35,17 @@ class GetRoomsInteractorImpl(
 
 
     private fun getMyRoomsNetwork() = gitterApi.getMyRooms()
-            .flatMap { rooms ->
+            .subscribeOn(Schedulers.io())
+            .map { rooms ->
                 rooms.sortByDescending { it.lastAccessTimestamp }
                 saveRoomsToDatabase(rooms)
-                val wrapper = DataWrapper(rooms, DataSource.NETWORK)
-                Observable.just(wrapper)
-            }.subscribeOn(Schedulers.io())
+                DataWrapper(rooms, DataSource.NETWORK)
+            }
             .observeOn(AndroidSchedulers.mainThread())
 
     private fun saveRoomsToDatabase(rooms: List<Room>) {
-        database.clearMyRooms()
-        database.saveMyRooms(rooms)
+        database.clearRooms()
+        database.saveRooms(rooms)
     }
 
 }

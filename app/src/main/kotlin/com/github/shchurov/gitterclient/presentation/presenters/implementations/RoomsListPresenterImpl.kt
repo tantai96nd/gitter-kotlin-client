@@ -3,6 +3,7 @@ package com.github.shchurov.gitterclient.presentation.presenters.implementations
 import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
+import com.github.shchurov.gitterclient.domain.interactors.UpdateRoomLastAccessTimeInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
@@ -13,7 +14,8 @@ import rx.subscriptions.CompositeSubscription
 
 class RoomsListPresenterImpl(
         private val view: RoomsListView,
-        private val getRoomsInteractor: GetRoomsInteractor
+        private val getRoomsInteractor: GetRoomsInteractor,
+        private val updateRoomLastAccessTimeInteractor: UpdateRoomLastAccessTimeInteractor
 ) : RoomsListPresenter, RoomsAdapter.ActionListener {
 
     private val subscriptions = CompositeSubscription()
@@ -26,7 +28,8 @@ class RoomsListPresenterImpl(
     }
 
     override fun onRestart() {
-        loadRooms(true)
+        // delay is required to show nice moving animation
+        view.postDelayed({loadRooms(true)}, 300)
     }
 
     private fun loadRooms(localOnly: Boolean) {
@@ -54,6 +57,7 @@ class RoomsListPresenterImpl(
     }
 
     override fun onRoomClick(room: Room) {
+        updateRoomLastAccessTimeInteractor.update(room)
         RoomActivity.start(view.getContext(), room.id, room.name)
     }
 

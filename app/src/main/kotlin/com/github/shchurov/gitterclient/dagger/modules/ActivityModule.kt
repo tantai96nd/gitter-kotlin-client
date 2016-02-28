@@ -5,14 +5,8 @@ import com.github.shchurov.gitterclient.dagger.scopes.PerActivity
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.GitterApi
-import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
-import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
-import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
-import com.github.shchurov.gitterclient.domain.interactors.MarkMessageAsReadInteractor
-import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomMessagesInteractorImpl
-import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomsInteractorImpl
-import com.github.shchurov.gitterclient.domain.interactors.implementation.GitterLogInInteractorImpl
-import com.github.shchurov.gitterclient.domain.interactors.implementation.MarkMessageAsReadInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.*
+import com.github.shchurov.gitterclient.domain.interactors.implementation.*
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
@@ -63,8 +57,15 @@ class ActivityModule(private val activity: Activity) {
 
     @Provides
     @PerActivity
-    fun provideRoomsListPresenter(view: RoomsListView, getRoomsInteractor: GetRoomsInteractor): RoomsListPresenter {
-        return RoomsListPresenterImpl(view, getRoomsInteractor)
+    fun provideUpdateRoomLastAccessTimeInteractor(database: Database): UpdateRoomLastAccessTimeInteractor {
+        return UpdateRoomLastAccessTimeInteractorImpl(database)
+    }
+
+    @Provides
+    @PerActivity
+    fun provideRoomsListPresenter(view: RoomsListView, getRoomsInteractor: GetRoomsInteractor,
+            updateRoomLastAccessTimeInteractor: UpdateRoomLastAccessTimeInteractor): RoomsListPresenter {
+        return RoomsListPresenterImpl(view, getRoomsInteractor, updateRoomLastAccessTimeInteractor)
     }
 
     //endregion
@@ -83,8 +84,8 @@ class ActivityModule(private val activity: Activity) {
 
     @Provides
     @PerActivity
-    fun provideMarkMessagesAsReadInteractor(gitterApi: GitterApi): MarkMessageAsReadInteractor {
-        return MarkMessageAsReadInteractorImpl(gitterApi)
+    fun provideMarkMessagesAsReadInteractor(gitterApi: GitterApi, database: Database): MarkMessageAsReadInteractor {
+        return MarkMessageAsReadInteractorImpl(gitterApi, database)
     }
 
     @Provides

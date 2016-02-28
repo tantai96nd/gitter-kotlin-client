@@ -16,6 +16,7 @@ class RoomViewHolder(itemView: View, private val actionListener: RoomsAdapter.Ac
 
     companion object {
         const val LAYOUT_ID = R.layout.room_item
+        const val MAX_UNREAD_ITEMS = 100
     }
 
     private val tvName = findViewById(R.id.tvName) as TextView
@@ -51,11 +52,18 @@ class RoomViewHolder(itemView: View, private val actionListener: RoomsAdapter.Ac
     private fun setupUnreadItems() {
         if (room.unreadItems > 0) {
             tvUnread.visibility = View.VISIBLE
-            tvUnread.text = room.unreadItems.toString()
+            tvUnread.text = getUnreadItemsString()
         } else {
             tvUnread.visibility = View.GONE
         }
     }
+
+    private fun getUnreadItemsString() =
+            if (room.unreadItems == MAX_UNREAD_ITEMS) {
+                (MAX_UNREAD_ITEMS - 1).toString() + '+'
+            } else {
+                room.unreadItems.toString()
+            }
 
     private fun setupMentions() {
         if (room.mentions > 0) {
