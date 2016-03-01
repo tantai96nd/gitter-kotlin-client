@@ -4,12 +4,14 @@ import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataWrapper
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
+import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Message
 import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 
-class GetRoomMessagesInteractorImpl(private val gitterApi: GitterApi) : GetRoomMessagesInteractor {
+class GetRoomMessagesInteractorImpl(
+        private val gitterApi: GitterApi,
+        private val schedulersProvider: SchedulersProvider
+) : GetRoomMessagesInteractor {
 
     companion object {
         private const val MESSAGES_LIMIT = 30;
@@ -22,9 +24,9 @@ class GetRoomMessagesInteractorImpl(private val gitterApi: GitterApi) : GetRoomM
     override fun getFirstPage(roomId: String): Observable<DataWrapper<MutableList<Message>>> {
         this.roomId = roomId
         return gitterApi.getRoomMessages(roomId, MESSAGES_LIMIT)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(schedulersProvider.backgroundScheduler)
                 .map { handleMessages(it) }
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(schedulersProvider.uiScheduler)
     }
 
     private fun handleMessages(messages: MutableList<Message>): DataWrapper<MutableList<Message>> {
@@ -44,9 +46,9 @@ class GetRoomMessagesInteractorImpl(private val gitterApi: GitterApi) : GetRoomM
 
     override fun getNextPage() =
             gitterApi.getRoomMessages(roomId, MESSAGES_LIMIT, lastMessageId)
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(schedulersProvider.backgroundScheduler)
                     .map { handleMessages(it) }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(schedulersProvider.uiScheduler)
 
     override fun hasMorePages() = hasMorePages
 

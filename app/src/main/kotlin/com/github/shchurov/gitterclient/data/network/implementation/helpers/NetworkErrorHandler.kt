@@ -1,6 +1,7 @@
 package com.github.shchurov.gitterclient.data.network.implementation.helpers
 
 import com.github.shchurov.gitterclient.R
+import com.github.shchurov.gitterclient.data.network.implementation.RetrofitInitializer
 import com.github.shchurov.gitterclient.data.network.responses.ErrorResponse
 import com.github.shchurov.gitterclient.utils.getString
 import com.github.shchurov.gitterclient.utils.showToast
@@ -9,13 +10,15 @@ import retrofit.Converter
 import retrofit.HttpException
 import java.net.UnknownHostException
 
+@Suppress("UNCHECKED_CAST")
 object NetworkErrorHandler {
 
     private lateinit var converter: Converter<ResponseBody, ErrorResponse>
 
-    @Suppress("UNCHECKED_CAST")
-    fun setConverterFactory(factory: Converter.Factory) {
-        converter = factory.fromResponseBody(ErrorResponse::class.java, null) as Converter<ResponseBody, ErrorResponse>
+    init {
+        converter = RetrofitInitializer.converterFactory.fromResponseBody(ErrorResponse::class.java, null)
+                as Converter<ResponseBody, ErrorResponse>
+
     }
 
     fun handleError(exception: Throwable) {

@@ -7,6 +7,7 @@ import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.*
 import com.github.shchurov.gitterclient.domain.interactors.implementation.*
+import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
@@ -30,8 +31,9 @@ class ActivityModule(private val activity: Activity) {
 
     @Provides
     @PerActivity
-    fun provideGetTokenInteractor(gitterApi: GitterApi, preferences: Preferences): GitterLogInInteractor {
-        return GitterLogInInteractorImpl(gitterApi, preferences)
+    fun provideGetTokenInteractor(gitterApi: GitterApi, preferences: Preferences,
+            schedulersProvider: SchedulersProvider): GitterLogInInteractor {
+        return GitterLogInInteractorImpl(gitterApi, preferences, schedulersProvider)
     }
 
     @Provides
@@ -51,8 +53,9 @@ class ActivityModule(private val activity: Activity) {
 
     @Provides
     @PerActivity
-    fun provideGetRoomsInteractor(gitterApi: GitterApi, database: Database): GetRoomsInteractor {
-        return GetRoomsInteractorImpl(gitterApi, database)
+    fun provideGetRoomsInteractor(gitterApi: GitterApi, database: Database, schedulersProvider: SchedulersProvider)
+            : GetRoomsInteractor {
+        return GetRoomsInteractorImpl(gitterApi, database, schedulersProvider)
     }
 
     @Provides
@@ -78,14 +81,16 @@ class ActivityModule(private val activity: Activity) {
 
     @Provides
     @PerActivity
-    fun provideGetRoomMessagesInteractor(gitterApi: GitterApi): GetRoomMessagesInteractor {
-        return GetRoomMessagesInteractorImpl(gitterApi)
+    fun provideGetRoomMessagesInteractor(gitterApi: GitterApi, schedulersProvider: SchedulersProvider)
+            : GetRoomMessagesInteractor {
+        return GetRoomMessagesInteractorImpl(gitterApi, schedulersProvider)
     }
 
     @Provides
     @PerActivity
-    fun provideMarkMessagesAsReadInteractor(gitterApi: GitterApi, database: Database): MarkMessageAsReadInteractor {
-        return MarkMessageAsReadInteractorImpl(gitterApi, database)
+    fun provideMarkMessagesAsReadInteractor(gitterApi: GitterApi, database: Database,
+            schedulersProvider: SchedulersProvider): MarkMessageAsReadInteractor {
+        return MarkMessageAsReadInteractorImpl(gitterApi, database, schedulersProvider)
     }
 
     @Provides

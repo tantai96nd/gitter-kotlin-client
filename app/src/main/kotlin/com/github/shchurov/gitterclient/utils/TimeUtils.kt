@@ -1,7 +1,5 @@
 package com.github.shchurov.gitterclient.utils
 
-import com.github.shchurov.gitterclient.App
-import com.github.shchurov.gitterclient.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -10,10 +8,8 @@ object TimeUtils {
     private val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US)
     private val calendar1 = Calendar.getInstance()
     private val calendar2 = Calendar.getInstance()
-    private lateinit var months: Array<String>
 
     init {
-        months = App.context.resources.getStringArray(R.array.months)
         isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
     }
 
@@ -23,13 +19,14 @@ object TimeUtils {
         return isoDateFormat.parse(time).time
     }
 
-    fun convertTimestampToString(time: Long): String {
+    fun convertTimestampToRelativeString(timestamp: Long, months: Array<String>): String {
         val calendarNow = calendar1
         val calendarThen = calendar2
-        setCalendarTime(calendarThen, time)
+        setCalendarTime(calendarNow, System.currentTimeMillis())
+        setCalendarTime(calendarThen, timestamp)
         val hourMinute = getHourMinuteString(calendarThen)
         if (isNotToday(calendarThen, calendarNow)) {
-            val dayMonth = getDayMonthString(calendarThen)
+            val dayMonth = getDayMonthString(calendarThen, months)
             return "$dayMonth $hourMinute"
         } else {
             return hourMinute
@@ -41,7 +38,6 @@ object TimeUtils {
     }
 
     private fun isNotToday(calendarThen: Calendar, calendarNow: Calendar): Boolean {
-        setCalendarTime(calendarNow, System.currentTimeMillis())
         return calendarThen.get(Calendar.DAY_OF_YEAR) != calendarNow.get(Calendar.DAY_OF_YEAR)
                 || calendarThen.get(Calendar.YEAR) != calendarNow.get(Calendar.YEAR)
     }
@@ -53,7 +49,7 @@ object TimeUtils {
         return "$hour:$minuteZero$minute"
     }
 
-    private fun getDayMonthString(calendar: Calendar): String {
+    private fun getDayMonthString(calendar: Calendar, months: Array<String>): String {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         val month = months[calendar.get(Calendar.MONTH)]
         return "$day $month"

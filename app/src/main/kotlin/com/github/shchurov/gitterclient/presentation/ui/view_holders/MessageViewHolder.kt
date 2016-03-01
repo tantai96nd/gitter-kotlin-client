@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.presentation.ui.adapters.MessagesAdapter
@@ -23,6 +24,7 @@ class MessageViewHolder(
         const val LAYOUT_ID = R.layout.message_item
     }
 
+    private val months = App.context.resources.getStringArray(R.array.months)
     private val ivAvatar = findViewById(R.id.ivAvatar) as ImageView
     private val tvUsername = findViewById(R.id.tvUsername) as TextView
     private val tvTime = findViewById(R.id.tvTime) as TextView
@@ -51,7 +53,7 @@ class MessageViewHolder(
     }
 
     private fun setupTime() {
-        tvTime.text = TimeUtils.convertTimestampToString(message.timestamp)
+        tvTime.text = TimeUtils.convertTimestampToRelativeString(message.timestamp, months)
     }
 
     private fun setupMessage() {

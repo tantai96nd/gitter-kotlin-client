@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import com.github.shchurov.gitterclient.dagger.components.AppComponent
 import com.github.shchurov.gitterclient.dagger.components.DaggerAppComponent
-import com.github.shchurov.gitterclient.data.database.implementation.RealmInitializer
 
 class App : Application() {
 
@@ -17,12 +16,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
-        initRealm()
         initDagger()
-    }
-
-    private fun initRealm() {
-        RealmInitializer.initRealm(this)
     }
 
     private fun initDagger() {

@@ -5,14 +5,14 @@ import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataWrapper
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
+import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Room
 import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 
 class GetRoomsInteractorImpl(
         private val gitterApi: GitterApi,
-        private val database: Database
+        private val database: Database,
+        private val schedulersProvider: SchedulersProvider
 ) : GetRoomsInteractor {
 
     override fun getRooms(localOnly: Boolean): Observable<DataWrapper<MutableList<Room>>> {
@@ -30,18 +30,18 @@ class GetRoomsInteractorImpl(
         subscriber.onNext(DataWrapper(rooms, DataSource.LOCAL))
         subscriber.onCompleted()
     }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(schedulersProvider.backgroundScheduler)
+            .observeOn(schedulersProvider.uiScheduler)
 
 
     private fun getMyRoomsNetwork() = gitterApi.getMyRooms()
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulersProvider.backgroundScheduler)
             .map { rooms ->
                 rooms.sortByDescending { it.lastAccessTimestamp }
                 saveRoomsToDatabase(rooms)
                 DataWrapper(rooms, DataSource.NETWORK)
             }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulersProvider.uiScheduler)
 
     private fun saveRoomsToDatabase(rooms: List<Room>) {
         database.clearRooms()

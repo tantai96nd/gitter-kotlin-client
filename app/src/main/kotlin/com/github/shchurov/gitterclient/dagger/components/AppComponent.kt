@@ -4,6 +4,7 @@ import com.github.shchurov.gitterclient.dagger.modules.AppModule
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.GitterApi
+import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import dagger.Component
 import javax.inject.Singleton
 
@@ -15,6 +16,8 @@ interface AppComponent {
 
     fun preferences(): Preferences
 
-    fun geitterApi(): GitterApi
+    fun gitterApi(): GitterApi
+
+    fun schedulersProvider(): SchedulersProvider
 
 }

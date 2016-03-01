@@ -4,14 +4,14 @@ import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.Secrets
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
+import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.User
 import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 
 class GitterLogInInteractorImpl(
         private val gitterApi: GitterApi,
-        private val preferences: Preferences
+        private val preferences: Preferences,
+        private val schedulersProvider: SchedulersProvider
 ) : GitterLogInInteractor {
 
     companion object {
@@ -22,7 +22,7 @@ class GitterLogInInteractorImpl(
     override fun logIn(code: String): Observable<User> {
         return gitterApi.getAccessToken(AUTHENTICATION_ENDPOINT, Secrets.gitterOauthKey, Secrets.gitterOauthSecret,
                 code, Secrets.gitterRedirectUri, GRANT_TYPE)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(schedulersProvider.backgroundScheduler)
                 .flatMap { token ->
                     preferences.gitterAccessToken = token.accessToken
                     gitterApi.getUser()
@@ -30,7 +30,7 @@ class GitterLogInInteractorImpl(
                 .doOnNext { user ->
                     preferences.userId = user.id
                 }
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(schedulersProvider.uiScheduler)
     }
 
 }

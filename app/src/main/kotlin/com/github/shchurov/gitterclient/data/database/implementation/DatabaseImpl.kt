@@ -6,9 +6,13 @@ import com.github.shchurov.gitterclient.domain.models.Room
 import io.realm.Realm
 import io.realm.Sort
 
-class DatabaseImpl() : Database {
+class DatabaseImpl(initializer: RealmInitializer) : Database {
 
     private val converter = DatabaseConverter()
+
+    init {
+        initializer.initRealm()
+    }
 
     override fun getRooms(): MutableList<Room> {
         val realm = getRealmInstance()
