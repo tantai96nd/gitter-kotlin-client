@@ -4,7 +4,6 @@ import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.database.implementation.realm_models.RoomRealm
 import com.github.shchurov.gitterclient.domain.models.Room
 import io.realm.Realm
-import io.realm.Sort
 
 class DatabaseImpl(initializer: RealmInitializer) : Database {
 
@@ -16,8 +15,7 @@ class DatabaseImpl(initializer: RealmInitializer) : Database {
 
     override fun getRooms(): MutableList<Room> {
         val realm = getRealmInstance()
-        val realmRooms = realm.allObjectsSorted(RoomRealm::class.java, RoomRealm.FIELD_LAST_ACCESS_TIMESTAMP,
-                Sort.DESCENDING)
+        val realmRooms = realm.allObjects(RoomRealm::class.java)
         val rooms: MutableList<Room> = mutableListOf()
         realmRooms.mapTo(rooms) { converter.convertRealmToRoom(it) }
         realm.close()

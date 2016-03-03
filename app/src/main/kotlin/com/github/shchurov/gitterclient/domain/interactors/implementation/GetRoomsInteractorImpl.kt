@@ -27,6 +27,7 @@ class GetRoomsInteractorImpl(
 
     private fun getMyRoomsLocal() = Observable.create<DataWrapper<MutableList<Room>>> { subscriber ->
         val rooms = database.getRooms()
+        rooms.sortByDescending { it.lastAccessTimestamp }
         subscriber.onNext(DataWrapper(rooms, DataSource.LOCAL))
         subscriber.onCompleted()
     }

@@ -16,7 +16,6 @@ open class RoomRealm(
 
     companion object {
         const val FIELD_ID = "id"
-        const val FIELD_LAST_ACCESS_TIMESTAMP = "lastAccessTimestamp"
     }
 
     constructor() : this(null, null, null, 0, 0, 0L)
