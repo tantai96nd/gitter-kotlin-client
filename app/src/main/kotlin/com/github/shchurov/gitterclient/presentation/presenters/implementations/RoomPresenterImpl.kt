@@ -1,6 +1,5 @@
 package com.github.shchurov.gitterclient.presentation.presenters.implementations
 
-import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.interactors.MarkMessageAsReadInteractor
@@ -14,7 +13,7 @@ import java.util.*
 
 class RoomPresenterImpl(
         private val view: RoomView,
-        private val messagesInteractorGet: GetRoomMessagesInteractor,
+        private val getMessagesInteractor: GetRoomMessagesInteractor,
         private val markMessageAsReadInteractor: MarkMessageAsReadInteractor
 ) : RoomPresenter, MessagesAdapter.ActionListener {
 
@@ -34,21 +33,28 @@ class RoomPresenterImpl(
 
     private fun loadMessagesFirstPage() {
         view.showInitLoading()
-        messagesInteractorGet.getFirstPage(roomId)
-                .compositeSubscribe(subscriptions, object : DataSubscriber<MutableList<Message>>() {
-                    override fun onData(data: MutableList<Message>, source: DataSource) {
-                        messages.addAll(data)
-                        adapter.notifyMessagesAdded(0, data.size)
-                        if (!messagesInteractorGet.hasMorePages()) {
-                            view.disablePagingListener()
-                        }
-                        view.forceOnReadPositionsChangedCallback()
-                    }
+        getMessagesInteractor.getFirstPage(roomId)
+                .compositeSubscribe(subscriptions, createMessagesSubscriber())
+    }
 
-                    override fun onFinish() {
-                        view.hideInitLoading()
-                    }
-                })
+    private fun createMessagesSubscriber(): DataSubscriber<MutableList<Message>> {
+        return object : DataSubscriber<MutableList<Message>>() {
+            override fun onNext(data: MutableList<Message>) {
+                messages.addAll(data.reversed())
+                adapter.notifyMessagesAdded(messages.size - data.size, data.size)
+                if (getMessagesInteractor.hasMorePages()) {
+                    view.enablePagingListener()
+                } else {
+                    view.disablePagingListener()
+                }
+                view.forceOnReadPositionsChangedCallback()
+            }
+
+            override fun onFinish() {
+                adapter.loading = false
+                view.hideInitLoading()
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -71,26 +77,9 @@ class RoomPresenterImpl(
     }
 
     override fun onLoadMoreItems() {
-        loadMessagesNext()
-    }
-
-    private fun loadMessagesNext() {
         adapter.loading = true
-        messagesInteractorGet.getNextPage()
-                .compositeSubscribe(subscriptions, object : DataSubscriber<MutableList<Message>>() {
-                    override fun onData(data: MutableList<Message>, source: DataSource) {
-                        messages.addAll(data)
-                        adapter.notifyMessagesAdded(messages.size - data.size, data.size)
-                        if (messagesInteractorGet.hasMorePages()) {
-                            view.enablePagingListener()
-                        }
-                    }
-
-                    override fun onFinish() {
-                        adapter.loading = false
-                    }
-                })
+        getMessagesInteractor.getNextPage()
+                .compositeSubscribe(subscriptions, createMessagesSubscriber())
     }
-
 
 }

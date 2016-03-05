@@ -2,8 +2,6 @@ package com.github.shchurov.gitterclient.domain.interactors.implementation
 
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.GitterApi
-import com.github.shchurov.gitterclient.domain.DataSource
-import com.github.shchurov.gitterclient.domain.DataWrapper
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Room
@@ -15,20 +13,20 @@ class GetRoomsInteractorImpl(
         private val schedulersProvider: SchedulersProvider
 ) : GetRoomsInteractor {
 
-    override fun getRooms(localOnly: Boolean): Observable<DataWrapper<MutableList<Room>>> {
+    override fun getRooms(localOnly: Boolean): Observable<MutableList<Room>> {
         val localObservable = getMyRoomsLocal()
         if (localOnly) {
             return localObservable
         } else {
             val networkObservable = getMyRoomsNetwork()
-            return Observable.mergeDelayError(localObservable, networkObservable)
+            return Observable.concat(localObservable, networkObservable)
         }
     }
 
-    private fun getMyRoomsLocal() = Observable.create<DataWrapper<MutableList<Room>>> { subscriber ->
+    private fun getMyRoomsLocal() = Observable.create<MutableList<Room>> { subscriber ->
         val rooms = database.getRooms()
         rooms.sortByDescending { it.lastAccessTimestamp }
-        subscriber.onNext(DataWrapper(rooms, DataSource.LOCAL))
+        subscriber.onNext(rooms)
         subscriber.onCompleted()
     }
             .subscribeOn(schedulersProvider.backgroundScheduler)
@@ -40,7 +38,7 @@ class GetRoomsInteractorImpl(
             .map { rooms ->
                 rooms.sortByDescending { it.lastAccessTimestamp }
                 saveRoomsToDatabase(rooms)
-                DataWrapper(rooms, DataSource.NETWORK)
+                rooms
             }
             .observeOn(schedulersProvider.uiScheduler)
 

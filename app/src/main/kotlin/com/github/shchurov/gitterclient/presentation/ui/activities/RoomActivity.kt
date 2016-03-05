@@ -132,7 +132,7 @@ class RoomActivity : AppCompatActivity(), RoomView {
     }
 
     override fun forceOnReadPositionsChangedCallback() {
-        // simple post(...) returns "-1" positions
+        // simple post(...) returns wrong positions
         rvMessages.postDelayed({ readScrollListener.forceCallback(rvMessages) }, 100)
     }
 }

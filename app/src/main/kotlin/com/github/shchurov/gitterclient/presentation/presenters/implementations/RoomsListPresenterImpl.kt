@@ -1,6 +1,5 @@
 package com.github.shchurov.gitterclient.presentation.presenters.implementations
 
-import com.github.shchurov.gitterclient.domain.DataSource
 import com.github.shchurov.gitterclient.domain.DataSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.interactors.UpdateRoomLastAccessTimeInteractor
@@ -29,7 +28,7 @@ class RoomsListPresenterImpl(
 
     override fun onRestart() {
         // delay is required to show nice moving animation
-        view.postDelayed({loadRooms(true)}, 300)
+        view.postDelayed({ loadRooms(true) }, 300)
     }
 
     private fun loadRooms(localOnly: Boolean) {
@@ -38,7 +37,7 @@ class RoomsListPresenterImpl(
         }
         getRoomsInteractor.getRooms(localOnly)
                 .compositeSubscribe(subscriptions, object : DataSubscriber<MutableList<Room>>() {
-                    override fun onData(data: MutableList<Room>, source: DataSource) {
+                    override fun onNext(data: MutableList<Room>) {
                         rooms.clear()
                         rooms.addAll(data)
                         adapter.notifyDataSetChanged()
