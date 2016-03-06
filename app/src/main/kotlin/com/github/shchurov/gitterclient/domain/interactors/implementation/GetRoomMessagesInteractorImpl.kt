@@ -11,17 +11,13 @@ class GetRoomMessagesInteractorImpl(
         private val schedulersProvider: SchedulersProvider
 ) : GetRoomMessagesInteractor {
 
-    companion object {
-        const val MESSAGES_LIMIT = 30;
-    }
-
     private var hasMorePages = false
     private lateinit var roomId: String
     private lateinit var earliestMessageId: String
 
     override fun getFirstPage(roomId: String): Observable<MutableList<Message>> {
         this.roomId = roomId
-        return gitterApi.getRoomMessages(roomId, MESSAGES_LIMIT)
+        return gitterApi.getRoomMessages(roomId, GetRoomMessagesInteractor.PAGE_SIZE)
                 .subscribeOn(schedulersProvider.backgroundScheduler)
                 .map { handleMessages(it) }
                 .observeOn(schedulersProvider.uiScheduler)
@@ -34,7 +30,7 @@ class GetRoomMessagesInteractorImpl(
     }
 
     private fun refreshHasMorePages(lastPageSize: Int) {
-        hasMorePages = lastPageSize == MESSAGES_LIMIT
+        hasMorePages = lastPageSize == GetRoomMessagesInteractor.PAGE_SIZE
     }
 
     private fun refreshEarliestMessageId(messages: List<Message>) {
@@ -42,7 +38,7 @@ class GetRoomMessagesInteractorImpl(
     }
 
     override fun getNextPage() =
-            gitterApi.getRoomMessages(roomId, MESSAGES_LIMIT, earliestMessageId)
+            gitterApi.getRoomMessages(roomId, GetRoomMessagesInteractor.PAGE_SIZE, earliestMessageId)
                     .subscribeOn(schedulersProvider.backgroundScheduler)
                     .map { handleMessages(it) }
                     .observeOn(schedulersProvider.uiScheduler)

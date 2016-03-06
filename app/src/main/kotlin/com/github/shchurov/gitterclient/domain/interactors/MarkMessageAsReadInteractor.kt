@@ -6,6 +6,6 @@ interface MarkMessageAsReadInteractor {
 
     fun markAsReadLazy(message: Message, roomId: String)
 
-    fun flush(roomId: String)
+    fun flush()
 
 }

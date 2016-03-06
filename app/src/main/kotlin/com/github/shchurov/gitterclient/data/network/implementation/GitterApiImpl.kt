@@ -33,7 +33,7 @@ class GitterApiImpl(
                         response.mapTo(messages) { converter.convertResponseToMessage(it) }
                     }
 
-    override fun markMessagesAsRead(messageIds: List<String>, roomId: String) =
+    override fun markMessagesAsRead(messageIds: List<String>, roomId: String?) =
             retrofitService.markMessagesAsRead(roomId, preferences.getUserId()!!, messageIds)
 
     override fun getUser() = retrofitService.getUser()

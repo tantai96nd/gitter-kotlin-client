@@ -16,7 +16,7 @@ interface GitterApi {
     fun getRoomMessages(roomId: String, limit: Int, beforeId: String? = null)
             : Observable<MutableList<Message>>
 
-    fun markMessagesAsRead(messageIds: List<String>, roomId: String): Observable<*>
+    fun markMessagesAsRead(messageIds: List<String>, roomId: String?): Observable<*>
 
     fun getUser(): Observable<User>
 

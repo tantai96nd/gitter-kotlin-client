@@ -2,6 +2,7 @@ package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.data.network.GitterApi
+import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomMessagesInteractorImpl
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.User
@@ -20,7 +21,7 @@ import java.util.*
 class GetRoomMessagesInteractorTest {
 
     companion object {
-        private const val PAGE_SIZE = GetRoomMessagesInteractorImpl.MESSAGES_LIMIT
+        private const val PAGE_SIZE = GetRoomMessagesInteractor.PAGE_SIZE
     }
 
     @Mock private lateinit var gitterApi: GitterApi

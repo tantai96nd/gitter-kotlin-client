@@ -58,7 +58,7 @@ class RoomPresenterImpl(
     }
 
     override fun onDestroy() {
-        markMessageAsReadInteractor.flush(roomId)
+        markMessageAsReadInteractor.flush()
         subscriptions.clear()
     }
 

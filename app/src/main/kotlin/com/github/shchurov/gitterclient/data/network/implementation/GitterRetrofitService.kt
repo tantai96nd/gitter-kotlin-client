@@ -33,7 +33,7 @@ interface GitterRetrofitService {
     @POST("/v1/user/{userId}/rooms/{roomId}/unreadItems")
     @FormUrlEncoded
     fun markMessagesAsRead(
-            @Path("roomId") roomId: String,
+            @Path("roomId") roomId: String?,
             @Path("userId") userId: String,
             @Field("chat") messageIds: List<String>
     ): Observable<Any>

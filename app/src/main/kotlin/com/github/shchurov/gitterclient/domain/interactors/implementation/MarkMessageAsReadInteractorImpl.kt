@@ -19,10 +19,12 @@ class MarkMessageAsReadInteractorImpl(
     }
 
     private val ids = ArrayList<String>()
+    private lateinit var roomId: String
 
     override fun markAsReadLazy(message: Message, roomId: String) {
         if (!message.unread)
             return
+        this.roomId = roomId
         message.unread = false
         database.decrementRoomUnreadItems(roomId)
         ids.add(message.id)
@@ -31,7 +33,7 @@ class MarkMessageAsReadInteractorImpl(
         }
     }
 
-    override fun flush(roomId: String) {
+    override fun flush() {
         if (ids.size > 0) {
             sendRequest(roomId)
         }
