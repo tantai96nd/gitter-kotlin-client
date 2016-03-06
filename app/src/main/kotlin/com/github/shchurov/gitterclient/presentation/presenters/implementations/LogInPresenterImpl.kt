@@ -41,7 +41,7 @@ class LogInPresenterImpl(
     val subscriptions: CompositeSubscription = CompositeSubscription()
 
     override fun onCreate() {
-        if (preferences.gitterAccessToken == null) {
+        if (preferences.getGitterAccessToken() == null) {
             view.setWebViewClient(webViewClient)
             view.loadUrl(AUTH_REQUEST)
         } else {

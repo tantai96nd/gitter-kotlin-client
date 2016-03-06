@@ -56,7 +56,7 @@ class RoomsListPresenterImpl(
     }
 
     override fun onRoomClick(room: Room) {
-        updateRoomLastAccessTimeInteractor.update(room)
+        updateRoomLastAccessTimeInteractor.update(room, System.currentTimeMillis())
         RoomActivity.start(view.getContext(), room.id, room.name)
     }
 

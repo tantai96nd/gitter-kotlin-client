@@ -1,8 +1,8 @@
-package com.github.shchurov.gitterclient
+package com.github.shchurov.gitterclient.tests
 
+import com.github.shchurov.gitterclient.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.GitterApi
-import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomsInteractorImpl
 import com.github.shchurov.gitterclient.domain.models.Room
 import org.junit.Before
@@ -21,8 +21,7 @@ class GetRoomsInteractorTest {
     @Mock private lateinit var gitterApi: GitterApi
     @Mock private lateinit var database: Database
     private val schedulersProvider = ImmediateSchedulersProvider()
-
-    private lateinit var interactor: GetRoomsInteractor
+    private lateinit var interactor: GetRoomsInteractorImpl
     private lateinit var expectedRooms: MutableList<Room>
 
     @Before
@@ -64,15 +63,17 @@ class GetRoomsInteractorTest {
 
     @Test
     fun getLocal() {
-        val subscriber = TestSubscriber<MutableList<Room>>()
+        val subscriber = createSubscriber()
         interactor.getRooms(true).subscribe(subscriber)
         subscriber.assertNoErrors()
         subscriber.assertValue(expectedRooms)
     }
 
+    private fun createSubscriber() = TestSubscriber<MutableList<Room>>()
+
     @Test
     fun getLocalAndNetwork() {
-        val subscriber = TestSubscriber<MutableList<Room>>()
+        val subscriber = createSubscriber()
         interactor.getRooms(false).subscribe(subscriber)
         subscriber.assertNoErrors()
         subscriber.assertValues(expectedRooms, expectedRooms)

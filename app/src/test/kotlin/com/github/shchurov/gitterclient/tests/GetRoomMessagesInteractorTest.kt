@@ -1,5 +1,6 @@
-package com.github.shchurov.gitterclient
+package com.github.shchurov.gitterclient.tests
 
+import com.github.shchurov.gitterclient.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomMessagesInteractorImpl
 import com.github.shchurov.gitterclient.domain.models.Message
@@ -9,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
+import org.mockito.Mockito.*
 import org.mockito.runners.MockitoJUnitRunner
 import rx.Observable
 import rx.observers.TestSubscriber
@@ -18,9 +19,12 @@ import java.util.*
 @RunWith(MockitoJUnitRunner::class)
 class GetRoomMessagesInteractorTest {
 
+    companion object {
+        private const val PAGE_SIZE = GetRoomMessagesInteractorImpl.MESSAGES_LIMIT
+    }
+
     @Mock private lateinit var gitterApi: GitterApi
     private val schedulersProvider = ImmediateSchedulersProvider()
-    private val pageSize = GetRoomMessagesInteractorImpl.MESSAGES_LIMIT
     private lateinit var mockedMessages: MutableList<Message>;
     private lateinit var interactor: GetRoomMessagesInteractorImpl
 
@@ -32,14 +36,7 @@ class GetRoomMessagesInteractorTest {
 
     private fun setupMocks() {
         mockedMessages = createMockedMessagesList(1000)
-        Mockito.`when`(gitterApi.getRoomMessages(Mockito.anyString(), Mockito.eq(pageSize), Mockito.anyString()))
-                .thenAnswer { invocation ->
-                    val beforeId = invocation.arguments[2] as String?
-                    val end: Int = beforeId?.toInt() ?: mockedMessages.size
-                    val start = Math.max(0, end - pageSize)
-                    val answerProjection = mockedMessages.subList(start, end)
-                    Observable.just(ArrayList<Message>(answerProjection))
-                }
+        mockGitterApi()
     }
 
     private fun createMockedMessagesList(size: Int): MutableList<Message> {
@@ -52,14 +49,25 @@ class GetRoomMessagesInteractorTest {
         return messages
     }
 
+    private fun mockGitterApi() {
+        `when`(gitterApi.getRoomMessages(anyString(), eq(PAGE_SIZE), anyString()))
+                .thenAnswer { invocation ->
+                    val beforeId = invocation.arguments[2] as String?
+                    val end: Int = beforeId?.toInt() ?: mockedMessages.size
+                    val start = Math.max(0, end - PAGE_SIZE)
+                    val answerProjection = mockedMessages.subList(start, end)
+                    Observable.just(ArrayList<Message>(answerProjection))
+                }
+    }
+
     @Test
     fun getFirstAndNextPages() {
         checkFirstPage()
-        var total = pageSize
+        var total = PAGE_SIZE
         while (total < mockedMessages.size) {
             assertTrue(interactor.hasMorePages())
             checkNextPage(total)
-            total += pageSize
+            total += PAGE_SIZE
         }
     }
 
@@ -67,7 +75,7 @@ class GetRoomMessagesInteractorTest {
         val subscriber = createSubscriber()
         interactor.getFirstPage("random id").subscribe(subscriber)
         subscriber.assertNoErrors()
-        val expected = mockedMessages.subList(mockedMessages.size - pageSize, mockedMessages.size)
+        val expected = mockedMessages.subList(mockedMessages.size - PAGE_SIZE, mockedMessages.size)
         subscriber.assertValue(expected)
     }
 
@@ -75,7 +83,7 @@ class GetRoomMessagesInteractorTest {
 
     private fun checkNextPage(offset: Int) {
         val end = mockedMessages.size - offset
-        val start = Math.max(0, end - pageSize)
+        val start = Math.max(0, end - PAGE_SIZE)
         val expected = mockedMessages.subList(start, end)
         val subscriber = createSubscriber()
         interactor.getNextPage().subscribe(subscriber)

@@ -8,8 +8,7 @@ class UpdateRoomLastAccessTimeInteractorImpl(
         private val database: Database
 ) : UpdateRoomLastAccessTimeInteractor {
 
-    override fun update(room: Room) {
-        val timestamp = System.currentTimeMillis()
+    override fun update(room: Room, timestamp: Long) {
         room.lastAccessTimestamp = timestamp
         database.updateRoomLastAccessTime(room.id, timestamp)
     }

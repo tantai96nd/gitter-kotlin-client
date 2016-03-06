@@ -24,11 +24,11 @@ class GitterLogInInteractorImpl(
                 code, Secrets.gitterRedirectUri, GRANT_TYPE)
                 .subscribeOn(schedulersProvider.backgroundScheduler)
                 .flatMap { token ->
-                    preferences.gitterAccessToken = token.accessToken
+                    preferences.setGitterAccessToken(token.accessToken)
                     gitterApi.getUser()
                 }
                 .doOnNext { user ->
-                    preferences.userId = user.id
+                    preferences.setUserId(user.id)
                 }
                 .observeOn(schedulersProvider.uiScheduler)
     }

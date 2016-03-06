@@ -42,7 +42,7 @@ object RetrofitInitializer {
     private fun setupAuth(client: OkHttpClient, preferences: Preferences) {
         val interceptor = Interceptor { chain ->
             val original = chain.request();
-            val token = preferences.gitterAccessToken
+            val token = preferences.getGitterAccessToken()
             if (token != null) {
                 val modified = original.newBuilder()
                         .header(KEY_AUTH_HEADER, "Bearer $token")
