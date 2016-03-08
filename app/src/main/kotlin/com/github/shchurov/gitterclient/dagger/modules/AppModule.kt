@@ -8,8 +8,8 @@ import com.github.shchurov.gitterclient.data.database.implementation.RealmInitia
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.data.network.implementation.GitterApiImpl
 import com.github.shchurov.gitterclient.data.network.implementation.RetrofitInitializer
+import com.github.shchurov.gitterclient.domain.interactors.threading.RegularSchedulersProvider
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
-import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProviderImpl
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -45,7 +45,7 @@ class AppModule() {
     @Provides
     @Singleton
     fun provideSchedulersProvider(): SchedulersProvider {
-        return SchedulersProviderImpl()
+        return RegularSchedulersProvider()
     }
 
 }

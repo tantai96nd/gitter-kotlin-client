@@ -23,7 +23,7 @@ class GitterApiImpl(
             retrofitService.getMyRooms()
                     .map { response ->
                         val rooms = ArrayList<Room>()
-                        response.mapTo(rooms) { converter.convertToRoom(it) }
+                        response.mapTo(rooms) { converter.convertResponseToRoom(it) }
                     }
 
     override fun getRoomMessages(roomId: String, limit: Int, beforeId: String?): Observable<MutableList<Message>> =

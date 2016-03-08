@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$KOTLIN_VERSION"
@@ -17,14 +18,16 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 
     defaultConfig {
         applicationId "com.github.shchurov.gitterclient"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -43,6 +46,10 @@ def RETROFIT_VERSION = '2.0.0-beta2'
 def DAGGER_VERSION = '2.0.2'
 def REALM_VERSION = '0.87.1'
 def SUPPORT_VERSION = '23.2.0'
+def SUPPORT_TEST_VERSION = '0.4.1'
+def ESPRESSO_VERSION = '2.2.1'
+def MOCKITO_VERSION = '1.10.19'
+def DEXMAKER_VERSION = '1.2'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -64,7 +71,26 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:${DAGGER_VERSION}"
     provided "org.glassfish:javax.annotation:10.0-b28"
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:${MOCKITO_VERSION}"
 
+    androidTestCompile ("com.android.support.test:runner:${SUPPORT_TEST_VERSION}") {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile ("com.android.support.test:rules:${SUPPORT_TEST_VERSION}") {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile ("com.android.support.test.espresso:espresso-core:${ESPRESSO_VERSION}") {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile ("com.android.support.test.espresso:espresso-intents:${ESPRESSO_VERSION}") {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile "com.google.dexmaker:dexmaker:${DEXMAKER_VERSION}"
+    androidTestCompile "com.google.dexmaker:dexmaker-mockito:${DEXMAKER_VERSION}"
+    androidTestCompile "org.mockito:mockito-core:${MOCKITO_VERSION}"
+
+}
+repositories {
+    mavenCentral()
 }

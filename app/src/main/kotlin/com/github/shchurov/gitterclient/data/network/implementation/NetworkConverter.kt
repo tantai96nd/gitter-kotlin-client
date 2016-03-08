@@ -14,7 +14,7 @@ class NetworkConverter {
 
     fun convertResponseToToken(tokenResponse: TokenResponse) = Token(tokenResponse.accessToken)
 
-    fun convertToRoom(roomResponse: RoomResponse): Room {
+    fun convertResponseToRoom(roomResponse: RoomResponse): Room {
         with(roomResponse) {
             val avatar = generateRoomAvatarUrl(url)
             val lastAccessTimestamp = TimeUtils.convertIsoToTimestamp(lastAccessTimeIso)
@@ -34,7 +34,7 @@ class NetworkConverter {
         User(id, username, avatar)
     }
 
-    private fun generateRoomAvatarUrl(roomUrl: String): String {
+    fun generateRoomAvatarUrl(roomUrl: String): String {
         // taken from the official gitter app, is reliable?
         val s = roomUrl.split("/")[1]
         return "https://avatars.githubusercontent.com/" + s + "?s=120";

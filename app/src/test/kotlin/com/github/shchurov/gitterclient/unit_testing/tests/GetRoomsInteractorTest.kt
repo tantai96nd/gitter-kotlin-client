@@ -1,9 +1,9 @@
-package com.github.shchurov.gitterclient.tests
+package com.github.shchurov.gitterclient.unit_testing.tests
 
-import com.github.shchurov.gitterclient.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomsInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Room
 import org.junit.Before
 import org.junit.Test

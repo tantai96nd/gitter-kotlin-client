@@ -27,7 +27,7 @@ open class Preferences(appContext: Context) {
 
     fun getGitterAccessToken(): String? {
         if (accessTokenCache == null) {
-            accessTokenCache = prefs.getString(PREFS_NAME, null)
+            accessTokenCache = prefs.getString(GITTER_ACCESS_TOKEN_KEY, null)
         }
         return accessTokenCache
     }

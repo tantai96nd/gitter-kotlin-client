@@ -1,5 +1,6 @@
 package com.github.shchurov.gitterclient.data.network.implementation
 
+import android.util.Log
 import com.github.shchurov.gitterclient.data.Preferences
 import com.squareup.okhttp.Interceptor
 import com.squareup.okhttp.OkHttpClient
@@ -43,6 +44,7 @@ object RetrofitInitializer {
         val interceptor = Interceptor { chain ->
             val original = chain.request();
             val token = preferences.getGitterAccessToken()
+            Log.d("OLOLO", "TOKEN: " + token)
             if (token != null) {
                 val modified = original.newBuilder()
                         .header(KEY_AUTH_HEADER, "Bearer $token")
