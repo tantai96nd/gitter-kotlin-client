@@ -1,17 +1,16 @@
 package com.github.shchurov.gitterclient.data
 
-import android.content.Context
+import com.github.shchurov.gitterclient.App
 import kotlin.reflect.KProperty
 
-open class Preferences(appContext: Context) {
+open class Preferences(preferencesName: String) {
 
     companion object {
-        private const val PREFS_NAME = "gitter_kotlin_client"
         private const val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
         private const val USER_ID_KEY = "user_id"
     }
 
-    private val prefs = appContext.getSharedPreferences(PREFS_NAME, 0)
+    private val prefs = App.context.getSharedPreferences(preferencesName, 0)
 
     // TODO: couldn't mock a property with mockito, need some investigation
     // var gitterAccessToken by CachedPreferenceField<String?>(GITTER_ACCESS_TOKEN_KEY, null)

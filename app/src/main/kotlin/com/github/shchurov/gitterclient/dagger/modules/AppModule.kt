@@ -1,6 +1,5 @@
 package com.github.shchurov.gitterclient.dagger.modules
 
-import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.database.implementation.DatabaseImpl
@@ -20,7 +19,7 @@ class AppModule() {
     @Provides
     @Singleton
     fun provideSharedPrefsManager(): Preferences {
-        return Preferences(App.Companion.context)
+        return Preferences("gitter_preferences")
     }
 
     @Provides

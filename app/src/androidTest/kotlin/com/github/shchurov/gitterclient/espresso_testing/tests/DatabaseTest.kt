@@ -7,6 +7,7 @@ import com.github.shchurov.gitterclient.data.database.implementation.RealmInitia
 import com.github.shchurov.gitterclient.domain.models.Room
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -21,6 +22,7 @@ class DatabaseTest {
 
     @Rule @JvmField
     val tmpFolder = TemporaryFolder()
+    private lateinit var realmConfig: RealmConfiguration
     private lateinit var database: Database
     private lateinit var fakeRooms: List<Room>
 
@@ -43,11 +45,15 @@ class DatabaseTest {
 
     private fun createRealmInitializer() = object : RealmInitializer() {
         override fun initRealm() {
-            val config = RealmConfiguration.Builder(tmpFolder.newFolder("realm_tmp"))
+            realmConfig = RealmConfiguration.Builder(tmpFolder.newFolder("realm_tmp"))
                     .build()
-            Realm.deleteRealm(config);
-            Realm.setDefaultConfiguration(config)
+            Realm.setDefaultConfiguration(realmConfig)
         }
+    }
+
+    @After
+    fun tearDown() {
+        Realm.deleteRealm(realmConfig);
     }
 
     @Test

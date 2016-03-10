@@ -1,7 +1,6 @@
 package com.github.shchurov.gitterclient.data.network.api.implementation
 
 import com.github.shchurov.gitterclient.data.Preferences
-import com.github.shchurov.gitterclient.data.network.api.implementation.NetworkConverter
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.data.network.api.implementation.retrofit.GitterRetrofitService
 import com.github.shchurov.gitterclient.domain.models.Message
