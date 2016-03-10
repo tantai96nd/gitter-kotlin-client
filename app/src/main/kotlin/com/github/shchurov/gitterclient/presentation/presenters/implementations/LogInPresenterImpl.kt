@@ -11,7 +11,6 @@ import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
 import com.github.shchurov.gitterclient.domain.models.User
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
-import com.github.shchurov.gitterclient.presentation.ui.activities.RoomsListActivity
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import com.github.shchurov.gitterclient.utils.showToast
 import rx.subscriptions.CompositeSubscription
@@ -45,13 +44,8 @@ class LogInPresenterImpl(
             view.setWebViewClient(webViewClient)
             view.loadUrl(AUTH_REQUEST)
         } else {
-            startRoomsActivity()
+            view.goToRoomsListScreen()
         }
-    }
-
-    private fun startRoomsActivity() {
-        RoomsListActivity.start(view.getActivity())
-        view.getActivity().finish()
     }
 
     private val webViewClient = object : WebViewClient() {
@@ -97,7 +91,7 @@ class LogInPresenterImpl(
         gitterLogInInteractor.logIn(code)
                 .compositeSubscribe(subscriptions, object : CustomSubscriber<User>() {
                     override fun onNext(data: User) {
-                        startRoomsActivity()
+                        view.goToRoomsListScreen()
                     }
 
                     override fun onFailure(e: Throwable) {

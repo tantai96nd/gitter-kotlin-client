@@ -9,7 +9,6 @@ import com.github.shchurov.gitterclient.presentation.ui.RoomView
 import com.github.shchurov.gitterclient.presentation.ui.adapters.MessagesAdapter
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import rx.subscriptions.CompositeSubscription
-import java.util.*
 
 class RoomPresenterImpl(
         private val view: RoomView,
@@ -18,7 +17,7 @@ class RoomPresenterImpl(
 ) : RoomPresenter, MessagesAdapter.ActionListener {
 
     private val subscriptions = CompositeSubscription()
-    private var messages = ArrayList<Message>()
+    private var messages = mutableListOf<Message>()
     private var adapter = MessagesAdapter(messages, this)
     private val roomId = view.getRoomId()
 

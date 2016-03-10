@@ -26,7 +26,7 @@ class GetRoomMessagesInteractorTest {
 
     @Mock private lateinit var gitterApi: GitterApi
     private val schedulersProvider = ImmediateSchedulersProvider()
-    private lateinit var mockedMessages: MutableList<Message>;
+    private lateinit var fakeMessages: MutableList<Message>;
     private lateinit var interactor: GetRoomMessagesInteractorImpl
 
     @Before
@@ -36,12 +36,12 @@ class GetRoomMessagesInteractorTest {
     }
 
     private fun setupMocks() {
-        mockedMessages = createMockedMessagesList(1000)
+        fakeMessages = createFakeMessagesList(1000)
         mockGitterApi()
     }
 
-    private fun createMockedMessagesList(size: Int): MutableList<Message> {
-        val messages: MutableList<Message> = mutableListOf()
+    private fun createFakeMessagesList(size: Int): MutableList<Message> {
+        val messages = mutableListOf<Message>()
         for (i in 0..(size - 1)) {
             val user = User("$i", "", "")
             val message = Message("$i", "", 0, user, false)
@@ -54,9 +54,9 @@ class GetRoomMessagesInteractorTest {
         `when`(gitterApi.getRoomMessages(anyString(), eq(PAGE_SIZE), anyString()))
                 .thenAnswer { invocation ->
                     val beforeId = invocation.arguments[2] as String?
-                    val end: Int = beforeId?.toInt() ?: mockedMessages.size
+                    val end: Int = beforeId?.toInt() ?: fakeMessages.size
                     val start = Math.max(0, end - PAGE_SIZE)
-                    val answerProjection = mockedMessages.subList(start, end)
+                    val answerProjection = fakeMessages.subList(start, end)
                     Observable.just(ArrayList<Message>(answerProjection))
                 }
     }
@@ -65,7 +65,7 @@ class GetRoomMessagesInteractorTest {
     fun getFirstAndNextPages() {
         checkFirstPage()
         var total = PAGE_SIZE
-        while (total < mockedMessages.size) {
+        while (total < fakeMessages.size) {
             assertTrue(interactor.hasMorePages())
             checkNextPage(total)
             total += PAGE_SIZE
@@ -76,16 +76,16 @@ class GetRoomMessagesInteractorTest {
         val subscriber = createSubscriber()
         interactor.getFirstPage("random id").subscribe(subscriber)
         subscriber.assertNoErrors()
-        val expected = mockedMessages.subList(mockedMessages.size - PAGE_SIZE, mockedMessages.size)
+        val expected = fakeMessages.subList(fakeMessages.size - PAGE_SIZE, fakeMessages.size)
         subscriber.assertValue(expected)
     }
 
     private fun createSubscriber() = TestSubscriber<MutableList<Message>>()
 
     private fun checkNextPage(offset: Int) {
-        val end = mockedMessages.size - offset
+        val end = fakeMessages.size - offset
         val start = Math.max(0, end - PAGE_SIZE)
-        val expected = mockedMessages.subList(start, end)
+        val expected = fakeMessages.subList(start, end)
         val subscriber = createSubscriber()
         interactor.getNextPage().subscribe(subscriber)
         subscriber.assertNoErrors()

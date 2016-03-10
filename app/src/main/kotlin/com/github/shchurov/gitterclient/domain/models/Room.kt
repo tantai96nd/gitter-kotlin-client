@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.domain.models
 
-class Room(val id: String, val name: String, val avatar: String?, var unreadItems: Int,
+data class Room(val id: String, val name: String, val avatar: String?, var unreadItems: Int,
         var mentions: Int, var lastAccessTimestamp: Long) {
 
     /**

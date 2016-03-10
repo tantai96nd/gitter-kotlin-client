@@ -27,7 +27,7 @@ class MarkMessageAsReadInteractorTest {
     @Mock private lateinit var gitterApi: GitterApi
     @Mock private lateinit var database: Database
     private val schedulersProvider = ImmediateSchedulersProvider()
-    private lateinit var mockedMessages: MutableList<Message>;
+    private lateinit var fakeMessages: MutableList<Message>;
     private lateinit var interactor: MarkMessageAsReadInteractorImpl
     private val sentToServerIds: MutableSet<String> = mutableSetOf()
 
@@ -38,7 +38,7 @@ class MarkMessageAsReadInteractorTest {
     }
 
     private fun setupMocks() {
-        mockedMessages = createMockedMessagesList(1000)
+        fakeMessages = createFakeMessagesList(1000)
         mockGitterApi()
     }
 
@@ -52,8 +52,8 @@ class MarkMessageAsReadInteractorTest {
                 }
     }
 
-    private fun createMockedMessagesList(size: Int): MutableList<Message> {
-        val messages: MutableList<Message> = mutableListOf()
+    private fun createFakeMessagesList(size: Int): MutableList<Message> {
+        val messages = mutableListOf<Message>()
         for (i in 0..(size - 1)) {
             val user = User("$i", "", "")
             val message = Message("$i", "", 0, user, true)
@@ -64,11 +64,11 @@ class MarkMessageAsReadInteractorTest {
 
     @Test
     fun markAsRead() {
-        val n = mockedMessages.size / 2
+        val n = fakeMessages.size / 2
         val random = Random()
         val markedIds: MutableSet<String> = mutableSetOf()
         for (i in 0..n) {
-            val message = mockedMessages[random.nextInt(mockedMessages.size)]
+            val message = fakeMessages[random.nextInt(fakeMessages.size)]
             markedIds.add(message.id)
             interactor.markAsReadLazy(message, ROOM_ID)
             assertFalse(message.unread)

@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.data.network
+package com.github.shchurov.gitterclient.data.network.api.implementation
 
 import com.github.shchurov.gitterclient.data.network.model.MessageResponse
 import com.github.shchurov.gitterclient.data.network.model.RoomResponse

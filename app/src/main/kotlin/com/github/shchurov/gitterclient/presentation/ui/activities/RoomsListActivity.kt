@@ -75,10 +75,11 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
         rvRooms.adapter = adapter
     }
 
-    override fun getContext() = this
-
     override fun postDelayed(runnable: () -> Unit, delay: Long) {
         rvRooms.postDelayed(runnable, delay)
     }
 
+    override fun goToRoomScreen(id: String, name: String) {
+        RoomActivity.start(this, id, name)
+    }
 }

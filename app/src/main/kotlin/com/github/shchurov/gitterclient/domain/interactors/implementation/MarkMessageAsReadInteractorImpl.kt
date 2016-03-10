@@ -18,7 +18,7 @@ class MarkMessageAsReadInteractorImpl(
         private const val MAX_MESSAGES_BEFORE_REQUEST = 20
     }
 
-    private val ids = ArrayList<String>()
+    private val ids = mutableListOf<String>()
     private lateinit var roomId: String
 
     override fun markAsReadLazy(message: Message, roomId: String) {

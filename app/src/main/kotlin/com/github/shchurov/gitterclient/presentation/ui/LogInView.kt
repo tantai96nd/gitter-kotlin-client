@@ -11,6 +11,6 @@ interface LogInView {
 
     fun showWebView()
 
-    fun getActivity(): Activity
+    fun goToRoomsListScreen()
 
 }

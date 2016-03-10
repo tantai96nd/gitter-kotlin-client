@@ -57,7 +57,10 @@ class LogInActivity : AppCompatActivity(), LogInView {
                 .duration = 300
     }
 
-    override fun getActivity() = this
+    override fun onDestroy() {
+        presenter.onDestroy()
+        super.onDestroy()
+    }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (event!!.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
@@ -67,8 +70,9 @@ class LogInActivity : AppCompatActivity(), LogInView {
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onDestroy() {
-        presenter.onDestroy()
-        super.onDestroy()
+    override fun goToRoomsListScreen() {
+        RoomsListActivity.start(this)
+        finish()
     }
+
 }

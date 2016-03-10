@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.unit_testing.tests
 
-import com.github.shchurov.gitterclient.data.network.NetworkConverter
+import com.github.shchurov.gitterclient.data.network.api.implementation.NetworkConverter
 import com.github.shchurov.gitterclient.data.network.model.MessageResponse
 import com.github.shchurov.gitterclient.data.network.model.RoomResponse
 import com.github.shchurov.gitterclient.data.network.model.TokenResponse

@@ -1,13 +1,12 @@
 package com.github.shchurov.gitterclient.data.network.api.implementation
 
 import com.github.shchurov.gitterclient.data.Preferences
-import com.github.shchurov.gitterclient.data.network.NetworkConverter
+import com.github.shchurov.gitterclient.data.network.api.implementation.NetworkConverter
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.data.network.api.implementation.retrofit.GitterRetrofitService
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.Room
 import rx.Observable
-import java.util.*
 
 class GitterApiImpl(
         private val retrofitService: GitterRetrofitService,
@@ -24,14 +23,14 @@ class GitterApiImpl(
     override fun getMyRooms(): Observable<MutableList<Room>> =
             retrofitService.getMyRooms()
                     .map { response ->
-                        val rooms = ArrayList<Room>()
+                        val rooms = mutableListOf<Room>()
                         response.mapTo(rooms) { converter.convertResponseToRoom(it) }
                     }
 
     override fun getRoomMessages(roomId: String, limit: Int, beforeId: String?): Observable<MutableList<Message>> =
             retrofitService.getRoomMessages(roomId, limit, beforeId)
                     .map { response ->
-                        val messages = ArrayList<Message>()
+                        val messages = mutableListOf<Message>()
                         response.mapTo(messages) { converter.convertResponseToMessage(it) }
                     }
 

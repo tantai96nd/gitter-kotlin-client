@@ -31,14 +31,14 @@ class GetRoomsInteractorTest {
     }
 
     private fun setupMocks() {
-        val rooms = createRoomsList(15)
+        val rooms = createFakeRoomsList(15)
         mockGitterApiRooms(rooms)
         mockDatabaseRooms(rooms)
         rooms.sortByDescending { it.lastAccessTimestamp }
         expectedRooms = rooms
     }
 
-    private fun createRoomsList(size: Int): MutableList<Room> {
+    private fun createFakeRoomsList(size: Int): MutableList<Room> {
         val rooms: MutableList<Room> = mutableListOf()
         val random = Random()
         for (i in 0..size) {

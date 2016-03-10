@@ -6,7 +6,6 @@ import com.github.shchurov.gitterclient.domain.interactors.UpdateRoomLastAccessT
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
-import com.github.shchurov.gitterclient.presentation.ui.activities.RoomActivity
 import com.github.shchurov.gitterclient.presentation.ui.adapters.RoomsAdapter
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import rx.subscriptions.CompositeSubscription
@@ -57,7 +56,7 @@ class RoomsListPresenterImpl(
 
     override fun onRoomClick(room: Room) {
         updateRoomLastAccessTimeInteractor.update(room, System.currentTimeMillis())
-        RoomActivity.start(view.getContext(), room.id, room.name)
+        view.goToRoomScreen(room.id, room.name)
     }
 
 }
