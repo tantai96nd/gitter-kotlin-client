@@ -1,8 +1,8 @@
 package com.github.shchurov.gitterclient.domain.interactors.implementation
 
 import com.github.shchurov.gitterclient.data.database.Database
-import com.github.shchurov.gitterclient.data.network.GitterApi
-import com.github.shchurov.gitterclient.data.network.implementation.helpers.RequestSubscriber
+import com.github.shchurov.gitterclient.data.network.api.GitterApi
+import com.github.shchurov.gitterclient.data.subscribers.EmptySubscriber
 import com.github.shchurov.gitterclient.domain.interactors.MarkMessageAsReadInteractor
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Message
@@ -44,7 +44,7 @@ class MarkMessageAsReadInteractorImpl(
         ids.clear()
         gitterApi.markMessagesAsRead(copyIds, roomId)
                 .subscribeOn(schedulersProvider.backgroundScheduler)
-                .subscribe(RequestSubscriber())
+                .subscribe(EmptySubscriber())
     }
 
 }

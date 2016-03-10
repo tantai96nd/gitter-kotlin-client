@@ -2,7 +2,7 @@ package com.github.shchurov.gitterclient.domain.interactors.implementation
 
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.Secrets
-import com.github.shchurov.gitterclient.data.network.GitterApi
+import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.User

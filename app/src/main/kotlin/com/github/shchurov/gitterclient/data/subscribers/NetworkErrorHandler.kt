@@ -1,8 +1,8 @@
-package com.github.shchurov.gitterclient.data.network.implementation.helpers
+package com.github.shchurov.gitterclient.data.subscribers
 
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.data.network.implementation.RetrofitInitializer
-import com.github.shchurov.gitterclient.data.network.responses.ErrorResponse
+import com.github.shchurov.gitterclient.data.network.api.implementation.retrofit.RetrofitInitializer
+import com.github.shchurov.gitterclient.data.network.model.ErrorResponse
 import com.github.shchurov.gitterclient.utils.getString
 import com.github.shchurov.gitterclient.utils.showToast
 import com.squareup.okhttp.ResponseBody

@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.domain.interactors.implementation
 
-import com.github.shchurov.gitterclient.data.network.GitterApi
+import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Message

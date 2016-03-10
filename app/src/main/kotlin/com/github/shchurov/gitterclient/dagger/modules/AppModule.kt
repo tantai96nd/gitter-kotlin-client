@@ -5,9 +5,9 @@ import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.database.implementation.DatabaseImpl
 import com.github.shchurov.gitterclient.data.database.implementation.RealmInitializer
-import com.github.shchurov.gitterclient.data.network.GitterApi
-import com.github.shchurov.gitterclient.data.network.implementation.GitterApiImpl
-import com.github.shchurov.gitterclient.data.network.implementation.RetrofitInitializer
+import com.github.shchurov.gitterclient.data.network.api.GitterApi
+import com.github.shchurov.gitterclient.data.network.api.implementation.GitterApiImpl
+import com.github.shchurov.gitterclient.data.network.api.implementation.retrofit.RetrofitInitializer
 import com.github.shchurov.gitterclient.domain.interactors.threading.RegularSchedulersProvider
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import dagger.Module

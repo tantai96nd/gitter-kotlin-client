@@ -2,7 +2,7 @@ package com.github.shchurov.gitterclient.espresso_testing.dagger
 
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
-import com.github.shchurov.gitterclient.data.network.GitterApi
+import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import dagger.Module
 import dagger.Provides
 import org.mockito.Mockito

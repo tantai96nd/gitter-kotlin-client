@@ -1,6 +1,5 @@
-package com.github.shchurov.gitterclient.data.network.implementation
+package com.github.shchurov.gitterclient.data.network.api.implementation.retrofit
 
-import android.util.Log
 import com.github.shchurov.gitterclient.data.Preferences
 import com.squareup.okhttp.Interceptor
 import com.squareup.okhttp.OkHttpClient
@@ -16,8 +15,7 @@ object RetrofitInitializer {
 
     val converterFactory = GsonConverterFactory.create()
 
-    fun initGitterService(preferences: Preferences)
-            : GitterRetrofitService {
+    fun initGitterService(preferences: Preferences): GitterRetrofitService {
         val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -44,7 +42,6 @@ object RetrofitInitializer {
         val interceptor = Interceptor { chain ->
             val original = chain.request();
             val token = preferences.getGitterAccessToken()
-            Log.d("OLOLO", "TOKEN: " + token)
             if (token != null) {
                 val modified = original.newBuilder()
                         .header(KEY_AUTH_HEADER, "Bearer $token")

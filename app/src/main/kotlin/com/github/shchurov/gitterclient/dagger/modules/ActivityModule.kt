@@ -4,7 +4,7 @@ import android.app.Activity
 import com.github.shchurov.gitterclient.dagger.scopes.PerActivity
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
-import com.github.shchurov.gitterclient.data.network.GitterApi
+import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.*
 import com.github.shchurov.gitterclient.domain.interactors.implementation.*
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider

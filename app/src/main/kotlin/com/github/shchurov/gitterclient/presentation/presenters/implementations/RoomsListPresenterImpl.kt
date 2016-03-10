@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.presentation.presenters.implementations
 
-import com.github.shchurov.gitterclient.domain.DataSubscriber
+import com.github.shchurov.gitterclient.data.subscribers.CustomSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.interactors.UpdateRoomLastAccessTimeInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
@@ -36,7 +36,7 @@ class RoomsListPresenterImpl(
             adapter.loading = true
         }
         getRoomsInteractor.getRooms(localOnly)
-                .compositeSubscribe(subscriptions, object : DataSubscriber<MutableList<Room>>() {
+                .compositeSubscribe(subscriptions, object : CustomSubscriber<MutableList<Room>>() {
                     override fun onNext(data: MutableList<Room>) {
                         rooms.clear()
                         rooms.addAll(data)

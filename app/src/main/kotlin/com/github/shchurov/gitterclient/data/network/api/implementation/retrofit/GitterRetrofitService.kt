@@ -1,9 +1,9 @@
-package com.github.shchurov.gitterclient.data.network.implementation
+package com.github.shchurov.gitterclient.data.network.api.implementation.retrofit
 
-import com.github.shchurov.gitterclient.data.network.responses.MessageResponse
-import com.github.shchurov.gitterclient.data.network.responses.RoomResponse
-import com.github.shchurov.gitterclient.data.network.responses.TokenResponse
-import com.github.shchurov.gitterclient.data.network.responses.UserResponse
+import com.github.shchurov.gitterclient.data.network.model.MessageResponse
+import com.github.shchurov.gitterclient.data.network.model.RoomResponse
+import com.github.shchurov.gitterclient.data.network.model.TokenResponse
+import com.github.shchurov.gitterclient.data.network.model.UserResponse
 import retrofit.http.*
 import rx.Observable
 

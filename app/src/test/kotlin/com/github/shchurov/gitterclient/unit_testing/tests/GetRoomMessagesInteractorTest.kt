@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.unit_testing.tests
 
-import com.github.shchurov.gitterclient.data.network.GitterApi
+import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomMessagesInteractorImpl
 import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider

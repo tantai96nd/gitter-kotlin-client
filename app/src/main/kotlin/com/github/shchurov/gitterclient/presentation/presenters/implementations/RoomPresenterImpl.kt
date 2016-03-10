@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.presentation.presenters.implementations
 
-import com.github.shchurov.gitterclient.domain.DataSubscriber
+import com.github.shchurov.gitterclient.data.subscribers.CustomSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.interactors.MarkMessageAsReadInteractor
 import com.github.shchurov.gitterclient.domain.models.Message
@@ -37,8 +37,8 @@ class RoomPresenterImpl(
                 .compositeSubscribe(subscriptions, createMessagesSubscriber())
     }
 
-    private fun createMessagesSubscriber(): DataSubscriber<MutableList<Message>> {
-        return object : DataSubscriber<MutableList<Message>>() {
+    private fun createMessagesSubscriber(): CustomSubscriber<MutableList<Message>> {
+        return object : CustomSubscriber<MutableList<Message>>() {
             override fun onNext(data: MutableList<Message>) {
                 messages.addAll(data.reversed())
                 adapter.notifyMessagesAdded(messages.size - data.size, data.size)

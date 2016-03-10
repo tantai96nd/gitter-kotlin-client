@@ -1,7 +1,9 @@
-package com.github.shchurov.gitterclient.data.network.implementation
+package com.github.shchurov.gitterclient.data.network.api.implementation
 
 import com.github.shchurov.gitterclient.data.Preferences
-import com.github.shchurov.gitterclient.data.network.GitterApi
+import com.github.shchurov.gitterclient.data.network.NetworkConverter
+import com.github.shchurov.gitterclient.data.network.api.GitterApi
+import com.github.shchurov.gitterclient.data.network.api.implementation.retrofit.GitterRetrofitService
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.Room
 import rx.Observable
@@ -33,8 +35,9 @@ class GitterApiImpl(
                         response.mapTo(messages) { converter.convertResponseToMessage(it) }
                     }
 
-    override fun markMessagesAsRead(messageIds: List<String>, roomId: String?) =
-            retrofitService.markMessagesAsRead(roomId, preferences.getUserId()!!, messageIds)
+    override fun markMessagesAsRead(messageIds: List<String>, roomId: String?): Observable<*> {
+        return retrofitService.markMessagesAsRead(roomId, preferences.getUserId()!!, messageIds)
+    }
 
     override fun getUser() = retrofitService.getUser()
             .map { response -> converter.convertResponseToUser(response[0]) }

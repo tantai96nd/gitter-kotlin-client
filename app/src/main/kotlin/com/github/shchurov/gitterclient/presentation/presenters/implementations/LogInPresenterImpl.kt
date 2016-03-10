@@ -6,7 +6,7 @@ import android.webkit.WebViewClient
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.Secrets
-import com.github.shchurov.gitterclient.data.network.implementation.helpers.RequestSubscriber
+import com.github.shchurov.gitterclient.data.subscribers.CustomSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
 import com.github.shchurov.gitterclient.domain.models.User
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
@@ -95,8 +95,8 @@ class LogInPresenterImpl(
 
     private fun logIn(code: String) {
         gitterLogInInteractor.logIn(code)
-                .compositeSubscribe(subscriptions, object : RequestSubscriber<User>() {
-                    override fun onSuccess(data: User) {
+                .compositeSubscribe(subscriptions, object : CustomSubscriber<User>() {
+                    override fun onNext(data: User) {
                         startRoomsActivity()
                     }
 

@@ -1,9 +1,8 @@
-package com.github.shchurov.gitterclient.domain
+package com.github.shchurov.gitterclient.data.subscribers
 
-import com.github.shchurov.gitterclient.data.network.implementation.helpers.NetworkErrorHandler
 import rx.Subscriber
 
-abstract class DataSubscriber<T> : Subscriber<T>() {
+abstract class CustomSubscriber<T> : Subscriber<T>() {
 
     final override fun onError(e: Throwable) {
         onFailure(e)

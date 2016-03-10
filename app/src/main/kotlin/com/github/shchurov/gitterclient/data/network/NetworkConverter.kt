@@ -1,9 +1,9 @@
-package com.github.shchurov.gitterclient.data.network.implementation
+package com.github.shchurov.gitterclient.data.network
 
-import com.github.shchurov.gitterclient.data.network.responses.MessageResponse
-import com.github.shchurov.gitterclient.data.network.responses.RoomResponse
-import com.github.shchurov.gitterclient.data.network.responses.TokenResponse
-import com.github.shchurov.gitterclient.data.network.responses.UserResponse
+import com.github.shchurov.gitterclient.data.network.model.MessageResponse
+import com.github.shchurov.gitterclient.data.network.model.RoomResponse
+import com.github.shchurov.gitterclient.data.network.model.TokenResponse
+import com.github.shchurov.gitterclient.data.network.model.UserResponse
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.domain.models.Token

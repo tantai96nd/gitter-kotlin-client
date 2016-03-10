@@ -1,10 +1,10 @@
 package com.github.shchurov.gitterclient.unit_testing.tests
 
-import com.github.shchurov.gitterclient.data.network.implementation.NetworkConverter
-import com.github.shchurov.gitterclient.data.network.responses.MessageResponse
-import com.github.shchurov.gitterclient.data.network.responses.RoomResponse
-import com.github.shchurov.gitterclient.data.network.responses.TokenResponse
-import com.github.shchurov.gitterclient.data.network.responses.UserResponse
+import com.github.shchurov.gitterclient.data.network.NetworkConverter
+import com.github.shchurov.gitterclient.data.network.model.MessageResponse
+import com.github.shchurov.gitterclient.data.network.model.RoomResponse
+import com.github.shchurov.gitterclient.data.network.model.TokenResponse
+import com.github.shchurov.gitterclient.data.network.model.UserResponse
 import com.github.shchurov.gitterclient.utils.TimeUtils
 import org.junit.Assert.assertTrue
 import org.junit.Test
