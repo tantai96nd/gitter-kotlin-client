@@ -1,8 +1,7 @@
-package com.github.shchurov.gitterclient.unit_testing.tests
+package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
-import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomMessagesInteractorImpl
 import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.User
@@ -27,12 +26,12 @@ class GetRoomMessagesInteractorTest {
     @Mock private lateinit var gitterApi: GitterApi
     private val schedulersProvider = ImmediateSchedulersProvider()
     private lateinit var fakeMessages: MutableList<Message>;
-    private lateinit var interactor: GetRoomMessagesInteractorImpl
+    private lateinit var interactor: GetRoomMessagesInteractor
 
     @Before
     fun setUp() {
         setupMocks()
-        interactor = GetRoomMessagesInteractorImpl(gitterApi, schedulersProvider)
+        interactor = GetRoomMessagesInteractor(gitterApi, schedulersProvider)
     }
 
     private fun setupMocks() {

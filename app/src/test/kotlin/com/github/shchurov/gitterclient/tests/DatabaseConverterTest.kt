@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.unit_testing.tests
+package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.data.database.implementation.DatabaseConverter
 import com.github.shchurov.gitterclient.data.database.implementation.realm_models.RoomRealm

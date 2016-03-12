@@ -1,6 +1,6 @@
-package com.github.shchurov.gitterclient.unit_testing
+package com.github.shchurov.gitterclient
 
-import com.github.shchurov.gitterclient.unit_testing.tests.*
+import com.github.shchurov.gitterclient.tests.*
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -8,4 +8,4 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(GetRoomMessagesInteractorTest::class, GetRoomsInteractorTest::class,
         GitterLogInInteractorTest::class, MarkMessageAsReadInteractorTest::class,
         UpdateRoomLastAccessTimeInteractorTest::class, DatabaseConverterTest::class, NetworkConverterTest::class)
-class MainSuite
+class UnitTestsSuite

@@ -1,8 +1,8 @@
-package com.github.shchurov.gitterclient.unit_testing.tests
+package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
-import com.github.shchurov.gitterclient.domain.interactors.implementation.MarkMessageAsReadInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.MarkMessageAsReadInteractor
 import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.User
@@ -28,13 +28,13 @@ class MarkMessageAsReadInteractorTest {
     @Mock private lateinit var database: Database
     private val schedulersProvider = ImmediateSchedulersProvider()
     private lateinit var fakeMessages: MutableList<Message>;
-    private lateinit var interactor: MarkMessageAsReadInteractorImpl
+    private lateinit var interactor: MarkMessageAsReadInteractor
     private val sentToServerIds: MutableSet<String> = mutableSetOf()
 
     @Before
     fun setUp() {
         setupMocks()
-        interactor = MarkMessageAsReadInteractorImpl(gitterApi, database, schedulersProvider)
+        interactor = MarkMessageAsReadInteractor(gitterApi, database, schedulersProvider)
     }
 
     private fun setupMocks() {

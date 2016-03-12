@@ -89,6 +89,7 @@ dependencies {
     androidTestCompile "com.google.dexmaker:dexmaker:${DEXMAKER_VERSION}"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:${DEXMAKER_VERSION}"
     androidTestCompile "org.mockito:mockito-core:${MOCKITO_VERSION}"
+    kaptAndroidTest "com.google.dagger:dagger-compiler:${DAGGER_VERSION}"
 
 }
 repositories {

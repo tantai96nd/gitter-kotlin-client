@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.unit_testing.tests
+package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.data.network.api.implementation.NetworkConverter
 import com.github.shchurov.gitterclient.data.network.model.MessageResponse

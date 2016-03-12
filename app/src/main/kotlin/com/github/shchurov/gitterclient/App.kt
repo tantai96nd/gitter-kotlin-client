@@ -8,7 +8,7 @@ import com.github.shchurov.gitterclient.dagger.components.DaggerAppComponent
 class App : Application() {
 
     companion object {
-        @JvmStatic lateinit var appComponent: AppComponent
+        @JvmStatic var appComponent: AppComponent? = null
         lateinit var context: Context
             private set
     }
@@ -20,7 +20,9 @@ class App : Application() {
     }
 
     private fun initDagger() {
-        appComponent = DaggerAppComponent.create()
+        if (appComponent == null) {
+            appComponent = DaggerAppComponent.create()
+        }
     }
 
 }

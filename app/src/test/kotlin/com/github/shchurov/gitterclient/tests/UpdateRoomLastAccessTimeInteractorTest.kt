@@ -1,7 +1,7 @@
-package com.github.shchurov.gitterclient.unit_testing.tests
+package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.data.database.Database
-import com.github.shchurov.gitterclient.domain.interactors.implementation.UpdateRoomLastAccessTimeInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.UpdateRoomLastAccessTimeInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -21,11 +21,11 @@ class UpdateRoomLastAccessTimeInteractorTest {
     }
 
     @Mock private lateinit var database: Database
-    private lateinit var interactor: UpdateRoomLastAccessTimeInteractorImpl
+    private lateinit var interactor: UpdateRoomLastAccessTimeInteractor
 
     @Before
     fun setUp() {
-        interactor = UpdateRoomLastAccessTimeInteractorImpl(database)
+        interactor = UpdateRoomLastAccessTimeInteractor(database)
     }
 
     @Test

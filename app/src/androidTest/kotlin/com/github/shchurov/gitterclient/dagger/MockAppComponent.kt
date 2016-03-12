@@ -1,5 +1,6 @@
-package com.github.shchurov.gitterclient.espresso_testing.dagger
+package com.github.shchurov.gitterclient.dagger
 
+import com.github.shchurov.gitterclient.dagger.components.AppComponent
 import com.github.shchurov.gitterclient.dagger.modules.AppModule
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
@@ -10,14 +11,14 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = arrayOf(AppModule::class))
-interface MockAppComponent {
+interface MockAppComponent : AppComponent {
 
-    fun database(): Database
+    override fun database(): Database
 
-    fun preferences(): Preferences
+    override fun preferences(): Preferences
 
-    fun gitterApi(): GitterApi
+    override fun gitterApi(): GitterApi
 
-    fun schedulersProvider(): SchedulersProvider
+    override fun schedulersProvider(): SchedulersProvider
 
 }

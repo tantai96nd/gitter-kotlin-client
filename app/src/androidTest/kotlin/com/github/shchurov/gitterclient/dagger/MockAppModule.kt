@@ -1,8 +1,10 @@
-package com.github.shchurov.gitterclient.espresso_testing.dagger
+package com.github.shchurov.gitterclient.dagger
 
 import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
+import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider
+import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import dagger.Module
 import dagger.Provides
 import org.mockito.Mockito
@@ -19,7 +21,7 @@ class MockAppModule() {
 
     @Provides
     @Singleton
-    fun provideGitterApi(preferences: Preferences): GitterApi {
+    fun provideGitterApi(): GitterApi {
         return Mockito.mock(GitterApi::class.java)
     }
 
@@ -27,6 +29,12 @@ class MockAppModule() {
     @Singleton
     fun provideDatabase(): Database {
         return Mockito.mock(Database::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSchedulersProvider(): SchedulersProvider {
+        return ImmediateSchedulersProvider()
     }
 
 }

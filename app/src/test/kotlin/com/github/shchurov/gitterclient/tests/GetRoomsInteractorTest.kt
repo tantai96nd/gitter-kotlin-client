@@ -1,8 +1,8 @@
-package com.github.shchurov.gitterclient.unit_testing.tests
+package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
-import com.github.shchurov.gitterclient.domain.interactors.implementation.GetRoomsInteractorImpl
+import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Room
 import org.junit.Before
@@ -21,13 +21,13 @@ class GetRoomsInteractorTest {
     @Mock private lateinit var gitterApi: GitterApi
     @Mock private lateinit var database: Database
     private val schedulersProvider = ImmediateSchedulersProvider()
-    private lateinit var interactor: GetRoomsInteractorImpl
+    private lateinit var interactor: GetRoomsInteractor
     private lateinit var expectedRooms: MutableList<Room>
 
     @Before
     fun setUp() {
         setupMocks()
-        interactor = GetRoomsInteractorImpl(gitterApi, database, schedulersProvider)
+        interactor = GetRoomsInteractor(gitterApi, database, schedulersProvider)
     }
 
     private fun setupMocks() {
