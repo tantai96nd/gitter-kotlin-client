@@ -8,7 +8,7 @@ interface Database {
 
     fun clearRooms()
 
-    fun saveRooms(rooms: List<Room>)
+    fun insertRooms(rooms: List<Room>)
 
     fun updateRoomLastAccessTime(roomId: String, timestamp: Long)
 

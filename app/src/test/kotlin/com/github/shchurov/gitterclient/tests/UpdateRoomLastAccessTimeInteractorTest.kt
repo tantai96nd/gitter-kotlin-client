@@ -1,7 +1,6 @@
 package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.data.database.Database
-import com.github.shchurov.gitterclient.domain.interactors.UpdateRoomLastAccessTimeInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
 import org.junit.Assert.assertEquals
 import org.junit.Before

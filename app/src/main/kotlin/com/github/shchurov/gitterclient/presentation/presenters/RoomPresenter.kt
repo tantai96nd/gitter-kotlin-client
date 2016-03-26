@@ -1,82 +1,69 @@
 package com.github.shchurov.gitterclient.presentation.presenters
 
-import com.github.shchurov.gitterclient.data.subscribers.CustomSubscriber
+import com.github.shchurov.gitterclient.data.subscribers.DefaultSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.interactors.MarkMessageAsReadInteractor
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
-import com.github.shchurov.gitterclient.presentation.ui.adapters.MessagesAdapter
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import rx.subscriptions.CompositeSubscription
 import javax.inject.Inject
 
 class RoomPresenter @Inject constructor(
-        private val view: RoomView,
         private val getMessagesInteractor: GetRoomMessagesInteractor,
         private val markMessageAsReadInteractor: MarkMessageAsReadInteractor
-) : MessagesAdapter.ActionListener {
+) : BasePresenter<RoomView>() {
 
     private val subscriptions = CompositeSubscription()
-    private var messages = mutableListOf<Message>()
-    private var adapter = MessagesAdapter(messages, this)
-    private val roomId = view.getRoomId()
 
-    fun onCreate() {
-        setupRecyclerViewAdapter()
+    override fun onAttach() {
         loadMessagesFirstPage()
     }
 
-    private fun setupRecyclerViewAdapter() {
-        view.setRecyclerViewAdapter(adapter)
-    }
-
     private fun loadMessagesFirstPage() {
-        view.showInitLoading()
-        getMessagesInteractor.getFirstPage(roomId)
+        getView().showInitLoading()
+        getMessagesInteractor.getFirstPage()
                 .compositeSubscribe(subscriptions, createMessagesSubscriber())
     }
 
-    private fun createMessagesSubscriber(): CustomSubscriber<MutableList<Message>> {
-        return object : CustomSubscriber<MutableList<Message>>() {
+    private fun createMessagesSubscriber(): DefaultSubscriber<MutableList<Message>> {
+        return object : DefaultSubscriber<MutableList<Message>>() {
             override fun onNext(data: MutableList<Message>) {
-                messages.addAll(data.reversed())
-                adapter.notifyMessagesAdded(messages.size - data.size, data.size)
-                if (getMessagesInteractor.hasMorePages()) {
-                    view.enablePagingListener()
+                getView().addMessages(data)
+                if (getMessagesInteractor.hasMorePages) {
+                    getView().enablePagingListener()
                 } else {
-                    view.disablePagingListener()
+                    getView().disablePagingListener()
                 }
-                view.forceOnReadPositionsChangedCallback()
             }
 
             override fun onFinish() {
-                adapter.loading = false
-                view.hideInitLoading()
+                getView().hideLoadingMore()
+                getView().hideInitLoading()
             }
         }
     }
 
-    fun onDestroy() {
+    override fun onDetach() {
         markMessageAsReadInteractor.flush()
         subscriptions.clear()
     }
 
-    fun onVisiblePositionsChanged(firstPosition: Int, lastPosition: Int) {
-        markMessagesAsRead(firstPosition, lastPosition)
+    fun onVisibleMessagesChanged(visibleMessages: List<Message>) {
+        markMessagesAsRead(visibleMessages)
     }
 
-    private fun markMessagesAsRead(firstAdapterPosition: Int, lastAdapterPosition: Int) {
-        val offset = adapter.messagesOffset
-        for (i in (firstAdapterPosition - offset)..(lastAdapterPosition - offset)) {
-            if (adapter.isMessageOnPosition(i) && messages[i].unread) {
-                markMessageAsReadInteractor.markAsReadLazy(messages[i], roomId)
-                adapter.notifyMessageMarkedAsRead(i);
+    private fun markMessagesAsRead(messages: List<Message>) {
+        for (message in messages) {
+            if (message.unread) {
+                markMessageAsReadInteractor.markAsReadLazy(message)
+                getView().invalidateMessage(message)
             }
         }
     }
 
     fun onLoadMoreItems() {
-        adapter.loading = true
+        getView().showLoadingMore()
         getMessagesInteractor.getNextPage()
                 .compositeSubscribe(subscriptions, createMessagesSubscriber())
     }

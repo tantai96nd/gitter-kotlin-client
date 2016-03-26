@@ -1,9 +1,8 @@
 package com.github.shchurov.gitterclient.tests
 
-import com.github.shchurov.gitterclient.data.Preferences
+import com.github.shchurov.gitterclient.data.preferences.implementation.PreferencesImpl
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
-import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
-import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider
+import com.github.shchurov.gitterclient.domain.interactors.AuthInteractor
 import com.github.shchurov.gitterclient.domain.models.Token
 import com.github.shchurov.gitterclient.domain.models.User
 import org.junit.Before
@@ -24,14 +23,14 @@ class GitterLogInInteractorTest {
     }
 
     @Mock private lateinit var gitterApi: GitterApi
-    @Mock private lateinit var preferences: Preferences
+    @Mock private lateinit var preferences: PreferencesImpl
     private val schedulersProvider = ImmediateSchedulersProvider()
-    private lateinit var interactor: GitterLogInInteractor
+    private lateinit var interactor: AuthInteractor
 
     @Before
     fun setUp() {
         setupMocks()
-        interactor = GitterLogInInteractor(gitterApi, preferences, schedulersProvider)
+        interactor = AuthInteractor(gitterApi, preferences, schedulersProvider)
     }
 
     private fun setupMocks() {

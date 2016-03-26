@@ -58,7 +58,7 @@ class DatabaseTest {
 
     @Test
     fun saveAndGetRooms() {
-        database.saveRooms(fakeRooms)
+        database.insertRooms(fakeRooms)
         val retrievedRooms = database.getRooms()
         retrievedRooms.sortBy { it.id.toInt() }
         assertEquals(fakeRooms, retrievedRooms)
@@ -66,7 +66,7 @@ class DatabaseTest {
 
     @Test
     fun clearRooms() {
-        database.saveRooms(fakeRooms)
+        database.insertRooms(fakeRooms)
         database.clearRooms()
         val retrievedRooms = database.getRooms()
         assertTrue(retrievedRooms.isEmpty())
@@ -76,7 +76,7 @@ class DatabaseTest {
     fun updateRoomLastAccessTime() {
         val testRoom = fakeRooms[4]
         testRoom.lastAccessTimestamp = 1234
-        database.saveRooms(fakeRooms)
+        database.insertRooms(fakeRooms)
         database.updateRoomLastAccessTime(testRoom.id, 3456L)
         val retrievedRoom = database.getRooms().filter { it.id == testRoom.id }.first()
         assertTrue(retrievedRoom.lastAccessTimestamp == 3456L)
@@ -86,7 +86,7 @@ class DatabaseTest {
     fun decrementRoomUnreadItems() {
         val testRoom = fakeRooms[4]
         testRoom.unreadItems = 1234
-        database.saveRooms(fakeRooms)
+        database.insertRooms(fakeRooms)
         database.decrementRoomUnreadItems(testRoom.id)
         val retrievedRoom = database.getRooms().filter { it.id == testRoom.id }.first()
         assertEquals(retrievedRoom.unreadItems, 1233)

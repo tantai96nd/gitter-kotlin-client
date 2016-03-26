@@ -1,13 +1,13 @@
 package com.github.shchurov.gitterclient.dagger.modules
 
-import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.database.implementation.DatabaseImpl
 import com.github.shchurov.gitterclient.data.database.implementation.RealmInitializer
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.data.network.api.implementation.GitterApiImpl
 import com.github.shchurov.gitterclient.data.network.api.implementation.retrofit.RetrofitInitializer
-import com.github.shchurov.gitterclient.domain.interactors.threading.RegularSchedulersProvider
+import com.github.shchurov.gitterclient.data.preferences.Preferences
+import com.github.shchurov.gitterclient.data.preferences.implementation.PreferencesImpl
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import dagger.Module
 import dagger.Provides
@@ -18,8 +18,8 @@ class AppModule() {
 
     @Provides
     @Singleton
-    fun provideSharedPrefsManager(): Preferences {
-        return Preferences("gitter_preferences")
+    fun providePreferences(): Preferences {
+        return PreferencesImpl("gitter_preferences")
     }
 
     @Provides
@@ -44,7 +44,7 @@ class AppModule() {
     @Provides
     @Singleton
     fun provideSchedulersProvider(): SchedulersProvider {
-        return RegularSchedulersProvider()
+        return SchedulersProvider()
     }
 
 }

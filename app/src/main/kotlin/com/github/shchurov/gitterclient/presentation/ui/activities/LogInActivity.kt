@@ -6,17 +6,13 @@ import android.view.KeyEvent
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.github.shchurov.gitterclient.App
-import com.github.shchurov.gitterclient.dagger.components.DaggerActivityComponent
-import com.github.shchurov.gitterclient.dagger.modules.ActivityModule
+import com.github.shchurov.gitterclient.dagger.components.DaggerGeneralScreenComponent
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
+import com.github.shchurov.gitterclient.utils.showToast
 import javax.inject.Inject
 
 class LogInActivity : AppCompatActivity(), LogInView {
-
-    companion object {
-        val PAGE_RENDER_TIME = 300L
-    }
 
     @Inject lateinit var presenter: LogInPresenter
     private lateinit var webView: WebView
@@ -24,41 +20,36 @@ class LogInActivity : AppCompatActivity(), LogInView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
-        setupWebView()
-        presenter.onCreate()
+        setupUi()
+        presenter.attach(this)
     }
 
     private fun initDependencies() {
-        val component = DaggerActivityComponent.builder()
+        val component = DaggerGeneralScreenComponent.builder()
                 .appComponent(App.appComponent)
-                .activityModule(ActivityModule(this))
                 .build()
         component.inject(this)
     }
 
-    private fun setupWebView() {
+    private fun setupUi() {
         webView = WebView(this)
-        webView.alpha = 0f;
+        webView.setWebViewClient(webViewClient)
         setContentView(webView)
     }
 
-    override fun setWebViewClient(webViewClient: WebViewClient) {
-        webView.setWebViewClient(webViewClient)
-    }
+    private val webViewClient = object : WebViewClient() {
+        override fun shouldOverrideUrlLoading(webView: WebView?, url: String?): Boolean {
+            return presenter.onWebViewOverrideLoading(url)
+        }
 
-    override fun loadUrl(url: String) {
-        webView.loadUrl(url)
-    }
-
-    override fun showWebView() {
-        webView.animate()
-                .alpha(1f)
-                .setStartDelay(PAGE_RENDER_TIME)
-                .duration = 300
+        @Suppress("OverridingDeprecatedMember")
+        override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
+            return presenter.onWebViewError()
+        }
     }
 
     override fun onDestroy() {
-        presenter.onDestroy()
+        presenter.detach()
         super.onDestroy()
     }
 
@@ -68,6 +59,18 @@ class LogInActivity : AppCompatActivity(), LogInView {
             return true
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun loadUrl(url: String) {
+        webView.loadUrl(url)
+    }
+
+    override fun clearWebViewHistory() {
+        webView.clearHistory()
+    }
+
+    override fun showError(stringId: Int) {
+        showToast(stringId)
     }
 
     override fun goToRoomsListScreen() {

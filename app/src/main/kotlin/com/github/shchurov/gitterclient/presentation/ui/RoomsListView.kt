@@ -1,13 +1,15 @@
 package com.github.shchurov.gitterclient.presentation.ui
 
-import android.support.v7.widget.RecyclerView
+import com.github.shchurov.gitterclient.domain.models.Room
 
 interface RoomsListView {
 
-    fun setRecyclerViewAdapter(adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>)
-
-    fun postDelayed(runnable: () -> Unit, delay: Long)
-
     fun goToRoomScreen(id: String, name: String)
+
+    fun showLoading()
+
+    fun hideLoading()
+
+    fun displayRooms(rooms: List<Room>)
 
 }

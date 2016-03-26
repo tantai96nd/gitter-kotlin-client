@@ -6,6 +6,6 @@ object Secrets {
 
     val gitterOauthSecret = "9d7fc162ccc62f465d28961f0b0324b798d82bfd"
 
-    val gitterRedirectUri = "https://github.com/shchurov/gitter-kotlin-client"
+    val gitterRedirectUrl = "https://github.com/shchurov/gitter-kotlin-client"
 
 }

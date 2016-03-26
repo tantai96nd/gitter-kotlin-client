@@ -1,8 +1,8 @@
 package com.github.shchurov.gitterclient.data.network.api.implementation
 
-import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.data.network.api.implementation.retrofit.GitterRetrofitService
+import com.github.shchurov.gitterclient.data.preferences.Preferences
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.Room
 import rx.Observable

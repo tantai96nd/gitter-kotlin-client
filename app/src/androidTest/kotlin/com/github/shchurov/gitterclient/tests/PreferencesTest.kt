@@ -2,7 +2,7 @@ package com.github.shchurov.gitterclient.tests
 
 import android.support.test.runner.AndroidJUnit4
 import com.github.shchurov.gitterclient.App
-import com.github.shchurov.gitterclient.data.Preferences
+import com.github.shchurov.gitterclient.data.preferences.implementation.PreferencesImpl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -15,7 +15,7 @@ class PreferencesTest {
         private const val PREFS_NAME = "test_preferences"
     }
 
-    private val preferences = Preferences(PREFS_NAME)
+    private val preferences = PreferencesImpl(PREFS_NAME)
 
     @After
     fun tearDown() {

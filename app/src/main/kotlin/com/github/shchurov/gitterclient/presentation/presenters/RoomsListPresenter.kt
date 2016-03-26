@@ -1,62 +1,48 @@
 package com.github.shchurov.gitterclient.presentation.presenters
 
-import com.github.shchurov.gitterclient.data.subscribers.CustomSubscriber
+import com.github.shchurov.gitterclient.data.subscribers.DefaultSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
-import com.github.shchurov.gitterclient.domain.interactors.UpdateRoomLastAccessTimeInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
-import com.github.shchurov.gitterclient.presentation.ui.adapters.RoomsAdapter
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import rx.subscriptions.CompositeSubscription
 import javax.inject.Inject
 
 class RoomsListPresenter @Inject constructor(
-        private val view: RoomsListView,
-        private val getRoomsInteractor: GetRoomsInteractor,
-        private val updateRoomLastAccessTimeInteractor: UpdateRoomLastAccessTimeInteractor
-) : RoomsAdapter.ActionListener {
+        private val getRoomsInteractor: GetRoomsInteractor
+) : BasePresenter<RoomsListView>() {
 
     private val subscriptions = CompositeSubscription()
-    private val rooms: MutableList<Room> = arrayListOf()
-    private val adapter = RoomsAdapter(rooms, this)
 
-    fun onCreate() {
-        view.setRecyclerViewAdapter(adapter)
+    override fun onAttach() {
         loadRooms(false)
     }
 
-    fun onRestart() {
-        // delay is required to show nice moving animation
-        view.postDelayed({ loadRooms(true) }, 300)
-    }
-
     private fun loadRooms(localOnly: Boolean) {
-        if (!localOnly) {
-            adapter.loading = true
-        }
-        getRoomsInteractor.getRooms(localOnly)
-                .compositeSubscribe(subscriptions, object : CustomSubscriber<MutableList<Room>>() {
+        getView().showLoading()
+        getRoomsInteractor.get(localOnly)
+                .compositeSubscribe(subscriptions, object : DefaultSubscriber<MutableList<Room>>() {
                     override fun onNext(data: MutableList<Room>) {
-                        rooms.clear()
-                        rooms.addAll(data)
-                        adapter.notifyDataSetChanged()
+                        getView().displayRooms(data)
                     }
 
                     override fun onFinish() {
-                        if (!localOnly) {
-                            adapter.loading = false
-                        }
+                        getView().hideLoading()
                     }
                 })
     }
 
-    fun onDestroy() {
-        subscriptions.clear()
+    fun onReturnFromBackground() {
+        loadRooms(true)
     }
 
-    override fun onRoomClick(room: Room) {
-        updateRoomLastAccessTimeInteractor.update(room, System.currentTimeMillis())
-        view.goToRoomScreen(room.id, room.name)
+    override fun onDetach() {
+        subscriptions.clear()
+        super.onDetach()
+    }
+
+    fun onRoomClick(room: Room) {
+        getView().goToRoomScreen(room.id, room.name)
     }
 
 }

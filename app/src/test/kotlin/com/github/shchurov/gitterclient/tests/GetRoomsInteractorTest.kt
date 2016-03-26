@@ -3,7 +3,6 @@ package com.github.shchurov.gitterclient.tests
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
-import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Room
 import org.junit.Before
 import org.junit.Test
@@ -64,7 +63,7 @@ class GetRoomsInteractorTest {
     @Test
     fun getLocal() {
         val subscriber = createSubscriber()
-        interactor.getRooms(true).subscribe(subscriber)
+        interactor.get(true).subscribe(subscriber)
         subscriber.assertNoErrors()
         subscriber.assertValue(expectedRooms)
     }
@@ -74,7 +73,7 @@ class GetRoomsInteractorTest {
     @Test
     fun getLocalAndNetwork() {
         val subscriber = createSubscriber()
-        interactor.getRooms(false).subscribe(subscriber)
+        interactor.get(false).subscribe(subscriber)
         subscriber.assertNoErrors()
         subscriber.assertValues(expectedRooms, expectedRooms)
     }

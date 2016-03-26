@@ -1,9 +1,10 @@
-package com.github.shchurov.gitterclient.data
+package com.github.shchurov.gitterclient.data.preferences.implementation
 
 import com.github.shchurov.gitterclient.App
+import com.github.shchurov.gitterclient.data.preferences.Preferences
 import kotlin.reflect.KProperty
 
-open class Preferences(preferencesName: String) {
+open class PreferencesImpl(preferencesName: String) : Preferences {
 
     companion object {
         private const val GITTER_ACCESS_TOKEN_KEY = "gitter_access_token"
@@ -16,28 +17,21 @@ open class Preferences(preferencesName: String) {
     // var gitterAccessToken by CachedPreferenceField<String?>(GITTER_ACCESS_TOKEN_KEY, null)
     // var userId by PreferenceField<String?>(USER_ID_KEY, null)
 
-    private var accessTokenCache: String? = null
-
-    open fun setGitterAccessToken(accessToken: String) {
+    override fun setGitterAccessToken(accessToken: String) {
         prefs.edit()
                 .putString(GITTER_ACCESS_TOKEN_KEY, accessToken)
                 .commit()
     }
 
-    fun getGitterAccessToken(): String? {
-        if (accessTokenCache == null) {
-            accessTokenCache = prefs.getString(GITTER_ACCESS_TOKEN_KEY, null)
-        }
-        return accessTokenCache
-    }
+    override fun getGitterAccessToken(): String? = prefs.getString(GITTER_ACCESS_TOKEN_KEY, null)
 
-    open fun setUserId(userId: String) {
+    override fun setUserId(userId: String) {
         prefs.edit()
                 .putString(USER_ID_KEY, userId)
                 .commit()
     }
 
-    fun getUserId(): String? = prefs.getString(USER_ID_KEY, null)
+    override fun getUserId(): String? = prefs.getString(USER_ID_KEY, null)
 
     private inner open class PreferenceField<T>(val key: String, val defaultValue: T?) {
 

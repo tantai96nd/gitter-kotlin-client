@@ -22,7 +22,7 @@ class DatabaseImpl(initializer: RealmInitializer) : Database {
         return rooms
     }
 
-    override fun saveRooms(rooms: List<Room>) {
+    override fun insertRooms(rooms: List<Room>) {
         val realmRooms = rooms.map { converter.convertRoomToRealm(it) }
         executeTransaction { realm -> realm.copyToRealm(realmRooms) }
     }

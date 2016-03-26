@@ -7,8 +7,9 @@ import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.presentation.ui.view_holders.LoadingViewHolder
 import com.github.shchurov.gitterclient.presentation.ui.view_holders.MessageViewHolder
 
-class MessagesAdapter(private val messages: List<Message>, private val actionListener: ActionListener) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MessagesAdapter(
+        private val actionListener: ActionListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val TYPE_MESSAGE = 0
@@ -16,6 +17,7 @@ class MessagesAdapter(private val messages: List<Message>, private val actionLis
         private const val PAYLOAD_HIDE_UNREAD = 3123
     }
 
+    private val messages: MutableList<Message> = mutableListOf()
     var loading: Boolean = false
         set(value) {
             if (value) {
@@ -25,11 +27,8 @@ class MessagesAdapter(private val messages: List<Message>, private val actionLis
             }
             field = value
         }
-    val messagesOffset = 0
 
-    private fun offsetEnd() = (if (loading) 1 else 0)
-
-    override fun getItemCount() = messages.size + offsetEnd()
+    override fun getItemCount() = messages.size + (if (loading) 1 else 0)
 
     override fun getItemViewType(position: Int) = when {
         loading && position == itemCount - 1 -> TYPE_LOADING
@@ -67,16 +66,23 @@ class MessagesAdapter(private val messages: List<Message>, private val actionLis
         }
     }
 
-    fun notifyMessagesAdded(oldCount: Int, count: Int) {
-        notifyItemRangeInserted(oldCount + messagesOffset, count)
+    fun addMessages(newMessages: List<Message>) {
+        val oldSize = messages.size
+        messages.addAll(newMessages)
+        notifyItemRangeInserted(oldSize, newMessages.size)
     }
 
-    fun notifyMessageMarkedAsRead(position: Int) {
-        notifyItemChanged(position + messagesOffset, PAYLOAD_HIDE_UNREAD)
+    fun invalidateMessage(message: Message) {
+        for (i in messages.indices) {
+            if (messages[i] == message) {
+                notifyItemChanged(i)
+            }
+        }
     }
 
-    fun isMessageOnPosition(i: Int): Boolean {
-        return getItemViewType(i) == TYPE_MESSAGE
+    fun getMessagesInRange(firstPosition: Int, lastPosition: Int): List<Message> {
+        val lastMessagePosition = Math.min(lastPosition, messages.size - 1)
+        return messages.subList(firstPosition, lastMessagePosition + 1)
     }
 
     interface ActionListener {

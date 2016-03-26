@@ -1,6 +1,6 @@
 package com.github.shchurov.gitterclient.data.network.api.implementation.retrofit
 
-import com.github.shchurov.gitterclient.data.Preferences
+import com.github.shchurov.gitterclient.data.preferences.Preferences
 import com.squareup.okhttp.Interceptor
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.logging.HttpLoggingInterceptor
@@ -13,13 +13,11 @@ object RetrofitInitializer {
     private const val BASE_URL = "https://api.gitter.im/"
     private const val KEY_AUTH_HEADER = "Authorization"
 
-    val converterFactory = GsonConverterFactory.create()
-
     fun initGitterService(preferences: Preferences): GitterRetrofitService {
         val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(converterFactory)
+                .addConverterFactory(GsonConverterFactory.create())
                 .client(createClient(preferences))
                 .build()
         return retrofit.create(GitterRetrofitService::class.java)

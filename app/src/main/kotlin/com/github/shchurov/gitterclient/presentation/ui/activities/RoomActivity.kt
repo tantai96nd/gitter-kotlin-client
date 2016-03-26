@@ -13,16 +13,18 @@ import android.view.View
 import android.widget.ProgressBar
 import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.dagger.components.DaggerActivityComponent
-import com.github.shchurov.gitterclient.dagger.modules.ActivityModule
+import com.github.shchurov.gitterclient.dagger.components.DaggerRoomComponent
+import com.github.shchurov.gitterclient.dagger.modules.RoomModule
+import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
+import com.github.shchurov.gitterclient.presentation.ui.adapters.MessagesAdapter
 import com.github.shchurov.gitterclient.utils.MessagesItemDecoration
 import com.github.shchurov.gitterclient.utils.PagingScrollListener
 import com.github.shchurov.gitterclient.utils.VisiblePositionsScrollListener
 import javax.inject.Inject
 
-class RoomActivity : AppCompatActivity(), RoomView {
+class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListener {
 
     companion object {
         private const val EXTRA_ROOM_ID = "room_id"
@@ -41,23 +43,28 @@ class RoomActivity : AppCompatActivity(), RoomView {
     private lateinit var toolbar: Toolbar
     private lateinit var rvMessages: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private var adapter = MessagesAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
+        setupUi()
+        presenter.attach(this)
+    }
+
+    private fun initDependencies() {
+        val component = DaggerRoomComponent.builder()
+                .appComponent(App.appComponent)
+                .roomModule(RoomModule(getRoomId()))
+                .build()
+        component.inject(this)
+    }
+
+    private fun setupUi() {
         setContentView(R.layout.room_activity)
         initViews()
         setupToolbar()
         setupRecyclerView()
-        presenter.onCreate()
-    }
-
-    private fun initDependencies() {
-        val component = DaggerActivityComponent.builder()
-                .appComponent(App.appComponent)
-                .activityModule(ActivityModule(this))
-                .build()
-        component.inject(this)
     }
 
     private fun initViews() {
@@ -67,8 +74,6 @@ class RoomActivity : AppCompatActivity(), RoomView {
     }
 
     private fun setupToolbar() {
-        val title = intent.getStringExtra(EXTRA_ROOM_NAME)
-        toolbar.title = title
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
@@ -82,6 +87,7 @@ class RoomActivity : AppCompatActivity(), RoomView {
             addOnScrollListener(readScrollListener)
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         }
+        rvMessages.adapter = adapter
     }
 
     private val pagingScrollListener = object : PagingScrollListener(PAGING_THRESHOLD) {
@@ -92,12 +98,13 @@ class RoomActivity : AppCompatActivity(), RoomView {
 
     private val readScrollListener = object : VisiblePositionsScrollListener() {
         override fun onVisiblePositionsChanged(firstPosition: Int, lastPosition: Int) {
-            presenter.onVisiblePositionsChanged(firstPosition, lastPosition)
+            val visibleMessages = adapter.getMessagesInRange(firstPosition, lastPosition)
+            presenter.onVisibleMessagesChanged(visibleMessages)
         }
     }
 
     override fun onDestroy() {
-        presenter.onDestroy()
+        presenter.detach()
         super.onDestroy()
     }
 
@@ -108,12 +115,13 @@ class RoomActivity : AppCompatActivity(), RoomView {
         return true
     }
 
-    override fun setRecyclerViewAdapter(
-            adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>) {
-        rvMessages.adapter = adapter
-    }
-
     override fun getRoomId() = intent.getStringExtra(EXTRA_ROOM_ID)
+
+    override fun getRoomName() = intent.getStringExtra(EXTRA_ROOM_NAME)
+
+    override fun setToolbarTitle(title: String) {
+        toolbar.title = title
+    }
 
     override fun showInitLoading() {
         progressBar.visibility = View.VISIBLE
@@ -121,6 +129,23 @@ class RoomActivity : AppCompatActivity(), RoomView {
 
     override fun hideInitLoading() {
         progressBar.visibility = View.GONE
+    }
+
+    override fun showLoadingMore() {
+        adapter.loading = true
+    }
+
+    override fun hideLoadingMore() {
+        adapter.loading = false
+    }
+
+    override fun addMessages(messages: List<Message>) {
+        adapter.addMessages(messages.asReversed())
+        forceOnReadPositionsChangedCallback()
+    }
+
+    private fun forceOnReadPositionsChangedCallback() {
+        rvMessages.postDelayed({ readScrollListener.forceCallback(rvMessages) }, 100)
     }
 
     override fun enablePagingListener() {
@@ -131,8 +156,8 @@ class RoomActivity : AppCompatActivity(), RoomView {
         pagingScrollListener.enabled = false
     }
 
-    override fun forceOnReadPositionsChangedCallback() {
-        // simple post(...) returns wrong positions
-        rvMessages.postDelayed({ readScrollListener.forceCallback(rvMessages) }, 100)
+    override fun invalidateMessage(message: Message) {
+        adapter.invalidateMessage(message)
     }
+
 }

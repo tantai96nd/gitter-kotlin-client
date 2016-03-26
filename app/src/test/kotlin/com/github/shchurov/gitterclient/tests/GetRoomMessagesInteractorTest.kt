@@ -2,7 +2,6 @@ package com.github.shchurov.gitterclient.tests
 
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
-import com.github.shchurov.gitterclient.domain.interactors.threading.ImmediateSchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.User
 import org.junit.Assert.assertTrue

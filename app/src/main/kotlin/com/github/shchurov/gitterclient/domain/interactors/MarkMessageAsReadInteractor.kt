@@ -1,6 +1,5 @@
 package com.github.shchurov.gitterclient.domain.interactors
 
-import com.github.shchurov.gitterclient.dagger.scopes.PerScreen
 import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.data.subscribers.EmptySubscriber
@@ -9,28 +8,24 @@ import com.github.shchurov.gitterclient.domain.models.Message
 import java.util.*
 import javax.inject.Inject
 
-@PerScreen
 class MarkMessageAsReadInteractor @Inject constructor(
         private val gitterApi: GitterApi,
         private val database: Database,
-        private val schedulersProvider: SchedulersProvider
+        private val schedulersProvider: SchedulersProvider,
+        private val roomId: String
 ) {
 
     companion object {
-        private const val MAX_MESSAGES_BEFORE_REQUEST = 20
+        private const val MAX_PENDING_MESSAGES = 20
     }
 
     private val ids = mutableListOf<String>()
-    private lateinit var roomId: String
 
-    fun markAsReadLazy(message: Message, roomId: String) {
-        if (!message.unread)
-            return
-        this.roomId = roomId
+    fun markAsReadLazy(message: Message) {
         message.unread = false
         database.decrementRoomUnreadItems(roomId)
         ids.add(message.id)
-        if (ids.size == MAX_MESSAGES_BEFORE_REQUEST) {
+        if (ids.size == MAX_PENDING_MESSAGES) {
             sendRequest(roomId)
         }
     }
@@ -45,7 +40,7 @@ class MarkMessageAsReadInteractor @Inject constructor(
         val copyIds = ArrayList(ids)
         ids.clear()
         gitterApi.markMessagesAsRead(copyIds, roomId)
-                .subscribeOn(schedulersProvider.backgroundScheduler)
+                .subscribeOn(schedulersProvider.background)
                 .subscribe(EmptySubscriber())
     }
 

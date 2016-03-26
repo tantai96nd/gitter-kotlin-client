@@ -1,12 +1,14 @@
 package com.github.shchurov.gitterclient.presentation.ui
 
-import android.support.v7.widget.RecyclerView
+import com.github.shchurov.gitterclient.domain.models.Message
 
 interface RoomView {
 
-    fun setRecyclerViewAdapter(adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>)
-
     fun getRoomId(): String
+
+    fun getRoomName(): String
+
+    fun setToolbarTitle(title: String)
 
     fun showInitLoading()
 
@@ -16,6 +18,12 @@ interface RoomView {
 
     fun disablePagingListener()
 
-    fun forceOnReadPositionsChangedCallback()
+    fun showLoadingMore()
+
+    fun hideLoadingMore()
+
+    fun addMessages(messages: List<Message>)
+
+    fun invalidateMessage(message: Message)
 
 }

@@ -7,13 +7,20 @@ import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.ui.view_holders.LoadingViewHolder
 import com.github.shchurov.gitterclient.presentation.ui.view_holders.RoomViewHolder
 
-class RoomsAdapter(private val rooms: List<Room>, private val actionListener: ActionListener) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RoomsAdapter(
+        private val actionListener: ActionListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val TYPE_ROOM = 0
         private const val TYPE_LOADING = 1
     }
+
+    var rooms: List<Room>? = null
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     var loading: Boolean = false
         set(value) {
@@ -31,7 +38,7 @@ class RoomsAdapter(private val rooms: List<Room>, private val actionListener: Ac
 
     private fun offset() = if (loading) 1 else 0
 
-    override fun getItemCount() = offset() + rooms.size
+    override fun getItemCount() = offset() + (rooms?.size ?: 0)
 
     override fun getItemViewType(position: Int) = when {
         loading && position == 0 -> Companion.TYPE_LOADING
@@ -41,7 +48,7 @@ class RoomsAdapter(private val rooms: List<Room>, private val actionListener: Ac
     // not 100% reliable (shrinking 24-chars String to Long) but totally safe.
     // Allows to have cool animations when items' positions have been changed
     override fun getItemId(position: Int) = when (getItemViewType(position)) {
-        Companion.TYPE_ROOM -> Math.abs(rooms[position - offset()].idHashCode)
+        Companion.TYPE_ROOM -> Math.abs(rooms!![position - offset()].idHashCode)
         else -> RecyclerView.NO_ID
     }
 
@@ -63,7 +70,7 @@ class RoomsAdapter(private val rooms: List<Room>, private val actionListener: Ac
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder.itemViewType == Companion.TYPE_ROOM) {
-            (holder as RoomViewHolder).bindData(rooms[position - offset()])
+            (holder as RoomViewHolder).bindData(rooms!![position - offset()])
         }
     }
 

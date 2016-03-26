@@ -2,10 +2,11 @@ package com.github.shchurov.gitterclient.data.subscribers
 
 import rx.Subscriber
 
-abstract class CustomSubscriber<T> : Subscriber<T>() {
+abstract class DefaultSubscriber<T> : Subscriber<T>() {
 
     final override fun onError(e: Throwable) {
-        onFailure(e)
+        val errorMessage = ErrorMessageGenerator.generateErrorMessage(e)
+        onFailure(e, errorMessage)
         onFinish()
     }
 
@@ -13,8 +14,7 @@ abstract class CustomSubscriber<T> : Subscriber<T>() {
         onFinish()
     }
 
-    protected open fun onFailure(e: Throwable) {
-        NetworkErrorHandler.handleError(e)
+    protected open fun onFailure(e: Throwable, errorMessage: String) {
     }
 
     protected open fun onFinish() {

@@ -9,17 +9,19 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.dagger.components.DaggerActivityComponent
-import com.github.shchurov.gitterclient.dagger.modules.ActivityModule
+import com.github.shchurov.gitterclient.dagger.components.DaggerGeneralScreenComponent
+import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
+import com.github.shchurov.gitterclient.presentation.ui.adapters.RoomsAdapter
 import javax.inject.Inject
 
-class RoomsListActivity : AppCompatActivity(), RoomsListView {
+class RoomsListActivity : AppCompatActivity(), RoomsListView, RoomsAdapter.ActionListener {
 
     @Inject lateinit var presenter: RoomsListPresenter
     private lateinit var rvRooms: RecyclerView
     private lateinit var toolbar: Toolbar
+    private val adapter = RoomsAdapter(this)
 
     companion object {
         fun start(context: Context) {
@@ -31,19 +33,22 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
+        setupUi()
+        presenter.attach(this)
+    }
+
+    private fun initDependencies() {
+        val component = DaggerGeneralScreenComponent.builder()
+                .appComponent(App.appComponent)
+                .build()
+        component.inject(this)
+    }
+
+    private fun setupUi() {
         setContentView(R.layout.rooms_list_activity)
         initViews()
         setupRecyclerView()
         setupToolbar()
-        presenter.onCreate()
-    }
-
-    private fun initDependencies() {
-        val component = DaggerActivityComponent.builder()
-                .appComponent(App.appComponent)
-                .activityModule(ActivityModule(this))
-                .build()
-        component.inject(this)
     }
 
     private fun initViews() {
@@ -54,6 +59,7 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
     private fun setupRecyclerView() {
         rvRooms.layoutManager = LinearLayoutManager(this)
         rvRooms.setHasFixedSize(false)
+        rvRooms.adapter = adapter
     }
 
     private fun setupToolbar() {
@@ -62,24 +68,32 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView {
 
     override fun onRestart() {
         super.onRestart()
-        presenter.onRestart()
+        presenter.onReturnFromBackground()
     }
 
     override fun onDestroy() {
-        presenter.onDestroy()
+        presenter.detach()
         super.onDestroy()
     }
 
-    override fun setRecyclerViewAdapter(
-            adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>) {
-        rvRooms.adapter = adapter
+    override fun showLoading() {
+        adapter.loading = true
     }
 
-    override fun postDelayed(runnable: () -> Unit, delay: Long) {
-        rvRooms.postDelayed(runnable, delay)
+    override fun hideLoading() {
+        adapter.loading = false
+    }
+
+    override fun displayRooms(rooms: List<Room>) {
+        adapter.rooms = rooms
     }
 
     override fun goToRoomScreen(id: String, name: String) {
         RoomActivity.start(this, id, name)
     }
+
+    override fun onRoomClick(room: Room) {
+        presenter.onRoomClick(room)
+    }
+
 }

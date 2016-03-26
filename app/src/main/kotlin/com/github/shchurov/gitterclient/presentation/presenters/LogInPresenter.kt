@@ -1,27 +1,21 @@
 package com.github.shchurov.gitterclient.presentation.presenters
 
 import android.net.Uri
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.dagger.scopes.PerScreen
-import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.Secrets
-import com.github.shchurov.gitterclient.data.subscribers.CustomSubscriber
-import com.github.shchurov.gitterclient.domain.interactors.GitterLogInInteractor
+import com.github.shchurov.gitterclient.data.subscribers.DefaultSubscriber
+import com.github.shchurov.gitterclient.domain.interactors.AuthInteractor
+import com.github.shchurov.gitterclient.domain.interactors.CheckAuthInteractor
 import com.github.shchurov.gitterclient.domain.models.User
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
-import com.github.shchurov.gitterclient.utils.showToast
 import rx.subscriptions.CompositeSubscription
 import javax.inject.Inject
 
-@PerScreen
 class LogInPresenter @Inject constructor(
-        private val view: LogInView,
-        private val preferences: Preferences,
-        private val gitterLogInInteractor: GitterLogInInteractor
-) {
+        private val checkAuthInteractor: CheckAuthInteractor,
+        private val authInteractor: AuthInteractor
+) : BasePresenter<LogInView>() {
 
     companion object {
         const val AUTHORIZATION_ENDPOINT = "https://gitter.im/login/oauth/authorize"
@@ -32,78 +26,70 @@ class LogInPresenter @Inject constructor(
         const val KEY_CODE = "code"
         const val KEY_ERROR = "error"
         const val ERROR_ACCESS_DENIED = "access_denied"
-        @Suppress("ConvertToStringTemplate")
-        val AUTH_REQUEST = "${AUTHORIZATION_ENDPOINT}" +
+        val AUTH_URL = "${AUTHORIZATION_ENDPOINT}" +
                 "?${KEY_CLIENT_ID}=${Secrets.gitterOauthKey}" +
                 "&${KEY_RESPONSE_TYPE}=${RESPONSE_TYPE}" +
-                "&${KEY_REDIRECT_URI}=${Secrets.gitterRedirectUri}"
+                "&${KEY_REDIRECT_URI}=${Secrets.gitterRedirectUrl}"
     }
 
     val subscriptions: CompositeSubscription = CompositeSubscription()
 
-    fun onCreate() {
-        if (preferences.getGitterAccessToken() == null) {
-            view.setWebViewClient(webViewClient)
-            view.loadUrl(AUTH_REQUEST)
+    override fun onAttach() {
+        if (checkAuthInteractor.isAuthorized()) {
+            getView().goToRoomsListScreen()
         } else {
-            view.goToRoomsListScreen()
+            getView().loadUrl(AUTH_URL)
         }
     }
 
-    private val webViewClient = object : WebViewClient() {
-        override fun onPageFinished(webView: WebView?, url: String?) {
-            view.showWebView()
-        }
-
-        override fun shouldOverrideUrlLoading(webView: WebView?, url: String?): Boolean {
-            if (isUrlShouldBeHandled(url)) {
-                webView?.clearHistory()
-                handleUrl(url!!)
-                return true
-            } else {
-                return false
-            }
-        }
-
-        private fun isUrlShouldBeHandled(url: String?) = url != null && url.startsWith(Secrets.gitterRedirectUri)
-
-        private fun handleUrl(url: String) {
-            val uri = Uri.parse(url);
-            val queryKeys = uri.queryParameterNames
-            when {
-                KEY_ERROR in queryKeys -> handleAuthError(uri.getQueryParameter(KEY_ERROR))
-                KEY_CODE in queryKeys -> logIn(uri.getQueryParameter(KEY_CODE))
-            }
-        }
-
-        override fun onReceivedError(view: WebView?, errorCode: Int, description: String?,
-                failingUrl: String?) {
-            //TODO:
-        }
-    }
-
-    private fun handleAuthError(error: String) {
-        when (error) {
-            ERROR_ACCESS_DENIED -> showToast(R.string.error_access_denied)
-            else -> showToast(R.string.unexpected_error)
-        }
+    override fun onDetach() {
+        subscriptions.clear()
     }
 
     private fun logIn(code: String) {
-        gitterLogInInteractor.logIn(code)
-                .compositeSubscribe(subscriptions, object : CustomSubscriber<User>() {
+        authInteractor.logIn(code)
+                .compositeSubscribe(subscriptions, object : DefaultSubscriber<User>() {
                     override fun onNext(data: User) {
-                        view.goToRoomsListScreen()
+                        getView().goToRoomsListScreen()
                     }
 
-                    override fun onFailure(e: Throwable) {
+                    override fun onFailure(e: Throwable, errorMessage: String) {
                         //TODO:
                     }
                 })
     }
 
-    fun onDestroy() {
-        subscriptions.clear()
+    fun onWebViewOverrideLoading(url: String?): Boolean {
+        if (url != null && isRedirectUrl(url)) {
+            getView().clearWebViewHistory()
+            handleRedirectUrl(url)
+            return true
+        } else {
+            return false
+        }
     }
+
+    private fun isRedirectUrl(url: String) = url.startsWith(Secrets.gitterRedirectUrl)
+
+    private fun handleRedirectUrl(url: String) {
+        val uri = Uri.parse(url);
+        val queryKeys = uri.queryParameterNames
+        when {
+            KEY_ERROR in queryKeys -> handleAuthError(uri.getQueryParameter(KEY_ERROR))
+            KEY_CODE in queryKeys -> logIn(uri.getQueryParameter(KEY_CODE))
+        }
+    }
+
+    private fun handleAuthError(error: String) {
+        when (error) {
+            ERROR_ACCESS_DENIED -> getView().showError(R.string.error_access_denied)
+            else -> getView().showError(R.string.unexpected_error)
+        }
+    }
+
+    fun onWebViewError() {
+        //TODO:
+    }
+
 
 }

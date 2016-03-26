@@ -1,16 +1,14 @@
 package com.github.shchurov.gitterclient.domain.interactors
 
-import com.github.shchurov.gitterclient.dagger.scopes.PerScreen
-import com.github.shchurov.gitterclient.data.Preferences
 import com.github.shchurov.gitterclient.data.Secrets
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
+import com.github.shchurov.gitterclient.data.preferences.Preferences
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.User
 import rx.Observable
 import javax.inject.Inject
 
-@PerScreen
-class GitterLogInInteractor @Inject constructor(
+class AuthInteractor @Inject constructor(
         private val gitterApi: GitterApi,
         private val preferences: Preferences,
         private val schedulersProvider: SchedulersProvider
@@ -23,8 +21,8 @@ class GitterLogInInteractor @Inject constructor(
 
     fun logIn(code: String): Observable<User> {
         return gitterApi.getAccessToken(AUTHENTICATION_ENDPOINT, Secrets.gitterOauthKey, Secrets.gitterOauthSecret,
-                code, Secrets.gitterRedirectUri, GRANT_TYPE)
-                .subscribeOn(schedulersProvider.backgroundScheduler)
+                code, Secrets.gitterRedirectUrl, GRANT_TYPE)
+                .subscribeOn(schedulersProvider.background)
                 .flatMap { token ->
                     preferences.setGitterAccessToken(token.accessToken)
                     gitterApi.getUser()
@@ -32,7 +30,7 @@ class GitterLogInInteractor @Inject constructor(
                 .doOnNext { user ->
                     preferences.setUserId(user.id)
                 }
-                .observeOn(schedulersProvider.uiScheduler)
+                .observeOn(schedulersProvider.main)
     }
 
 }

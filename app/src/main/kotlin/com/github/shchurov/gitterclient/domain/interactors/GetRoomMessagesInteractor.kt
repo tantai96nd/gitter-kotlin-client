@@ -1,53 +1,41 @@
 package com.github.shchurov.gitterclient.domain.interactors
 
-import com.github.shchurov.gitterclient.dagger.scopes.PerScreen
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersProvider
 import com.github.shchurov.gitterclient.domain.models.Message
 import rx.Observable
+import rx.functions.Action1
 import javax.inject.Inject
 
-@PerScreen
 class GetRoomMessagesInteractor @Inject constructor(
         private val gitterApi: GitterApi,
-        private val schedulersProvider: SchedulersProvider
+        private val schedulersProvider: SchedulersProvider,
+        private val roomId: String
 ) {
 
     companion object {
         const val PAGE_SIZE = 30
     }
 
-    private var hasMorePages = false
-    private lateinit var roomId: String
+    var hasMorePages = false
+        private set
     private lateinit var earliestMessageId: String
 
-    fun getFirstPage(roomId: String): Observable<MutableList<Message>> {
-        this.roomId = roomId
+    fun getFirstPage(): Observable<MutableList<Message>> {
         return gitterApi.getRoomMessages(roomId, PAGE_SIZE)
-                .subscribeOn(schedulersProvider.backgroundScheduler)
-                .map { handleMessages(it) }
-                .observeOn(schedulersProvider.uiScheduler)
+                .subscribeOn(schedulersProvider.background)
+                .doOnNext(updateStateAction)
+                .observeOn(schedulersProvider.main)
     }
 
-    private fun handleMessages(messages: MutableList<Message>): MutableList<Message> {
-        refreshHasMorePages(messages.size)
-        refreshEarliestMessageId(messages)
-        return messages
-    }
-
-    private fun refreshHasMorePages(lastPageSize: Int) {
-        hasMorePages = lastPageSize == PAGE_SIZE
-    }
-
-    private fun refreshEarliestMessageId(messages: List<Message>) {
+    private val updateStateAction = Action1<MutableList<Message>> { messages ->
+        hasMorePages = messages.size == PAGE_SIZE
         earliestMessageId = messages.first().id
     }
 
     fun getNextPage() = gitterApi.getRoomMessages(roomId, PAGE_SIZE, earliestMessageId)
-            .subscribeOn(schedulersProvider.backgroundScheduler)
-            .map { handleMessages(it) }
-            .observeOn(schedulersProvider.uiScheduler)
-
-    fun hasMorePages() = hasMorePages
+            .subscribeOn(schedulersProvider.background)
+            .doOnNext { updateStateAction }
+            .observeOn(schedulersProvider.main)
 
 }
