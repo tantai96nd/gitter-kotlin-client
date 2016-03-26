@@ -4,12 +4,12 @@ import rx.Scheduler
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 
-class SchedulersProvider {
+open class SchedulersProvider {
 
-    val background: Scheduler
+    open val background: Scheduler
         get() = Schedulers.io()
 
-    val main: Scheduler
+    open val main: Scheduler
         get() = AndroidSchedulers.mainThread()
 
 }

@@ -1,9 +1,9 @@
-package com.github.shchurov.gitterclient.tests
+package com.github.shchurov.gitterclient.unit_tests.tests
 
 import com.github.shchurov.gitterclient.data.database.implementation.DatabaseConverter
 import com.github.shchurov.gitterclient.data.database.implementation.realm_models.RoomRealm
 import com.github.shchurov.gitterclient.domain.models.Room
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class DatabaseConverterTest {
@@ -20,30 +20,32 @@ class DatabaseConverterTest {
     private val converter = DatabaseConverter()
 
     @Test
-    fun convertRealmToRoom() {
+    fun testConvertRealmToRoom() {
         val realmRoom = RoomRealm(ID, NAME, AVATAR, UNREAD_ITEMS, MENTIONS, TIMESTAMP)
         val converted = converter.convertRealmToRoom(realmRoom)
+
         with (converted) {
-            assertTrue(id == ID
-                    && name == NAME
-                    && avatar == AVATAR
-                    && unreadItems == UNREAD_ITEMS
-                    && mentions == MENTIONS
-                    && lastAccessTimestamp == TIMESTAMP)
+            assertEquals(ID, id);
+            assertEquals(NAME, name);
+            assertEquals(AVATAR, avatar)
+            assertEquals(UNREAD_ITEMS, unreadItems)
+            assertEquals(MENTIONS, mentions)
+            assertEquals(TIMESTAMP, lastAccessTimestamp)
         }
     }
 
     @Test
-    fun convertRoomToRealm() {
+    fun testConvertRoomToRealm() {
         val room = Room(ID, NAME, AVATAR, UNREAD_ITEMS, MENTIONS, TIMESTAMP)
         val converted = converter.convertRoomToRealm(room)
+
         with (converted) {
-            assertTrue(id == ID
-                    && name == NAME
-                    && avatar == AVATAR
-                    && unreadItems == UNREAD_ITEMS
-                    && mentions == MENTIONS
-                    && lastAccessTimestamp == TIMESTAMP)
+            assertEquals(ID, id)
+            assertEquals(NAME, name)
+            assertEquals(AVATAR, avatar)
+            assertEquals(UNREAD_ITEMS, unreadItems)
+            assertEquals(MENTIONS, mentions)
+            assertEquals(TIMESTAMP, lastAccessTimestamp)
         }
     }
 

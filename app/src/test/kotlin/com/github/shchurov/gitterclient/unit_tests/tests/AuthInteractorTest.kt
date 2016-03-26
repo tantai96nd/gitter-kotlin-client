@@ -1,10 +1,12 @@
-package com.github.shchurov.gitterclient.tests
+package com.github.shchurov.gitterclient.unit_tests.tests
 
-import com.github.shchurov.gitterclient.data.preferences.implementation.PreferencesImpl
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
+import com.github.shchurov.gitterclient.data.preferences.implementation.PreferencesImpl
 import com.github.shchurov.gitterclient.domain.interactors.AuthInteractor
 import com.github.shchurov.gitterclient.domain.models.Token
 import com.github.shchurov.gitterclient.domain.models.User
+import com.github.shchurov.gitterclient.unit_tests.helpers.ImmediateSchedulersProvider
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,26 +17,22 @@ import rx.Observable
 import rx.observers.TestSubscriber
 
 @RunWith(MockitoJUnitRunner::class)
-class GitterLogInInteractorTest {
+class AuthInteractorTest {
 
     companion object {
-        private const val ACCESS_TOKEN = "random_token123"
-        private const val USER_ID = "random_user_id123"
+        private const val ACCESS_TOKEN = "access_token"
+        private const val USER_ID = "user_id"
     }
 
+    private lateinit var interactor: AuthInteractor
     @Mock private lateinit var gitterApi: GitterApi
     @Mock private lateinit var preferences: PreferencesImpl
     private val schedulersProvider = ImmediateSchedulersProvider()
-    private lateinit var interactor: AuthInteractor
 
     @Before
     fun setUp() {
-        setupMocks()
-        interactor = AuthInteractor(gitterApi, preferences, schedulersProvider)
-    }
-
-    private fun setupMocks() {
         mockGitterApi()
+        interactor = AuthInteractor(gitterApi, preferences, schedulersProvider)
     }
 
     private fun mockGitterApi() {
@@ -45,12 +43,15 @@ class GitterLogInInteractorTest {
     }
 
     @Test
-    fun logIn() {
+    fun testLogIn() {
         val subscriber = TestSubscriber<User>()
+        val mainThreadName = Thread.currentThread().name
         interactor.logIn("random_code").subscribe(subscriber)
+
         subscriber.assertNoErrors()
-        verify(preferences, times(1)).setGitterAccessToken(ACCESS_TOKEN)
-        verify(preferences, times(1)).setUserId(USER_ID)
+        verify(preferences).setGitterAccessToken(ACCESS_TOKEN)
+        verify(preferences).setUserId(USER_ID)
+        Assert.assertNotEquals(mainThreadName, subscriber.lastSeenThread.name)
     }
 
 }

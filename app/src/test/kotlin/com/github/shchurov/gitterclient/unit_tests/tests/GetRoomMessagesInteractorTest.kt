@@ -1,26 +1,20 @@
-package com.github.shchurov.gitterclient.tests
+package com.github.shchurov.gitterclient.unit_tests.tests
 
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.User
-import org.junit.Assert.assertTrue
+import com.github.shchurov.gitterclient.unit_tests.helpers.ImmediateSchedulersProvider
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.*
 import org.mockito.runners.MockitoJUnitRunner
-import rx.Observable
 import rx.observers.TestSubscriber
 import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class GetRoomMessagesInteractorTest {
-
-    companion object {
-        private const val PAGE_SIZE = GetRoomMessagesInteractor.PAGE_SIZE
-    }
 
     @Mock private lateinit var gitterApi: GitterApi
     private val schedulersProvider = ImmediateSchedulersProvider()

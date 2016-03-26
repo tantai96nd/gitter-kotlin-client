@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.dagger
+package com.github.shchurov.gitterclient.functional_tests.dagger
 
 import com.github.shchurov.gitterclient.data.preferences.implementation.PreferencesImpl
 import com.github.shchurov.gitterclient.data.database.Database

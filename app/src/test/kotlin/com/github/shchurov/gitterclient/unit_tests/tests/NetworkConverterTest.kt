@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.tests
+package com.github.shchurov.gitterclient.unit_tests.tests
 
 import com.github.shchurov.gitterclient.data.network.api.implementation.NetworkConverter
 import com.github.shchurov.gitterclient.data.network.model.MessageResponse
@@ -6,7 +6,7 @@ import com.github.shchurov.gitterclient.data.network.model.RoomResponse
 import com.github.shchurov.gitterclient.data.network.model.TokenResponse
 import com.github.shchurov.gitterclient.data.network.model.UserResponse
 import com.github.shchurov.gitterclient.utils.TimeUtils
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class NetworkConverterTest {
@@ -24,55 +24,62 @@ class NetworkConverterTest {
         private const val USER_ID = "user_id"
         private const val AVATAR = "avatar"
         private const val USERNAME = "username"
+        private const val UNREAD = true
     }
 
     private val converter = NetworkConverter()
 
     @Test
-    fun convertResponseToToken() {
+    fun testConvertResponseToToken() {
         val tokenResponse = TokenResponse(TOKEN)
         val converted = converter.convertResponseToToken(tokenResponse)
-        assertTrue(converted.accessToken == TOKEN)
+
+        assertEquals(TOKEN, converted.accessToken)
     }
 
     @Test
-    fun convertResponseToRoom() {
+    fun testConvertResponseToRoom() {
         val roomResponse = RoomResponse(ROOM_ID, NAME, UNREAD_ITEMS, MENTIONS, URL, TIME_ISO)
         val converted = converter.convertResponseToRoom(roomResponse)
+
         with(converted) {
-            assertTrue(id == ROOM_ID
-                    && name == NAME
-                    && lastAccessTimestamp == TimeUtils.convertIsoToTimestamp(TIME_ISO)
-                    && mentions == MENTIONS
-                    && unreadItems == UNREAD_ITEMS
-                    && avatar == converter.generateRoomAvatarUrl(URL))
+            assertEquals(ROOM_ID, id)
+            assertEquals(NAME, name)
+            assertEquals(TimeUtils.convertIsoToTimestamp(TIME_ISO), lastAccessTimestamp)
+            assertEquals(MENTIONS, mentions)
+            assertEquals(UNREAD_ITEMS, unreadItems)
+            assertEquals(converter.generateRoomAvatarUrl(URL), avatar)
         }
     }
 
     @Test
-    fun convertResponseToUser() {
+    fun testConvertResponseToUser() {
         val userResponse = UserResponse(USER_ID, USERNAME, AVATAR)
         val converted = converter.convertResponseToUser(userResponse)
+
         with(converted) {
-            assertTrue(id == USER_ID
-                    && username == USERNAME
-                    && avatar == AVATAR)
+            assertEquals(USER_ID, id)
+            assertEquals(USERNAME, username)
+            assertEquals(AVATAR, avatar)
         }
     }
 
     @Test
-    fun convertResponseToMessage() {
+    fun testConvertResponseToMessage() {
         val userResponse = UserResponse(USER_ID, USERNAME, AVATAR)
-        val messageResponse = MessageResponse(MESSAGE_ID, TEXT, TIME_ISO, userResponse, true)
+        val messageResponse = MessageResponse(MESSAGE_ID, TEXT, TIME_ISO, userResponse, UNREAD)
         val converted = converter.convertResponseToMessage(messageResponse)
+
         with(converted) {
-            assertTrue(user.id == USER_ID
-                    && user.username == USERNAME
-                    && user.avatar == AVATAR)
-            assertTrue(id == MESSAGE_ID
-                    && text == TEXT
-                    && timestamp == TimeUtils.convertIsoToTimestamp(TIME_ISO)
-                    && unread == true)
+            with(user) {
+                assertEquals(USER_ID, id)
+                assertEquals(USERNAME, username)
+                assertEquals(AVATAR, avatar)
+            }
+            assertEquals(MESSAGE_ID, id)
+            assertEquals(TEXT, text)
+            assertEquals(TimeUtils.convertIsoToTimestamp(TIME_ISO), timestamp)
+            assertEquals(UNREAD, unread)
         }
     }
 

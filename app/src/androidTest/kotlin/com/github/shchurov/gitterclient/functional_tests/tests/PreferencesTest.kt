@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.tests
+package com.github.shchurov.gitterclient.functional_tests.tests
 
 import android.support.test.runner.AndroidJUnit4
 import com.github.shchurov.gitterclient.App

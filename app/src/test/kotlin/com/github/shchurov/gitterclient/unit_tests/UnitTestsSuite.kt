@@ -1,11 +1,11 @@
-package com.github.shchurov.gitterclient
+package com.github.shchurov.gitterclient.unit_tests
 
-import com.github.shchurov.gitterclient.tests.*
+import com.github.shchurov.gitterclient.unit_tests.tests.*
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(GetRoomMessagesInteractorTest::class, GetRoomsInteractorTest::class,
-        GitterLogInInteractorTest::class, MarkMessageAsReadInteractorTest::class,
+        AuthInteractorTest::class, MarkMessageAsReadInteractorTest::class,
         UpdateRoomLastAccessTimeInteractorTest::class, DatabaseConverterTest::class, NetworkConverterTest::class)
 class UnitTestsSuite
