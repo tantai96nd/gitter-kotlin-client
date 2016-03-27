@@ -6,7 +6,6 @@ import android.view.KeyEvent
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.github.shchurov.gitterclient.App
-import com.github.shchurov.gitterclient.dagger.components.DaggerGeneralScreenComponent
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
 import com.github.shchurov.gitterclient.utils.showToast
@@ -25,10 +24,8 @@ class LogInActivity : AppCompatActivity(), LogInView {
     }
 
     private fun initDependencies() {
-        val component = DaggerGeneralScreenComponent.builder()
-                .appComponent(App.appComponent)
-                .build()
-        component.inject(this)
+        App.component.createGeneralScreenComponent()
+                .inject(this)
     }
 
     private fun setupUi() {

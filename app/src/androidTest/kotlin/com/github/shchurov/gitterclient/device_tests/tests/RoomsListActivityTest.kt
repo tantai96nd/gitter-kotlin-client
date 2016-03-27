@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.functional_tests.tests
+package com.github.shchurov.gitterclient.device_tests.tests
 
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4

@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.dagger.components.DaggerGeneralScreenComponent
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
@@ -38,10 +37,8 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView, RoomsAdapter.Actio
     }
 
     private fun initDependencies() {
-        val component = DaggerGeneralScreenComponent.builder()
-                .appComponent(App.appComponent)
-                .build()
-        component.inject(this)
+        App.component.createGeneralScreenComponent()
+                .inject(this)
     }
 
     private fun setupUi() {

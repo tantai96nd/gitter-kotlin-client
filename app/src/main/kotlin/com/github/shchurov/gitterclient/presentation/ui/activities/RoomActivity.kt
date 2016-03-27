@@ -13,7 +13,6 @@ import android.view.View
 import android.widget.ProgressBar
 import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
-import com.github.shchurov.gitterclient.dagger.components.DaggerRoomComponent
 import com.github.shchurov.gitterclient.dagger.modules.RoomModule
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
@@ -53,11 +52,8 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
     }
 
     private fun initDependencies() {
-        val component = DaggerRoomComponent.builder()
-                .appComponent(App.appComponent)
-                .roomModule(RoomModule(getRoomId()))
-                .build()
-        component.inject(this)
+        App.component.createRoomComponent(RoomModule(getRoomId()))
+                .inject(this)
     }
 
     private fun setupUi() {

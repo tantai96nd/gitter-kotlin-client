@@ -1,4 +1,4 @@
-package com.github.shchurov.gitterclient.functional_tests.tests
+package com.github.shchurov.gitterclient.device_tests.tests
 
 import android.support.test.runner.AndroidJUnit4
 import com.github.shchurov.gitterclient.App
@@ -30,6 +30,7 @@ class PreferencesTest {
         val token = "123456qwerty"
         preferences.setGitterAccessToken(token)
         val retrievedToken = preferences.getGitterAccessToken()
+
         assertEquals(token, retrievedToken)
     }
 
@@ -38,6 +39,7 @@ class PreferencesTest {
         val id = "asdfgh09876"
         preferences.setUserId(id)
         val retrievedId = preferences.getUserId()
+
         assertEquals(id, retrievedId)
     }
 

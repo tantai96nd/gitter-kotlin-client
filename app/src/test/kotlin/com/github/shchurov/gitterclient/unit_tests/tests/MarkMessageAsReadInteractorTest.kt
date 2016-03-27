@@ -50,7 +50,7 @@ class MarkMessageAsReadInteractorTest {
     }
 
     @Test
-    fun markAsRead() {
+    fun testMarkAsRead() {
         for (message in messages) {
             interactor.markAsReadLazy(message)
         }

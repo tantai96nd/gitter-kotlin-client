@@ -3,10 +3,10 @@ package com.github.shchurov.gitterclient.dagger.components
 import com.github.shchurov.gitterclient.dagger.scopes.PerScreen
 import com.github.shchurov.gitterclient.presentation.ui.activities.LogInActivity
 import com.github.shchurov.gitterclient.presentation.ui.activities.RoomsListActivity
-import dagger.Component
+import dagger.Subcomponent
 
 @PerScreen
-@Component(dependencies = arrayOf(AppComponent::class))
+@Subcomponent
 interface GeneralScreenComponent {
 
     fun inject(activity: LogInActivity)
