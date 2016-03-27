@@ -4,84 +4,96 @@ import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.domain.models.User
-import com.github.shchurov.gitterclient.unit_tests.helpers.ImmediateSchedulersProvider
+import com.github.shchurov.gitterclient.unit_tests.helpers.TestSchedulersProvider
+import com.github.shchurov.gitterclient.unit_tests.helpers.eq
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
 import org.mockito.Mock
+import org.mockito.Mockito.*
 import org.mockito.runners.MockitoJUnitRunner
+import rx.Observable
 import rx.observers.TestSubscriber
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class GetRoomMessagesInteractorTest {
 
+    companion object {
+        private const val ROOM_ID = "room_id"
+    }
+
     @Mock private lateinit var gitterApi: GitterApi
-    private val schedulersProvider = ImmediateSchedulersProvider()
-    private lateinit var fakeMessages: MutableList<Message>;
     private lateinit var interactor: GetRoomMessagesInteractor
+    private lateinit var messages: List<Message>
+    private val limitCaptor = ArgumentCaptor.forClass(Int::class.java)
 
     @Before
     fun setUp() {
-        setupMocks()
-        interactor = GetRoomMessagesInteractor(gitterApi, schedulersProvider)
+        messages = createMessagesList(100)
+        interactor = GetRoomMessagesInteractor(gitterApi, TestSchedulersProvider(), ROOM_ID)
     }
 
-    private fun setupMocks() {
-        fakeMessages = createFakeMessagesList(1000)
-        mockGitterApi()
-    }
-
-    private fun createFakeMessagesList(size: Int): MutableList<Message> {
-        val messages = mutableListOf<Message>()
-        for (i in 0..(size - 1)) {
-            val user = User("$i", "", "")
-            val message = Message("$i", "", 0, user, false)
-            messages.add(message)
+    private fun createMessagesList(size: Int): List<Message> {
+        val list: MutableList<Message> = mutableListOf()
+        for (i in 0..size - 1) {
+            val user = User("user_id$i", "username$i", "avatar$i")
+            list.add(Message("message_id$i", "text$i", i.toLong(), user, true))
         }
-        return messages
+        return list.reversed()
     }
 
-    private fun mockGitterApi() {
-        `when`(gitterApi.getRoomMessages(anyString(), eq(PAGE_SIZE), anyString()))
+    @Test
+    fun testGetFirstAndNextPage() {
+        mockGitterApiRegular()
+        var subscriber = TestSubscriber<List<Message>>()
+        interactor.getFirstPage()
+                .subscribe(subscriber)
+        subscriber.awaitTerminalEvent()
+
+        subscriber.assertNoErrors()
+        subscriber.assertValueCount(1)
+        verify(gitterApi).getRoomMessages(eq(ROOM_ID), anyInt(), eq(null))
+        val firstPage = subscriber.onNextEvents[0]
+        assertEquals(limitCaptor.value, firstPage.size)
+        assertTrue(interactor.hasMorePages)
+
+        subscriber = TestSubscriber<List<Message>>()
+        interactor.getNextPage()
+                .subscribe(subscriber)
+        subscriber.awaitTerminalEvent()
+
+        subscriber.assertNoErrors()
+        subscriber.assertValueCount(1)
+        verify(gitterApi).getRoomMessages(eq(ROOM_ID), anyInt(), eq(firstPage.first().id))
+        assertEquals(limitCaptor.value, subscriber.onNextEvents[0].size)
+    }
+
+    private fun mockGitterApiRegular() {
+        `when`(gitterApi.getRoomMessages(eq(ROOM_ID), limitCaptor.capture(), anyString()))
                 .thenAnswer { invocation ->
-                    val beforeId = invocation.arguments[2] as String?
-                    val end: Int = beforeId?.toInt() ?: fakeMessages.size
-                    val start = Math.max(0, end - PAGE_SIZE)
-                    val answerProjection = fakeMessages.subList(start, end)
-                    Observable.just(ArrayList<Message>(answerProjection))
+                    Observable.just(messages.subList(0, limitCaptor.value))
                 }
     }
 
     @Test
-    fun getFirstAndNextPages() {
-        checkFirstPage()
-        var total = PAGE_SIZE
-        while (total < fakeMessages.size) {
-            assertTrue(interactor.hasMorePages())
-            checkNextPage(total)
-            total += PAGE_SIZE
-        }
+    fun testNoMorePages() {
+        mockGitterApiOneLess()
+        val subscriber = TestSubscriber<List<Message>>()
+        interactor.getFirstPage()
+                .subscribe(subscriber)
+        subscriber.awaitTerminalEvent()
+
+        assertFalse(interactor.hasMorePages)
+
     }
 
-    private fun checkFirstPage() {
-        val subscriber = createSubscriber()
-        interactor.getFirstPage("random id").subscribe(subscriber)
-        subscriber.assertNoErrors()
-        val expected = fakeMessages.subList(fakeMessages.size - PAGE_SIZE, fakeMessages.size)
-        subscriber.assertValue(expected)
-    }
-
-    private fun createSubscriber() = TestSubscriber<MutableList<Message>>()
-
-    private fun checkNextPage(offset: Int) {
-        val end = fakeMessages.size - offset
-        val start = Math.max(0, end - PAGE_SIZE)
-        val expected = fakeMessages.subList(start, end)
-        val subscriber = createSubscriber()
-        interactor.getNextPage().subscribe(subscriber)
-        subscriber.assertNoErrors()
-        subscriber.assertValue(expected)
+    private fun mockGitterApiOneLess() {
+        `when`(gitterApi.getRoomMessages(eq(ROOM_ID), limitCaptor.capture(), anyString()))
+                .thenAnswer { invocation ->
+                    Observable.just(messages.subList(0, limitCaptor.value - 1))
+                }
     }
 
 }

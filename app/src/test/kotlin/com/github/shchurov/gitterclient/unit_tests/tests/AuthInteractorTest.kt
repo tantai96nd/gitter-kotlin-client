@@ -5,7 +5,7 @@ import com.github.shchurov.gitterclient.data.preferences.implementation.Preferen
 import com.github.shchurov.gitterclient.domain.interactors.AuthInteractor
 import com.github.shchurov.gitterclient.domain.models.Token
 import com.github.shchurov.gitterclient.domain.models.User
-import com.github.shchurov.gitterclient.unit_tests.helpers.ImmediateSchedulersProvider
+import com.github.shchurov.gitterclient.unit_tests.helpers.TestSchedulersProvider
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -27,12 +27,11 @@ class AuthInteractorTest {
     private lateinit var interactor: AuthInteractor
     @Mock private lateinit var gitterApi: GitterApi
     @Mock private lateinit var preferences: PreferencesImpl
-    private val schedulersProvider = ImmediateSchedulersProvider()
 
     @Before
     fun setUp() {
         mockGitterApi()
-        interactor = AuthInteractor(gitterApi, preferences, schedulersProvider)
+        interactor = AuthInteractor(gitterApi, preferences, TestSchedulersProvider())
     }
 
     private fun mockGitterApi() {
@@ -48,6 +47,7 @@ class AuthInteractorTest {
         val mainThreadName = Thread.currentThread().name
         interactor.logIn("random_code").subscribe(subscriber)
 
+        subscriber.awaitTerminalEvent()
         subscriber.assertNoErrors()
         verify(preferences).setGitterAccessToken(ACCESS_TOKEN)
         verify(preferences).setUserId(USER_ID)

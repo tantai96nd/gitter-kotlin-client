@@ -4,7 +4,7 @@ import com.github.shchurov.gitterclient.data.database.Database
 import com.github.shchurov.gitterclient.data.network.api.GitterApi
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
-import com.github.shchurov.gitterclient.unit_tests.helpers.ImmediateSchedulersProvider
+import com.github.shchurov.gitterclient.unit_tests.helpers.TestSchedulersProvider
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,63 +20,61 @@ class GetRoomsInteractorTest {
 
     @Mock private lateinit var gitterApi: GitterApi
     @Mock private lateinit var database: Database
-    private val schedulersProvider = ImmediateSchedulersProvider()
     private lateinit var interactor: GetRoomsInteractor
-    private lateinit var expectedRooms: MutableList<Room>
+    private lateinit var expectedLocalRooms: MutableList<Room>
+    private lateinit var expectedNetworkRooms: MutableList<Room>
 
     @Before
     fun setUp() {
-        setupMocks()
-        interactor = GetRoomsInteractor(gitterApi, database, schedulersProvider)
+        expectedLocalRooms = createRoomsList(20)
+        expectedNetworkRooms = createRoomsList(30)
+        mockDatabase()
+        mockGitterApi()
+        interactor = GetRoomsInteractor(gitterApi, database, TestSchedulersProvider())
     }
 
-    private fun setupMocks() {
-        val rooms = createFakeRoomsList(15)
-        mockGitterApiRooms(rooms)
-        mockDatabaseRooms(rooms)
-        rooms.sortByDescending { it.lastAccessTimestamp }
-        expectedRooms = rooms
-    }
-
-    private fun createFakeRoomsList(size: Int): MutableList<Room> {
-        val rooms: MutableList<Room> = mutableListOf()
+    private fun createRoomsList(size: Int): MutableList<Room> {
+        val list: MutableList<Room> = mutableListOf()
         val random = Random()
-        for (i in 0..size) {
-            val timestamp = Math.abs(random.nextLong())
-            val room = Room("$i", "", null, 0, 0, timestamp)
-            rooms.add(room)
+        for (i in 0..size - 1) {
+            list.add(Room("id$i", "name$i", "avatar$i", random.nextInt(), random.nextInt(), random.nextLong()))
         }
-        return rooms
+        list.sortByDescending { it.lastAccessTimestamp }
+        return list
     }
 
-    private fun mockGitterApiRooms(rooms: MutableList<Room>) {
+    private fun mockGitterApi() {
+        val rooms = ArrayList(expectedNetworkRooms)
         Collections.shuffle(rooms)
         Mockito.`when`(gitterApi.getMyRooms())
-                .thenReturn(Observable.just(ArrayList<Room>(rooms)))
+                .thenReturn(Observable.just(rooms))
     }
 
-    private fun mockDatabaseRooms(rooms: MutableList<Room>) {
+    private fun mockDatabase() {
+        val rooms = ArrayList(expectedLocalRooms)
         Collections.shuffle(rooms)
         Mockito.`when`(database.getRooms())
-                .thenReturn(ArrayList<Room>(rooms))
+                .thenReturn(rooms)
     }
 
     @Test
-    fun getLocal() {
-        val subscriber = createSubscriber()
+    fun testLocal() {
+        val subscriber = TestSubscriber<MutableList<Room>>()
         interactor.get(true).subscribe(subscriber)
+        subscriber.awaitTerminalEvent()
+
         subscriber.assertNoErrors()
-        subscriber.assertValue(expectedRooms)
+        subscriber.assertValue(expectedLocalRooms)
     }
 
-    private fun createSubscriber() = TestSubscriber<MutableList<Room>>()
-
     @Test
-    fun getLocalAndNetwork() {
-        val subscriber = createSubscriber()
+    fun testLocalAndNetwork() {
+        val subscriber = TestSubscriber<MutableList<Room>>()
         interactor.get(false).subscribe(subscriber)
+        subscriber.awaitTerminalEvent()
+
         subscriber.assertNoErrors()
-        subscriber.assertValues(expectedRooms, expectedRooms)
+        subscriber.assertValues(expectedLocalRooms, expectedNetworkRooms)
     }
 
 }

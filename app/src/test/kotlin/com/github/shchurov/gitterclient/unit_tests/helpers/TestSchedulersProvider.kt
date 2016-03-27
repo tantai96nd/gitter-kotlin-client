@@ -4,7 +4,7 @@ import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersP
 import rx.Scheduler
 import rx.schedulers.Schedulers
 
-class ImmediateSchedulersProvider : SchedulersProvider() {
+class TestSchedulersProvider : SchedulersProvider() {
 
     override val background: Scheduler
         get() = Schedulers.io()
