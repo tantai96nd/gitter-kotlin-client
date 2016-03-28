@@ -14,17 +14,17 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class AppModule() {
+open class AppModule() {
 
     @Provides
     @Singleton
-    fun providePreferences(): Preferences {
+    open fun providePreferences(): Preferences {
         return PreferencesImpl("gitter_preferences")
     }
 
     @Provides
     @Singleton
-    fun provideGitterApi(preferences: Preferences): GitterApi {
+    open fun provideGitterApi(preferences: Preferences): GitterApi {
         val gitterService = RetrofitInitializer.initGitterService(preferences)
         return GitterApiImpl(gitterService, preferences)
     }
@@ -37,7 +37,7 @@ class AppModule() {
 
     @Provides
     @Singleton
-    fun provideDatabase(realmInitializer: RealmInitializer): Database {
+    open fun provideDatabase(realmInitializer: RealmInitializer): Database {
         return DatabaseImpl(realmInitializer)
     }
 
