@@ -6,8 +6,6 @@ interface LogInView {
 
     fun clearWebViewHistory()
 
-    fun goToRoomsListScreen()
-
     fun showError(stringId: Int)
 
 }

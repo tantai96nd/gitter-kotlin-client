@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
+import com.github.shchurov.gitterclient.dagger.modules.GeneralScreenModule
 import com.github.shchurov.gitterclient.domain.models.Room
 import com.github.shchurov.gitterclient.presentation.presenters.RoomsListPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
@@ -37,7 +38,7 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView, RoomsAdapter.Actio
     }
 
     private fun initDependencies() {
-        App.component.createGeneralScreenComponent()
+        App.component.createGeneralScreenComponent(GeneralScreenModule(this))
                 .inject(this)
     }
 
@@ -83,10 +84,6 @@ class RoomsListActivity : AppCompatActivity(), RoomsListView, RoomsAdapter.Actio
 
     override fun displayRooms(rooms: List<Room>) {
         adapter.rooms = rooms
-    }
-
-    override fun goToRoomScreen(id: String, name: String) {
-        RoomActivity.start(this, id, name)
     }
 
     override fun onRoomClick(room: Room) {

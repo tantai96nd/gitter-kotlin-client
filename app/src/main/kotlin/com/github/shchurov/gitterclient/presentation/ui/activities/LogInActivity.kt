@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.github.shchurov.gitterclient.App
+import com.github.shchurov.gitterclient.dagger.modules.GeneralScreenModule
 import com.github.shchurov.gitterclient.presentation.presenters.LogInPresenter
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
 import com.github.shchurov.gitterclient.utils.showToast
@@ -24,7 +25,7 @@ class LogInActivity : AppCompatActivity(), LogInView {
     }
 
     private fun initDependencies() {
-        App.component.createGeneralScreenComponent()
+        App.component.createGeneralScreenComponent(GeneralScreenModule(this))
                 .inject(this)
     }
 
@@ -68,11 +69,6 @@ class LogInActivity : AppCompatActivity(), LogInView {
 
     override fun showError(stringId: Int) {
         showToast(stringId)
-    }
-
-    override fun goToRoomsListScreen() {
-        RoomsListActivity.start(this)
-        finish()
     }
 
 }

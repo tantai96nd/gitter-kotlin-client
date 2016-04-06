@@ -7,6 +7,7 @@ import com.github.shchurov.gitterclient.data.subscribers.DefaultSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.AuthInteractor
 import com.github.shchurov.gitterclient.domain.interactors.CheckAuthInteractor
 import com.github.shchurov.gitterclient.domain.models.User
+import com.github.shchurov.gitterclient.presentation.navigators.LogInNavigator
 import com.github.shchurov.gitterclient.presentation.ui.LogInView
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import rx.subscriptions.CompositeSubscription
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 class LogInPresenter @Inject constructor(
         private val checkAuthInteractor: CheckAuthInteractor,
-        private val authInteractor: AuthInteractor
+        private val authInteractor: AuthInteractor,
+        private val navigator: LogInNavigator
 ) : BasePresenter<LogInView>() {
 
     companion object {
@@ -26,6 +28,7 @@ class LogInPresenter @Inject constructor(
         const val KEY_CODE = "code"
         const val KEY_ERROR = "error"
         const val ERROR_ACCESS_DENIED = "access_denied"
+        @Suppress("RemoveCurlyBracesFromTemplate")
         val AUTH_URL = "${AUTHORIZATION_ENDPOINT}" +
                 "?${KEY_CLIENT_ID}=${Secrets.gitterOauthKey}" +
                 "&${KEY_RESPONSE_TYPE}=${RESPONSE_TYPE}" +
@@ -36,7 +39,7 @@ class LogInPresenter @Inject constructor(
 
     override fun onAttach() {
         if (checkAuthInteractor.isAuthorized()) {
-            getView().goToRoomsListScreen()
+            navigator.goToRoomsListScreen()
         } else {
             getView().loadUrl(AUTH_URL)
         }
@@ -50,7 +53,7 @@ class LogInPresenter @Inject constructor(
         authInteractor.logIn(code)
                 .compositeSubscribe(subscriptions, object : DefaultSubscriber<User>() {
                     override fun onNext(data: User) {
-                        getView().goToRoomsListScreen()
+                        navigator.goToRoomsListScreen()
                     }
 
                     override fun onFailure(e: Throwable, errorMessage: String) {

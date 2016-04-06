@@ -1,6 +1,7 @@
 package com.github.shchurov.gitterclient.dagger.components
 
 import com.github.shchurov.gitterclient.dagger.modules.AppModule
+import com.github.shchurov.gitterclient.dagger.modules.GeneralScreenModule
 import com.github.shchurov.gitterclient.dagger.modules.RoomModule
 import dagger.Component
 import javax.inject.Singleton
@@ -11,6 +12,6 @@ interface AppComponent {
 
     fun createRoomComponent(roomModule: RoomModule): RoomComponent
 
-    fun createGeneralScreenComponent(): GeneralScreenComponent
+    fun createGeneralScreenComponent(generalScreenModule: GeneralScreenModule): GeneralScreenComponent
 
 }

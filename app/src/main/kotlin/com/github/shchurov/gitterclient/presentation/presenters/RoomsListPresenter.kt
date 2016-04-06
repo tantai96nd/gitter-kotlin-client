@@ -3,13 +3,15 @@ package com.github.shchurov.gitterclient.presentation.presenters
 import com.github.shchurov.gitterclient.data.subscribers.DefaultSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomsInteractor
 import com.github.shchurov.gitterclient.domain.models.Room
+import com.github.shchurov.gitterclient.presentation.navigators.RoomsListNavigator
 import com.github.shchurov.gitterclient.presentation.ui.RoomsListView
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
 import rx.subscriptions.CompositeSubscription
 import javax.inject.Inject
 
 class RoomsListPresenter @Inject constructor(
-        private val getRoomsInteractor: GetRoomsInteractor
+        private val getRoomsInteractor: GetRoomsInteractor,
+        private val navigator: RoomsListNavigator
 ) : BasePresenter<RoomsListView>() {
 
     private val subscriptions = CompositeSubscription()
@@ -42,7 +44,7 @@ class RoomsListPresenter @Inject constructor(
     }
 
     fun onRoomClick(room: Room) {
-        getView().goToRoomScreen(room.id, room.name)
+        navigator.goToRoomScreen(room.id, room.name)
     }
 
 }
