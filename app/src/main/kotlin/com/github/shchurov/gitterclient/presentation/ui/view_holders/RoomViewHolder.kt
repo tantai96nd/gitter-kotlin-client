@@ -40,7 +40,7 @@ class RoomViewHolder(itemView: View, private val actionListener: RoomsAdapter.Ac
     private fun loadAvatar() {
         Glide.with(itemView.context)
                 .load(room.avatar)
-                .placeholder(R.drawable.avatar_loading)
+                .placeholder(R.drawable.ph_avatar_loading)
                 .transform(GlideCircleTransformation)
                 .into(ivAvatar)
     }

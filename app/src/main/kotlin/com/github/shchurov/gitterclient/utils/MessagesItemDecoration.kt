@@ -13,7 +13,7 @@ class MessagesItemDecoration() : RecyclerView.ItemDecoration() {
 
     companion object {
         private val WIDTH_DP = 1
-        private val COLOR_ID = R.color.grey2
+        private val COLOR_ID = R.color.grey3
     }
 
     private val width = Utils.dpToPx(WIDTH_DP)

@@ -8,9 +8,13 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SimpleItemAnimator
 import android.support.v7.widget.Toolbar
+import android.text.Editable
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.dagger.modules.RoomModule
@@ -20,6 +24,7 @@ import com.github.shchurov.gitterclient.presentation.ui.RoomView
 import com.github.shchurov.gitterclient.presentation.ui.adapters.MessagesAdapter
 import com.github.shchurov.gitterclient.utils.MessagesItemDecoration
 import com.github.shchurov.gitterclient.utils.PagingScrollListener
+import com.github.shchurov.gitterclient.utils.SimpleTextWatcher
 import com.github.shchurov.gitterclient.utils.VisiblePositionsScrollListener
 import javax.inject.Inject
 
@@ -42,6 +47,9 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
     private lateinit var toolbar: Toolbar
     private lateinit var rvMessages: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private lateinit var etNewMessage: EditText
+    private lateinit var tvSend: TextView
+    private lateinit var llNewMessage: LinearLayout
     private var adapter = MessagesAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,12 +69,16 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
         initViews()
         setupToolbar()
         setupRecyclerView()
+        setupMessageTextChangedListener()
     }
 
     private fun initViews() {
         toolbar = findViewById(R.id.toolbar) as Toolbar
         rvMessages = findViewById(R.id.rvMessages) as RecyclerView
         progressBar = findViewById(R.id.progressBar) as ProgressBar
+        etNewMessage = findViewById(R.id.etNewMessage) as EditText
+        tvSend = findViewById(R.id.tvSend) as TextView
+        llNewMessage = findViewById(R.id.llNewMessage) as LinearLayout
     }
 
     private fun setupToolbar() {
@@ -96,6 +108,32 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
         override fun onVisiblePositionsChanged(firstPosition: Int, lastPosition: Int) {
             val visibleMessages = adapter.getMessagesInRange(firstPosition, lastPosition)
             presenter.onVisibleMessagesChanged(visibleMessages)
+        }
+    }
+
+    private fun setupMessageTextChangedListener() {
+        etNewMessage.addTextChangedListener(object : SimpleTextWatcher() {
+            override fun afterTextChanged(s: Editable) {
+                if (s.length == 0) {
+                    hideSendButtonIfNot();
+                } else {
+                    showSendButtonIfNot();
+                }
+            }
+        })
+    }
+
+    private fun hideSendButtonIfNot() {
+        if (tvSend.translationY == 0f) {
+            tvSend.animate()
+                    .translationY((llNewMessage.height - tvSend.y).toFloat())
+        }
+    }
+
+    private fun showSendButtonIfNot() {
+        if (tvSend.translationY != 0f) {
+            tvSend.animate()
+                    .translationY(0f)
         }
     }
 

@@ -30,13 +30,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="4dp"
-        android:background="@drawable/unread_indicator"/>
+        android:background="@drawable/bg_unread_indicator"/>
 
     <TextView
         android:id="@+id/tvMentions"
         style="@style/RoomIndicatorTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/mention_indicator"/>
+        android:background="@drawable/bg_mention_indicator"/>
 
 </LinearLayout>
