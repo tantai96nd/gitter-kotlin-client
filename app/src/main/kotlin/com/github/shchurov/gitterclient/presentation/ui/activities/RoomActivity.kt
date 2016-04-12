@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SimpleItemAnimator
 import android.support.v7.widget.Toolbar
-import android.text.Editable
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -51,6 +50,7 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
     private lateinit var tvSend: TextView
     private lateinit var llNewMessage: LinearLayout
     private var adapter = MessagesAdapter(this)
+    private var sendButtonHiddenTranslation = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +70,7 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
         setupToolbar()
         setupRecyclerView()
         setupMessageTextChangedListener()
+        initSendButtonHiddenTranslation()
     }
 
     private fun initViews() {
@@ -113,27 +114,30 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
 
     private fun setupMessageTextChangedListener() {
         etNewMessage.addTextChangedListener(object : SimpleTextWatcher() {
-            override fun afterTextChanged(s: Editable) {
-                if (s.length == 0) {
-                    hideSendButtonIfNot();
-                } else {
-                    showSendButtonIfNot();
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if (before > 0 && s.length == 0) {
+                    runHideSendButtonAnimationIfRequired();
+                } else if (before == 0 && s.length > 0) {
+                    runShowSendButtonAnimationIfRequired();
                 }
             }
         })
     }
 
-    private fun hideSendButtonIfNot() {
-        if (tvSend.translationY == 0f) {
+    private fun runHideSendButtonAnimationIfRequired() {
             tvSend.animate()
-                    .translationY((llNewMessage.height - tvSend.y).toFloat())
-        }
+                    .translationY(sendButtonHiddenTranslation)
     }
 
-    private fun showSendButtonIfNot() {
-        if (tvSend.translationY != 0f) {
+    private fun runShowSendButtonAnimationIfRequired() {
             tvSend.animate()
                     .translationY(0f)
+    }
+
+    private fun initSendButtonHiddenTranslation() {
+        tvSend.post {
+            sendButtonHiddenTranslation = (llNewMessage.height - tvSend.y).toFloat()
+            tvSend.translationY = sendButtonHiddenTranslation
         }
     }
 
