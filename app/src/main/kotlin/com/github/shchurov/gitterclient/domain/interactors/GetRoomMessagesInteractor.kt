@@ -6,11 +6,12 @@ import com.github.shchurov.gitterclient.domain.models.Message
 import rx.Observable
 import rx.functions.Action1
 import javax.inject.Inject
+import javax.inject.Named
 
 class GetRoomMessagesInteractor @Inject constructor(
         private val gitterApi: GitterApi,
         private val schedulersProvider: SchedulersProvider,
-        private val roomId: String
+        @Named("roomId") private val roomId: String
 ) {
 
     companion object {
@@ -24,6 +25,7 @@ class GetRoomMessagesInteractor @Inject constructor(
     fun getFirstPage(): Observable<MutableList<Message>> {
         return gitterApi.getRoomMessages(roomId, PAGE_SIZE)
                 .subscribeOn(schedulersProvider.background)
+                .unsubscribeOn(schedulersProvider.background)
                 .doOnNext(updateStateAction)
                 .observeOn(schedulersProvider.main)
     }

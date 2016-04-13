@@ -26,4 +26,14 @@ interface RoomView {
 
     fun invalidateMessage(message: Message)
 
+    fun hideKeyboard()
+
+    fun showSendingInProgress()
+
+    fun enableMessageEditText()
+
+    fun disableMessageEditText()
+
+    fun hideSendingInProgress()
+
 }

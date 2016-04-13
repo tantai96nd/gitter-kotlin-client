@@ -1,5 +1,7 @@
 package com.github.shchurov.gitterclient.presentation.ui.activities
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,10 +12,7 @@ import android.support.v7.widget.SimpleItemAnimator
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import com.github.shchurov.gitterclient.App
 import com.github.shchurov.gitterclient.R
 import com.github.shchurov.gitterclient.dagger.modules.RoomModule
@@ -21,10 +20,7 @@ import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
 import com.github.shchurov.gitterclient.presentation.ui.adapters.MessagesAdapter
-import com.github.shchurov.gitterclient.utils.MessagesItemDecoration
-import com.github.shchurov.gitterclient.utils.PagingScrollListener
-import com.github.shchurov.gitterclient.utils.SimpleTextWatcher
-import com.github.shchurov.gitterclient.utils.VisiblePositionsScrollListener
+import com.github.shchurov.gitterclient.utils.*
 import javax.inject.Inject
 
 class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListener {
@@ -45,12 +41,14 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
     @Inject lateinit var presenter: RoomPresenter
     private lateinit var toolbar: Toolbar
     private lateinit var rvMessages: RecyclerView
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBarLoading: ProgressBar
     private lateinit var etNewMessage: EditText
+    private lateinit var flSend: FrameLayout
     private lateinit var tvSend: TextView
-    private lateinit var llNewMessage: LinearLayout
+    private lateinit var progressBarSending: ProgressBar
+    private lateinit var ivError: ImageView
     private var adapter = MessagesAdapter(this)
-    private var sendButtonHiddenTranslation = 0f
+    private var sendAnimator: ObjectAnimator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,17 +67,20 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
         initViews()
         setupToolbar()
         setupRecyclerView()
+        tvSend.setOnClickListener { presenter.onSendClick(tvSend.text.toString()) }
+        initSendTranslation()
         setupMessageTextChangedListener()
-        initSendButtonHiddenTranslation()
     }
 
     private fun initViews() {
         toolbar = findViewById(R.id.toolbar) as Toolbar
         rvMessages = findViewById(R.id.rvMessages) as RecyclerView
-        progressBar = findViewById(R.id.progressBar) as ProgressBar
+        progressBarLoading = findViewById(R.id.progressBarLoading) as ProgressBar
         etNewMessage = findViewById(R.id.etNewMessage) as EditText
         tvSend = findViewById(R.id.tvSend) as TextView
-        llNewMessage = findViewById(R.id.llNewMessage) as LinearLayout
+        flSend = findViewById(R.id.flSend) as FrameLayout
+        progressBarSending = findViewById(R.id.progressBarSending) as ProgressBar
+        ivError = findViewById(R.id.ivError) as ImageView
     }
 
     private fun setupToolbar() {
@@ -112,33 +113,62 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
         }
     }
 
+    private fun initSendTranslation() {
+        flSend.post { flSend.translationY = flSend.height.toFloat() }
+    }
+
     private fun setupMessageTextChangedListener() {
         etNewMessage.addTextChangedListener(object : SimpleTextWatcher() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (before > 0 && s.length == 0) {
-                    runHideSendButtonAnimationIfRequired();
-                } else if (before == 0 && s.length > 0) {
-                    runShowSendButtonAnimationIfRequired();
+                if (before == 0 && s.length > 0) {
+                    runShowSendButtonAnimation();
+                } else if (before > 0 && s.length == 0) {
+                    runHideSendButtonAnimation();
                 }
             }
         })
     }
 
-    private fun runHideSendButtonAnimationIfRequired() {
-            tvSend.animate()
-                    .translationY(sendButtonHiddenTranslation)
+    private fun runShowSendButtonAnimation() {
+        tvSend.visibility = View.VISIBLE
+        runShowSendStateAnimation()
     }
 
-    private fun runShowSendButtonAnimationIfRequired() {
-            tvSend.animate()
-                    .translationY(0f)
+    private fun runShowSendStateAnimation() {
+        runSendStateAnimation(0f, null)
     }
 
-    private fun initSendButtonHiddenTranslation() {
-        tvSend.post {
-            sendButtonHiddenTranslation = (llNewMessage.height - tvSend.y).toFloat()
-            tvSend.translationY = sendButtonHiddenTranslation
-        }
+    private fun runSendStateAnimation(translation: Float, listener: Animator.AnimatorListener?) {
+        sendAnimator?.cancel()
+        sendAnimator?.removeAllListeners()
+        sendAnimator = ObjectAnimator.ofFloat(flSend, "translationY", flSend.translationY, translation)
+                .apply {
+                    if (listener != null) {
+                        addListener(listener)
+                    }
+                    start()
+                }
+    }
+
+    private fun runHideSendButtonAnimation() {
+        runHideSendStateAnimation()
+    }
+
+    private fun runHideSendStateAnimation() {
+        sendAnimator?.cancel()
+        sendAnimator?.removeAllListeners()
+        sendAnimator = ObjectAnimator.ofFloat(flSend, "translationY", flSend.translationY, flSend.height.toFloat())
+                .apply {
+                    addListener(object : SimpleAnimatorListener() {
+                        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
+                        override fun onAnimationEnd(animator: Animator?) {
+                            tvSend.visibility = View.INVISIBLE
+                            progressBarSending.visibility = View.GONE
+                            ivError.visibility = View.GONE
+                        }
+                    })
+                    start()
+                }
     }
 
     override fun onDestroy() {
@@ -162,11 +192,11 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
     }
 
     override fun showInitLoading() {
-        progressBar.visibility = View.VISIBLE
+        progressBarLoading.visibility = View.VISIBLE
     }
 
     override fun hideInitLoading() {
-        progressBar.visibility = View.GONE
+        progressBarLoading.visibility = View.GONE
     }
 
     override fun showLoadingMore() {
@@ -196,6 +226,28 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
 
     override fun invalidateMessage(message: Message) {
         adapter.invalidateMessage(message)
+    }
+
+    override fun hideKeyboard() {
+        hideSoftInputKeyboard()
+    }
+
+    override fun showSendingInProgress() {
+        throw UnsupportedOperationException()
+    }
+
+    override fun hideSendingInProgress() {
+        throw UnsupportedOperationException()
+    }
+
+    override fun enableMessageEditText() {
+        etNewMessage.isEnabled = true
+        etNewMessage.isClickable = true
+    }
+
+    override fun disableMessageEditText() {
+        etNewMessage.isEnabled = true
+        etNewMessage.isClickable = true
     }
 
 }

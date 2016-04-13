@@ -7,12 +7,13 @@ import com.github.shchurov.gitterclient.domain.interactors.threading.SchedulersP
 import com.github.shchurov.gitterclient.domain.models.Message
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
 class MarkMessageAsReadInteractor @Inject constructor(
         private val gitterApi: GitterApi,
         private val database: Database,
         private val schedulersProvider: SchedulersProvider,
-        private val roomId: String
+        @Named("roomId") private val roomId: String
 ) {
 
     companion object {
@@ -39,8 +40,9 @@ class MarkMessageAsReadInteractor @Inject constructor(
     private fun sendRequest(roomId: String) {
         val copyIds = ArrayList(ids)
         ids.clear()
-        gitterApi.markMessagesAsRead(copyIds, roomId)
+        gitterApi.markMessagesAsRead(roomId, copyIds)
                 .subscribeOn(schedulersProvider.background)
+                .unsubscribeOn(schedulersProvider.background)
                 .subscribe(EmptySubscriber())
     }
 

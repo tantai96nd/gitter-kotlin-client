@@ -3,6 +3,7 @@ package com.github.shchurov.gitterclient.presentation.presenters
 import com.github.shchurov.gitterclient.data.subscribers.DefaultSubscriber
 import com.github.shchurov.gitterclient.domain.interactors.GetRoomMessagesInteractor
 import com.github.shchurov.gitterclient.domain.interactors.MarkMessageAsReadInteractor
+import com.github.shchurov.gitterclient.domain.interactors.SendMessageInteractor
 import com.github.shchurov.gitterclient.domain.models.Message
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
 import com.github.shchurov.gitterclient.utils.compositeSubscribe
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 class RoomPresenter @Inject constructor(
         private val getMessagesInteractor: GetRoomMessagesInteractor,
-        private val markMessageAsReadInteractor: MarkMessageAsReadInteractor
+        private val markMessageAsReadInteractor: MarkMessageAsReadInteractor,
+        private val sendMessageInteractor: SendMessageInteractor
 ) : BasePresenter<RoomView>() {
 
     private val subscriptions = CompositeSubscription()
@@ -26,21 +28,19 @@ class RoomPresenter @Inject constructor(
                 .compositeSubscribe(subscriptions, createMessagesSubscriber())
     }
 
-    private fun createMessagesSubscriber(): DefaultSubscriber<MutableList<Message>> {
-        return object : DefaultSubscriber<MutableList<Message>>() {
-            override fun onNext(data: MutableList<Message>) {
-                getView().addMessages(data)
-                if (getMessagesInteractor.hasMorePages) {
-                    getView().enablePagingListener()
-                } else {
-                    getView().disablePagingListener()
-                }
+    private fun createMessagesSubscriber() = object : DefaultSubscriber<MutableList<Message>>() {
+        override fun onNext(data: MutableList<Message>) {
+            getView().addMessages(data)
+            if (getMessagesInteractor.hasMorePages) {
+                getView().enablePagingListener()
+            } else {
+                getView().disablePagingListener()
             }
+        }
 
-            override fun onFinish() {
-                getView().hideLoadingMore()
-                getView().hideInitLoading()
-            }
+        override fun onFinish() {
+            getView().hideLoadingMore()
+            getView().hideInitLoading()
         }
     }
 
@@ -66,6 +66,31 @@ class RoomPresenter @Inject constructor(
         getView().showLoadingMore()
         getMessagesInteractor.getNextPage()
                 .compositeSubscribe(subscriptions, createMessagesSubscriber())
+    }
+
+    fun onSendClick(text: String) {
+        if (text.isBlank()) {
+            return
+        }
+        getView().showSendingInProgress()
+        getView().disableMessageEditText()
+        getView().hideKeyboard()
+//        subscriptions.add(sendMessageInteractor.sendMessage(text)
+//                .subscribe(createSendMessageSubscriber()))
+    }
+
+    fun createSendMessageSubscriber() = object : DefaultSubscriber<Message>() {
+        override fun onNext(t: Message?) {
+        }
+
+        override fun onFailure(e: Throwable, errorMessage: String) {
+
+        }
+
+        override fun onFinish() {
+            getView().hideSendingInProgress()
+            getView().enableMessageEditText()
+        }
     }
 
 }

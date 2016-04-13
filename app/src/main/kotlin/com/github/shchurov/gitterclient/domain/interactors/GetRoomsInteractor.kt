@@ -30,11 +30,13 @@ class GetRoomsInteractor @Inject constructor(
         subscriber.onCompleted()
     }
             .subscribeOn(schedulersProvider.background)
+            .unsubscribeOn(schedulersProvider.background)
             .observeOn(schedulersProvider.main)
 
 
     private fun getRoomsServer() = gitterApi.getMyRooms()
             .subscribeOn(schedulersProvider.background)
+            .unsubscribeOn(schedulersProvider.background)
             .map { rooms ->
                 rooms.sortByDescending { it.lastAccessTimestamp }
                 rewriteDatabaseRooms(rooms)

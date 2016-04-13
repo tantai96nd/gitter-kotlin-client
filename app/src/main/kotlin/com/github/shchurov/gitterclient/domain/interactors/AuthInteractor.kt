@@ -23,6 +23,7 @@ class AuthInteractor @Inject constructor(
         return gitterApi.getAccessToken(AUTHENTICATION_ENDPOINT, Secrets.gitterOauthKey, Secrets.gitterOauthSecret,
                 code, Secrets.gitterRedirectUrl, GRANT_TYPE)
                 .subscribeOn(schedulersProvider.background)
+                .unsubscribeOn(schedulersProvider.background)
                 .flatMap { token ->
                     preferences.setGitterAccessToken(token.accessToken)
                     gitterApi.getUser()

@@ -15,7 +15,7 @@ class GitterApiImpl(
     private val converter = NetworkConverter()
 
     override fun getAccessToken(url: String, clientId: String, clientSecret: String, code: String, redirectUri: String,
-            grantType: String) =
+                                grantType: String) =
             retrofitService.getAccessToken(url, clientId, clientSecret, code, redirectUri, grantType)
                     .map { response -> converter.convertResponseToToken(response) };
 
@@ -33,11 +33,14 @@ class GitterApiImpl(
                         response.mapTo(messages) { converter.convertResponseToMessage(it) }
                     }
 
-    override fun markMessagesAsRead(messageIds: List<String>, roomId: String?): Observable<*> {
+    override fun markMessagesAsRead(roomId: String, messageIds: List<String>): Observable<*> {
         return retrofitService.markMessagesAsRead(roomId, preferences.getUserId()!!, messageIds)
     }
 
     override fun getUser() = retrofitService.getUser()
             .map { response -> converter.convertResponseToUser(response[0]) }
+
+    override fun sendMessage(roomId: String, text: String) = retrofitService.sendMessage(roomId, text)
+            .map { response -> converter.convertResponseToMessage(response) }
 
 }
