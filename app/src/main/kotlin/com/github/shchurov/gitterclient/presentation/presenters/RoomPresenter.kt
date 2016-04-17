@@ -73,24 +73,20 @@ class RoomPresenter @Inject constructor(
             return
         }
         getView().showSendingInProgress()
-        getView().disableMessageEditText()
         getView().hideKeyboard()
         subscriptions.add(sendMessageInteractor.sendMessage(text)
                 .subscribe(createSendMessageSubscriber()))
     }
 
     fun createSendMessageSubscriber() = object : DefaultSubscriber<Message>() {
-        override fun onNext(t: Message?) {
+        override fun onNext(message: Message) {
             getView().clearMessageEditText()
             getView().hideSendingInProgress()
+            getView().addMessage(message)
         }
 
         override fun onFailure(e: Throwable, errorMessage: String) {
             getView().showSendingError()
-        }
-
-        override fun onFinish() {
-            getView().enableMessageEditText()
         }
     }
 

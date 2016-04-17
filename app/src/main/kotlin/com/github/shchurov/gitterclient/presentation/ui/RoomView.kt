@@ -30,14 +30,12 @@ interface RoomView {
 
     fun showSendingInProgress()
 
-    fun enableMessageEditText()
-
-    fun disableMessageEditText()
-
     fun showSendingError()
 
     fun hideSendingInProgress()
 
     fun clearMessageEditText()
+
+    fun addMessage(message: Message)
 
 }

@@ -67,7 +67,7 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
         initViews()
         setupToolbar()
         setupRecyclerView()
-        tvSend.setOnClickListener { presenter.onSendClick(tvSend.text.toString()) }
+        tvSend.setOnClickListener { presenter.onSendClick(etNewMessage.text.toString()) }
         initSendTranslation()
         setupMessageTextChangedListener()
     }
@@ -210,6 +210,7 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
 
     override fun showSendingInProgress() {
         animation?.cancel()
+        disableMessageEditText()
         animation = AnimationFlow.create()
                 .play(sendContainerHideAnimation)
                 .setup {
@@ -220,45 +221,56 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
                 .start()
     }
 
+    fun disableMessageEditText() {
+        etNewMessage.isEnabled = false
+        etNewMessage.isClickable = false
+    }
+
     override fun showSendingError() {
         animation?.cancel()
         animation = AnimationFlow.create()
                 .play(sendContainerHideAnimation)
                 .setup {
+                    tvSend.visibility = View.INVISIBLE
                     progressBarSending.visibility = View.GONE
                     ivError.visibility = View.VISIBLE
                 }
                 .play(sendContainerShowAnimation)
-                .wait(800)
+                .wait(600)
                 .play(sendContainerHideAnimation)
                 .setup {
                     ivError.visibility = View.GONE
                     tvSend.visibility = View.VISIBLE
+                    enableMessageEditText()
                 }
                 .play(sendContainerShowAnimation)
                 .start()
+    }
+
+    fun enableMessageEditText() {
+        etNewMessage.isEnabled = true
+        etNewMessage.isClickable = true
     }
 
     override fun hideSendingInProgress() {
         animation?.cancel()
         animation = AnimationFlow.create()
                 .play(sendContainerHideAnimation)
-                .setup { progressBarSending.visibility = View.GONE }
+                .setup {
+                    progressBarSending.visibility = View.GONE
+                    tvSend.visibility = View.VISIBLE
+                    enableMessageEditText()
+                }
                 .start()
-    }
-
-    override fun enableMessageEditText() {
-        etNewMessage.isEnabled = true
-        etNewMessage.isClickable = true
-    }
-
-    override fun disableMessageEditText() {
-        etNewMessage.isEnabled = false
-        etNewMessage.isClickable = false
     }
 
     override fun clearMessageEditText() {
         etNewMessage.setText("")
+    }
+
+    override fun addMessage(message: Message) {
+        adapter.insertMessage(message)
+        rvMessages.post { rvMessages.smoothScrollToPosition(0) }
     }
 
     private inner class SendContainerAnimation(private val endValue: Float) : AnimationFlow.Animation {

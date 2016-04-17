@@ -14,11 +14,7 @@ class SendMessageInteractor @Inject constructor(
 ) {
 
     fun sendMessage(text: String): Observable<Message> {
-        return Observable.create<Message> { subscriber ->
-            Thread.sleep(2000)
-            throw RuntimeException()
-        }
-                //        return gitterApi.sendMessage(roomId, text)
+        return gitterApi.sendMessage(roomId, text)
                 .subscribeOn(schedulersProvider.background)
                 .unsubscribeOn(schedulersProvider.background)
                 .observeOn(schedulersProvider.main)

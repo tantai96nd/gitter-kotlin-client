@@ -72,6 +72,11 @@ class MessagesAdapter(
         notifyItemRangeInserted(oldSize, newMessages.size)
     }
 
+    fun insertMessage(message: Message) {
+        messages.add(0, message)
+        notifyItemInserted(0)
+    }
+
     fun invalidateMessage(message: Message) {
         for (i in messages.indices) {
             if (messages[i] == message) {
