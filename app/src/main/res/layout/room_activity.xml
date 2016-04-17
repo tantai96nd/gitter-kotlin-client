@@ -59,7 +59,8 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/etNewMessage"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@id/etNewMessage">
+            android:layout_alignTop="@id/etNewMessage"
+            android:layout_marginRight="12dp">
 
             <TextView
                 android:id="@+id/tvSend"
@@ -73,8 +74,7 @@
                 android:paddingTop="8dp"
                 android:text="@string/send"
                 android:textColor="@color/grey3"
-                android:textSize="14sp"
-                android:visibility="invisible"/>
+                android:textSize="14sp"/>
 
             <ProgressBar
                 android:id="@+id/progressBarSending"
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:tint="@color/red"
+                android:tint="@color/yellow"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_error_32dp"/>
 

@@ -34,6 +34,10 @@ interface RoomView {
 
     fun disableMessageEditText()
 
+    fun showSendingError()
+
     fun hideSendingInProgress()
+
+    fun clearMessageEditText()
 
 }

@@ -1,6 +1,5 @@
 package com.github.shchurov.gitterclient.presentation.ui.activities
 
-import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
@@ -21,6 +20,7 @@ import com.github.shchurov.gitterclient.presentation.presenters.RoomPresenter
 import com.github.shchurov.gitterclient.presentation.ui.RoomView
 import com.github.shchurov.gitterclient.presentation.ui.adapters.MessagesAdapter
 import com.github.shchurov.gitterclient.utils.*
+import com.github.shchurov.gitterclient.utils.animation_flow.AnimationFlow
 import javax.inject.Inject
 
 class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListener {
@@ -48,7 +48,7 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
     private lateinit var progressBarSending: ProgressBar
     private lateinit var ivError: ImageView
     private var adapter = MessagesAdapter(this)
-    private var sendAnimator: ObjectAnimator? = null
+    private var animation: AnimationFlow? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,55 +121,31 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
         etNewMessage.addTextChangedListener(object : SimpleTextWatcher() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (before == 0 && s.length > 0) {
-                    runShowSendButtonAnimation();
+                    showSendButton();
                 } else if (before > 0 && s.length == 0) {
-                    runHideSendButtonAnimation();
+                    hideSendButton();
                 }
             }
         })
     }
 
-    private fun runShowSendButtonAnimation() {
-        tvSend.visibility = View.VISIBLE
-        runShowSendStateAnimation()
+    private fun showSendButton() {
+        animation?.cancel()
+        animation = AnimationFlow.create()
+                .play(sendContainerShowAnimation)
+                .start()
     }
 
-    private fun runShowSendStateAnimation() {
-        runSendStateAnimation(0f, null)
+    private val sendContainerShowAnimation = SendContainerAnimation(0f)
+
+    private fun hideSendButton() {
+        animation?.cancel()
+        animation = AnimationFlow.create()
+                .play(sendContainerHideAnimation)
+                .start()
     }
 
-    private fun runSendStateAnimation(translation: Float, listener: Animator.AnimatorListener?) {
-        sendAnimator?.cancel()
-        sendAnimator?.removeAllListeners()
-        sendAnimator = ObjectAnimator.ofFloat(flSend, "translationY", flSend.translationY, translation)
-                .apply {
-                    if (listener != null) {
-                        addListener(listener)
-                    }
-                    start()
-                }
-    }
-
-    private fun runHideSendButtonAnimation() {
-        runHideSendStateAnimation()
-    }
-
-    private fun runHideSendStateAnimation() {
-        sendAnimator?.cancel()
-        sendAnimator?.removeAllListeners()
-        sendAnimator = ObjectAnimator.ofFloat(flSend, "translationY", flSend.translationY, flSend.height.toFloat())
-                .apply {
-                    addListener(object : SimpleAnimatorListener() {
-                        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-                        override fun onAnimationEnd(animator: Animator?) {
-                            tvSend.visibility = View.INVISIBLE
-                            progressBarSending.visibility = View.GONE
-                            ivError.visibility = View.GONE
-                        }
-                    })
-                    start()
-                }
-    }
+    private val sendContainerHideAnimation by lazy { SendContainerAnimation(flSend.height.toFloat()) }
 
     override fun onDestroy() {
         presenter.detach()
@@ -233,11 +209,42 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
     }
 
     override fun showSendingInProgress() {
-        throw UnsupportedOperationException()
+        animation?.cancel()
+        animation = AnimationFlow.create()
+                .play(sendContainerHideAnimation)
+                .setup {
+                    tvSend.visibility = View.INVISIBLE
+                    progressBarSending.visibility = View.VISIBLE
+                }
+                .play(sendContainerShowAnimation)
+                .start()
+    }
+
+    override fun showSendingError() {
+        animation?.cancel()
+        animation = AnimationFlow.create()
+                .play(sendContainerHideAnimation)
+                .setup {
+                    progressBarSending.visibility = View.GONE
+                    ivError.visibility = View.VISIBLE
+                }
+                .play(sendContainerShowAnimation)
+                .wait(800)
+                .play(sendContainerHideAnimation)
+                .setup {
+                    ivError.visibility = View.GONE
+                    tvSend.visibility = View.VISIBLE
+                }
+                .play(sendContainerShowAnimation)
+                .start()
     }
 
     override fun hideSendingInProgress() {
-        throw UnsupportedOperationException()
+        animation?.cancel()
+        animation = AnimationFlow.create()
+                .play(sendContainerHideAnimation)
+                .setup { progressBarSending.visibility = View.GONE }
+                .start()
     }
 
     override fun enableMessageEditText() {
@@ -246,8 +253,19 @@ class RoomActivity : AppCompatActivity(), RoomView, MessagesAdapter.ActionListen
     }
 
     override fun disableMessageEditText() {
-        etNewMessage.isEnabled = true
-        etNewMessage.isClickable = true
+        etNewMessage.isEnabled = false
+        etNewMessage.isClickable = false
+    }
+
+    override fun clearMessageEditText() {
+        etNewMessage.setText("")
+    }
+
+    private inner class SendContainerAnimation(private val endValue: Float) : AnimationFlow.Animation {
+        override fun createAnimator() = ObjectAnimator.ofFloat(flSend, "translationY", flSend.translationY, endValue)
+
+        override fun onCancel() {
+        }
     }
 
 }
